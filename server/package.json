@@ -1,0 +1,64 @@
+{
+  "name": "eggjs-backend",
+  "version": "1.0.0",
+  "description": "基于 eggjs 的node后端框架",
+  "private": true,
+  "egg": {
+    "declarations": true
+  },
+  "scripts": {
+    "start": "egg-scripts start --daemon --title=egg-server-eggjs-backend",
+    "stop": "egg-scripts stop --title=egg-server-eggjs-backend",
+    "dev": "egg-bin dev --port 3050",
+    "start-prod": "EGG_SERVER_ENV=prod egg-scripts start --title=egg-server-eggjs-backend",
+    "start-test": "EGG_SERVER_ENV=test egg-scripts start --title=egg-server-eggjs-backend",
+    "debug": "egg-bin debug",
+    "test": "npm run lint -- --fix && npm run test-local",
+    "test-local": "egg-bin test",
+    "test-watch": "egg-bin test --watch",
+    "cov": "egg-bin cov",
+    "lint": "eslint .",
+    "ci": "npm run cov",
+    "autod": "autod"
+  },
+  "dependencies": {
+    "axios": "^0.21.0",
+    "bcryptjs": "^2.4.3",
+    "egg": "^2.27.0",
+    "egg-cors": "^2.2.3",
+    "egg-router-plus": "^1.3.1",
+    "egg-scripts": "^2.13.0",
+    "egg-sequelize": "^5.2.2",
+    "egg-swagger-doc": "^2.3.2",
+    "egg-validate": "^2.0.2",
+    "egg-view-ejs": "^2.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "koa-jwt": "^4.0.0",
+    "lodash": "^4.17.20",
+    "mysql2": "^2.1.0",
+    "path-to-regexp": "^6.1.0",
+    "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "autod": "^3.1.0",
+    "autod-egg": "^1.1.0",
+    "concurrently": "^5.3.0",
+    "egg-bin": "^4.15.0",
+    "egg-ci": "^1.15.0",
+    "egg-mock": "^4.0.0",
+    "eslint": "^7.7.0",
+    "eslint-config-egg": "^8.0.1"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "ci": {
+    "version": "10"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "zkboys",
+  "license": "MIT"
+}
