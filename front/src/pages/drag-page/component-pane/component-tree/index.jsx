@@ -8,10 +8,7 @@ export default function ComponentTree(props) {
 
     return (
         <Container>
-            <Header>
-                {icon}
-                {title}
-            </Header>
+            <Header icon={icon} title={title}/>
             <Content>
                 <div style={{height: 1000, background: 'green'}}>11</div>
             </Content>

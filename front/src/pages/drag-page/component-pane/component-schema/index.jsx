@@ -8,10 +8,7 @@ export default function ComponentSchema(props) {
 
     return (
         <Container>
-            <Header>
-                {icon}
-                {title}
-            </Header>
+            <Header icon={icon} title={title}/>
             <Content>
                 <div style={{height: 1000, background: 'greenyellow'}}>11</div>
             </Content>

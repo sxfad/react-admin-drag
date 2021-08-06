@@ -8,10 +8,7 @@ export default function ComponentSetting(props) {
 
     return (
         <Container>
-            <Header>
-                {icon}
-                {title}
-            </Header>
+            <Header icon={icon} title={title}/>
             <Content>
                 <div style={{height: 1000, background: 'rebeccapurple'}}>11</div>
             </Content>

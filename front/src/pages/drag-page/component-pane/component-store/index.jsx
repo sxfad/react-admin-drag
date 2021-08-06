@@ -10,10 +10,7 @@ export default function ComponentStore(props) {
 
     return (
         <Container>
-            <Header>
-                {icon}
-                {title}
-            </Header>
+            <Header icon={icon} title={title}/>
             <div className={s.top}>
                 <Input
                     allowClear
