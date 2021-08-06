@@ -10,6 +10,7 @@ const WebpackBar = req('webpackbar');
 const CracoAntDesignPlugin = req('craco-antd');
 const CracoLessPlugin = req('craco-less'); // include in craco-antd
 const MiniCssExtractPlugin = req('mini-css-extract-plugin');
+const FilterWarningsPlugin = require('webpack-filter-warnings-plugin');
 
 const packageName = require(path.join(ROOT_PATH, 'package.json')).name;
 
@@ -100,6 +101,15 @@ module.exports = {
             src: SRC_PATH,
         },
         plugins: [
+            /*
+            暂时先忽略
+            ./node_modules/prettier/parser-typescript.js
+            Critical dependency: the request of a dependency is an expression
+
+            * */
+            new FilterWarningsPlugin({
+                exclude: /Critical dependency: the request of a dependency is an expression/,
+            }),
             new WebpackBar({profile: true}),
             ...(process.env.ANALYZER === 'true' ?
                 [
