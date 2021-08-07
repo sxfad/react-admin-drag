@@ -1,0 +1,54 @@
+@import "src/theme";
+
+.category {
+    flex: 0 0 80px;
+    width: 80px;
+    height: 100%;
+    border-right: 1px solid #d8d8d8;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+
+    &::-webkit-scrollbar {
+        width: 0 !important;
+    }
+
+    .categoryTitle {
+        padding: 4px;
+        border-bottom: 1px solid #d8d8d8;
+        font-weight: bold;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        cursor: pointer;
+    }
+
+}
+
+.subCategory {
+    position: relative;
+    padding: 4px;
+    cursor: pointer;
+
+    .subCategoryTitle {
+        width: 100%;
+        padding: 0 4px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        cursor: pointer;
+    }
+
+    &.active {
+        color: @primary-color;
+
+        &::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 6px solid transparent;
+            border-right: 7px solid @primary-color;
+        }
+    }
+}

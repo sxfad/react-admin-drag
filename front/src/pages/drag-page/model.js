@@ -27,6 +27,14 @@ export default {
         selectedNode: null,
         // 当前拖拽节点
         draggingNode: null,
+
+
+        // 组件库下拉
+        stores: [],
+        // 当前选中组价库
+        selectedStoreId : 'base',
+        // 当前选中组件库分类Id
+        selectedSubCategoryId: null,
     },
 
     // 同步localStorage
