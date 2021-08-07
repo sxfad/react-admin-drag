@@ -1,4 +1,4 @@
-import {v4 as uuid} from 'uuid';
+import { v4 as uuid } from 'uuid';
 import base from './base';
 import navigation from './navigation';
 import common from './common';
@@ -12,16 +12,16 @@ import baseModule from './module';
 
 
 export default [
-    {title: '默认', children: base},
-    {title: '通用', children: common},
-    {title: '导航', children: navigation},
-    {title: '常用模块', children: baseModule},
-    {title: '表单', children: form},
-    {title: '数据输入', children: dataInput},
-    {title: '数据展示', children: dataShow},
-    {title: '反馈', children: feedback},
-    {title: '其他', children: other},
-    {title: '图标', children: icon},
+    { title: '常用模块', children: baseModule },
+    { title: '默认', children: base },
+    { title: '通用', children: common },
+    { title: '导航', children: navigation },
+    { title: '表单', children: form },
+    { title: '数据输入', children: dataInput },
+    { title: '数据展示', children: dataShow },
+    { title: '反馈', children: feedback },
+    { title: '其他', children: other },
+    { title: '图标', children: icon },
 ].map(item => {
     item.id = uuid();
     item.children = setDefaultConfig(item.children);
