@@ -1,5 +1,5 @@
-import React, {useRef} from 'react';
-import {Tooltip} from 'antd';
+import React, { useRef, useCallback } from 'react';
+import { Tooltip } from 'antd';
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
@@ -8,7 +8,7 @@ import {
     ApartmentOutlined,
     BarsOutlined,
 } from '@ant-design/icons';
-import {Icon} from 'src/components';
+import { Icon } from 'src/components';
 import config from 'src/commons/config-hoc';
 import DragBar from 'src/pages/drag-page/drag-bar';
 import ComponentStore from 'src/pages/drag-page/component-pane/component-store';
@@ -18,7 +18,42 @@ import ComponentSchema from 'src/pages/drag-page/component-pane/component-schema
 import ComponentSetting from 'src/pages/drag-page/component-pane/component-setting';
 import styles from './style.less';
 
-export default config({
+const tools = [
+    {
+        title: '页面菜单',
+        key: 'menu',
+        icon: <BarsOutlined style={{ fontSize: 20 }} />,
+        component: ComponentMenu,
+    },
+    {
+        title: '组件树',
+        key: 'componentTree',
+        icon: <ApartmentOutlined />,
+        component: ComponentTree,
+    },
+    {
+        title: '组件库',
+        key: 'componentStore',
+        icon: <AppstoreOutlined />,
+        component: ComponentStore,
+    },
+    {
+        title: 'Schema 源码开发',
+        key: 'schemaEditor',
+        icon: <Icon type="icon-code" />,
+        component: ComponentSchema,
+        bottom: true,
+    },
+    {
+        title: '设置',
+        key: 'setting',
+        icon: <SettingOutlined />,
+        component: ComponentSetting,
+        bottom: true,
+    },
+];
+
+export default React.memo(config({
     connect: state => {
         return {
             componentPaneExpended: state.dragPage.componentPaneExpended,
@@ -31,79 +66,44 @@ export default config({
         componentPaneExpended,
         componentPaneWidth,
         componentPaneActiveKey,
-        action: {dragPage: dragPageAction},
+        action: { dragPage: dragPageAction },
     } = props;
     const rightRef = useRef(null);
 
     // 工具图标点击事件
-    function handleToolClick(key) {
-        dragPageAction.setFields({componentPaneActiveKey: key});
+    const handleToolClick = useCallback((key) => {
+        dragPageAction.setFields({ componentPaneActiveKey: key });
 
         // 当前激活面板再次点击，进行展开收起操作
         if (key === componentPaneActiveKey) {
-            dragPageAction.setFields({componentPaneExpended: !componentPaneExpended});
+            dragPageAction.setFields({ componentPaneExpended: !componentPaneExpended });
             return;
         }
-        dragPageAction.setFields({componentPaneExpended: true});
-    }
+        dragPageAction.setFields({ componentPaneExpended: true });
+    }, [dragPageAction, componentPaneActiveKey, componentPaneExpended]);
 
     // 展开收起
-    function handleToggleCollapse() {
+    const handleToggleCollapse = useCallback(() => {
         const nextComponentPaneExpended = !componentPaneExpended;
 
         // 展开时，默认显示组件库
         if (!nextComponentPaneExpended && !componentPaneActiveKey) {
-            dragPageAction.setFields({componentPaneActiveKey: 'componentStore'});
+            dragPageAction.setFields({ componentPaneActiveKey: 'componentStore' });
         }
 
-        dragPageAction.setFields({componentPaneExpended: nextComponentPaneExpended});
-    }
+        dragPageAction.setFields({ componentPaneExpended: nextComponentPaneExpended });
+    }, [dragPageAction, componentPaneActiveKey, componentPaneExpended]);
 
-    function handleDragging(info) {
-        const {clientX} = info;
+    const handleDragging = useCallback((info) => {
+        const { clientX } = info;
 
-        const {x} = rightRef.current.getBoundingClientRect();
-        dragPageAction.setFields({componentPaneWidth: clientX - x - 4});
-    }
+        const { x } = rightRef.current.getBoundingClientRect();
+        dragPageAction.setFields({ componentPaneWidth: clientX - x - 4 });
+    }, [dragPageAction]);
 
-    const tools = [
-        {
-            title: '页面菜单',
-            key: 'menu',
-            icon: <BarsOutlined style={{fontSize: 20}}/>,
-            component: ComponentMenu,
-        },
-        {
-            title: '组件树',
-            key: 'componentTree',
-            icon: <ApartmentOutlined/>,
-            component: ComponentTree,
-        },
-        {
-            title: '组件库',
-            key: 'componentStore',
-            icon: <AppstoreOutlined/>,
-            component: ComponentStore,
-        },
-        {
-            title: 'Schema 源码开发',
-            key: 'schemaEditor',
-            icon: <Icon type="icon-code"/>,
-            component: ComponentSchema,
-            bottom: true,
-        },
-        {
-            title: '设置',
-            key: 'setting',
-            icon: <SettingOutlined/>,
-            component: ComponentSetting,
-            bottom: true,
-        },
-    ];
-
-    function renderTools(tools, bottom) {
+    const renderTools = useCallback((tools, bottom) => {
         return tools.filter(item => item.bottom === bottom).map(item => {
-            const {title, key, icon} = item;
+            const { title, key, icon } = item;
             const active = key === componentPaneActiveKey;
 
             return (
@@ -111,7 +111,7 @@ export default config({
                     <div
                         className={[
                             styles.toolItem,
-                            {[styles.active]: active},
+                            { [styles.active]: active },
                         ]}
                         onClick={() => handleToolClick(key)}
                     >
@@ -120,17 +120,17 @@ export default config({
                 </Tooltip>
             );
         });
-    }
+    }, [componentPaneActiveKey, handleToolClick]);
 
     const rightWidth = componentPaneExpended ? componentPaneWidth : 0;
     return (
         <div className={styles.root}>
-            {componentPaneExpended ? <DragBar onDragging={handleDragging}/> : null}
+            {componentPaneExpended ? <DragBar onDragging={handleDragging} /> : null}
             <div className={styles.left}>
                 <div className={styles.leftTop}>
                     <Tooltip placement="right" title={componentPaneExpended ? '收起' : '展开'}>
                         <div className={[styles.toggle, styles.toolItem]} onClick={() => handleToggleCollapse()}>
-                            {componentPaneExpended ? <MenuFoldOutlined/> : <MenuUnfoldOutlined/>}
+                            {componentPaneExpended ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
                         </div>
                     </Tooltip>
                     {renderTools(tools)}
@@ -139,9 +139,9 @@ export default config({
                     {renderTools(tools, true)}
                 </div>
             </div>
-            <div className={styles.right} ref={rightRef} style={{width: rightWidth}}>
+            <div className={styles.right} ref={rightRef} style={{ width: rightWidth }}>
                 {tools.map(item => {
-                    const {key, title, icon, component: Component} = item;
+                    const { key, title, icon, component: Component } = item;
                     return (
                         <div
                             key={key}
@@ -162,4 +162,4 @@ export default config({
             </div>
         </div>
     );
-});
+}));

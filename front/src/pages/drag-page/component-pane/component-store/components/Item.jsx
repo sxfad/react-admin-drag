@@ -64,19 +64,22 @@ export default function ComponentItem(props) {
     const { title, image } = data;
 
     return (
-        <div className={s.item}>
-            {title}
-            <div className={s.preview}>
-                {image ? (
-                    <img
-                        draggable={false}
-                        className={s.img}
-                        src={image}
-                        alt="组件预览图"
-                    />
-                ) : (
-                    renderPreview(data)
-                )}
+        <div className={s.itemWrapper}>
+            <div className={s.item}>
+                {title}
+                {data.renderPreview ? (
+                    <div className={s.preview}>
+                        {image ? (
+                            <div
+                                draggable={false}
+                                className={s.img}
+                                style={{ backgroundImage: `url(${image})` }}
+                            />
+                        ) : (
+                            renderPreview(data)
+                        )}
+                    </div>
+                ) : null}
             </div>
         </div>
     );

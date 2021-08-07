@@ -1,9 +1,10 @@
+import React from 'react';
 
-export default function Style (props) {
+export default React.memo(function Style(props) {
 
     return (
         <div>
             样式
         </div>
     );
-}
+});

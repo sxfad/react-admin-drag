@@ -286,7 +286,6 @@ export default [
                         </div>
                     );
                 },
-                // previewStyle: {width: '100%'},
                 config: {
                     componentName: 'Select',
                     props: {
@@ -309,7 +308,7 @@ export default [
             {
                 title: '滑动输入条',
                 renderPreview: true,
-                previewStyle: {width: '100%'},
+                previewProps: {style: {width: '100%'}},
                 // previewWrapperStyle: {background: 'red'},
                 config: {
                     componentName: 'Slider',
@@ -321,7 +320,7 @@ export default [
             {
                 title: '双滑动',
                 renderPreview: true,
-                previewStyle: {width: '100%'},
+                previewProps: {style: {width: '100%'}},
                 // previewWrapperStyle: {background: 'red'},
                 config: {
                     componentName: 'Slider',

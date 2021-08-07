@@ -15,7 +15,8 @@ export default [
                     return {
                         title: componentName,
                         renderPreview: true,
-                        previewStyle: {fontSize: 20},
+                        previewProps: { style: { fontSize: 20 } },
+                        previewHeight: 100,
                         icon: false,
                         config: {
                             componentName: componentName,

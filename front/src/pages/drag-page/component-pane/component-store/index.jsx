@@ -10,7 +10,7 @@ import Components from './components';
 import s from './style.less';
 import { filterTree } from 'src/pages/drag-page/util';
 
-export default config({
+const ComponentStore = config({
     connect: state => {
         return {
             stores: state.dragPage.stores,
@@ -103,3 +103,6 @@ export default config({
         </Container>
     );
 });
+
+export default React.memo(ComponentStore);
+

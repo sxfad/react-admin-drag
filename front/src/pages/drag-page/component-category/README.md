@@ -13,4 +13,5 @@ renderPreview | 否 | `true` | 是否渲染预览，可以为 直接jsx `<div>�
 previewProps | 否 | `{}` | 预览时额外属性
 previewZoom | 否 | - | 预览缩放
 previewWrapperStyle | 否 | - | 预览容器样式
+previewHeight | 否 | 200 或 44 | 预览容器高度
 image | 否 | - | 预览图片

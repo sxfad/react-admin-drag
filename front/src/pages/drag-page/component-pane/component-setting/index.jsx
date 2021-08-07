@@ -3,15 +3,17 @@ import Header from '../header';
 import Content from '../content';
 import React from 'react';
 
-export default function ComponentSetting(props) {
-    const {icon, title} = props;
+function ComponentSetting(props) {
+    const { icon, title } = props;
 
     return (
         <Container>
-            <Header icon={icon} title={title}/>
+            <Header icon={icon} title={title} />
             <Content>
-                <div style={{height: 1000, background: 'rebeccapurple'}}>11</div>
+                <div style={{ height: 1000, background: 'rebeccapurple' }}>11</div>
             </Content>
         </Container>
     );
 }
+
+export default React.memo(ComponentSetting);
