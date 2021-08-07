@@ -1,4 +1,155 @@
+import { getComponentConfig } from 'src/pages/drag-page/component-config';
+import { findNodesByName, findParentNodeByName } from 'src/pages/drag-page/util/node-util';
+import * as raLibComponent from '@ra-lib/admin';
+import * as components from 'src/pages/drag-page/components';
+import * as antdComponent from 'antd/es';
+import * as antdIcon from '@ant-design/icons';
+
 export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
+
+// 树过滤函数
+export function filterTree(array, filter) {
+    const getNodes = (result, node) => {
+        if (filter(node)) {
+            result.push(node);
+            return result;
+        }
+        if (Array.isArray(node.children)) {
+            const children = node.children.reduce(getNodes, []);
+            if (children.length) result.push({ ...node, children });
+        }
+        return result;
+    };
+
+    return array.reduce(getNodes, []);
+}
+
+// 根据 componentName 获取组件
+export function getComponent(options) {
+    let { componentName } = options;
+    const componentConfig = getComponentConfig(componentName);
+    const { renderComponentName, componentType } = componentConfig;
+
+    componentName = renderComponentName || componentName;
+
+    const [name, subName] = componentName.split('.');
+
+    const com = (Com, packageName) => {
+        if (subName) Com = Com[subName];
+
+        return {
+            component: Com,
+            packageName,
+            name: subName || name,
+            subName,
+            exportName: name,
+            dependence: {
+                destructuring: true, // 解构方式
+            },
+        };
+    };
+
+    if (componentType === '@ra-lib/admin') {
+        const raCom = raLibComponent[name];
+        if (raCom) return com(raCom, '@ra-lib/admin');
+    }
+
+    const Com = components[name];
+    if (Com) return com(Com);
+
+    const AntdCom = antdComponent[name];
+    if (AntdCom) return com(AntdCom, 'antd');
+
+    const AntdIcon = antdIcon[name];
+    if (AntdIcon) return com(AntdIcon, '@ant-design/icons');
+
+    return com(name);
+}
+
+// 判断字符串是否是函数
+export function isFunctionString(value) {
+    return value
+        && typeof value === 'string'
+        && (value.includes('function') || value.includes('=>'));
+}
+
+// 设置表单元素name
+export function getFormItemName(itemNode, pageConfig) {
+    const formNode = findParentNodeByName(pageConfig, 'Form', itemNode.id);
+    const items = findNodesByName(formNode, 'Form.Item');
+    if (!items?.length) return itemNode.props.name;
+    const names = items.map(node => node?.props?.name).filter(item => !!item);
+    return getNextField(names, 'field');
+}
+
+// 获取obj中字段名，比如 field = visible, obj中存在obj.visible,将得到 visible2
+export function getNextField(obj, field) {
+    if (typeof obj === 'object' && !Array.isArray(obj) && !(field in obj)) return field;
+
+    const nums = [0];
+    const keys = Array.isArray(obj) ? obj : Object.keys(obj);
+    keys.forEach(key => {
+        const result = RegExp(`${field}(\\d+$)`).exec(key);
+        if (result) {
+            nums.push(window.parseInt(result[1]));
+        }
+    });
+
+    const num = Math.max(...nums) + 1;
+
+    return `${field}${num}`;
+}
+
+// 获取字段配置信息
+export function getFieldOption(node, field) {
+    const config = getComponentConfig(node?.componentName);
+    if (!config) return null;
+
+    const { fields } = config;
+
+
+    const loopFields = fields => {
+        if (!fields?.length) return null;
+        for (let opt of fields) {
+            if (opt.field === field) return opt;
+
+            if (Array.isArray(opt.type)) {
+                const fs = opt.type.find(item => item.value === 'object');
+                if (fs) {
+                    const result = loopFields(fs.fields);
+                    if (result) return result;
+                }
+            }
+
+            if (typeof opt.type === 'object' && opt.type.value === 'object') {
+                const result = loopFields(opt.type.fields);
+                if (result) return result;
+            }
+        }
+    };
+
+    return loopFields(fields);
+}
+
+// 节点渲染之后，统一处理函数，用于给没有透传props属性的组件，添加拖拽相关属性
+export function fixDragProps(options) {
+    const { node, dragProps, iframeDocument, isPreview, element } = options;
+    if (!iframeDocument) return;
+    const { id } = node;
+
+    const ele = element || iframeDocument.querySelector(`.id_${id}`);
+
+    if (!ele) return;
+
+    Object.entries(dragProps)
+        .forEach(([key, value]) => {
+            if (isPreview) {
+                ele.removeAttribute(key);
+            } else {
+                ele.setAttribute(key, value);
+            }
+        });
+}
 
 /**
  * 获取元素在可视窗口内位置、尺寸、滚动等信息
