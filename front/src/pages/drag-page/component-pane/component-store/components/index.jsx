@@ -3,6 +3,7 @@ import { useThrottleFn } from 'ahooks';
 import config from 'src/commons/config-hoc';
 import s from './style.less';
 import { isElementVisible, scrollElement } from 'src/pages/drag-page/util';
+import Item from './Item';
 
 export default config({
     connect: state => {
@@ -72,17 +73,10 @@ export default config({
                                 {title} {subTitle}
                             </div>
                             {children.map(item => {
-                                const { id, title, hidden } = item;
+                                const { id, hidden } = item;
                                 if (hidden) return null;
 
-                                return (
-                                    <div
-                                        key={id}
-                                        id={`component_${id}`}
-                                    >
-                                        {title}
-                                    </div>
-                                );
+                                return <Item key={id} data={item}/>
                             })}
                         </div>
                     );

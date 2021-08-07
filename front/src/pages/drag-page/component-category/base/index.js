@@ -49,7 +49,7 @@ export default [
             ...['一', '二', '三', '四', '五', '六'].map((level, index) => {
                 const num = index + 1;
                 return {
-                    title: `${level}级标题 1${num}`,
+                    title: `${level}级标题 h${num}`,
                     renderPreview: false,
                     config: {
                         componentName: 'h' + num,

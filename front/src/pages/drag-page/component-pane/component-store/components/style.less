@@ -1,3 +1,5 @@
+@import "src/theme";
+
 .root {
     position: relative;
     padding: 4px 4px 0 4px;
@@ -9,6 +11,7 @@
         width: 0 !important;
     }
 }
+
 .categoryTitle {
     padding-top: 8px;
     padding-left: 4px;
@@ -16,4 +19,49 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+.item {
+    border: 1px dotted #d8d8d8;
+    margin: 4px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: move;
+    overflow: hidden;
+
+    &:hover {
+        border: 1px dotted @primary-color;
+    }
+
+    .preview {
+        position: relative;
+        background: #fff;
+        padding: 8px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 4px;
+        pointer-events: none;
+
+        :global {
+            .ant-form-item {
+                margin-bottom: 8px;
+            }
+        }
+    }
+
+    .previewZoom {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .img {
+        width: 100%;
+        height: auto;
+    }
 }
