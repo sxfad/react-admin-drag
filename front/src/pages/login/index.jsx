@@ -1,11 +1,11 @@
-import React, {useState, useEffect} from 'react';
-import {Helmet} from 'react-helmet';
-import {Button, Form} from 'antd';
-import {LockOutlined, UserOutlined} from '@ant-design/icons';
-import {FormItem, setLoginUser} from '@ra-lib/admin';
+import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
+import { Button, Form } from 'antd';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { FormItem, setLoginUser } from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
-import {toHome} from 'src/commons';
-import {Logo} from 'src/components';
+import { toHome } from 'src/commons';
+import { Logo } from 'src/components';
 import styles from './style.less';
 
 export default config({
@@ -24,10 +24,10 @@ export default config({
         const params = {
             ...values,
         };
-
-        login.run(params, {errorTip: false})
+        login.run = () => Promise.resolve({ id: 1, name: '测试', token: 'test' });
+        login.run(params, { errorTip: false })
             .then(res => {
-                const {id, name, token, ...others} = res;
+                const { id, name, token, ...others } = res;
                 setLoginUser({
                     id,     // 必须字段
                     name,   // 必须字段
@@ -57,13 +57,13 @@ export default config({
         setTimeout(() => setIsMount(true), 300);
     }, [form]);
 
-    const formItemClass = [styles.formItem, {[styles.active]: isMount}];
+    const formItemClass = [styles.formItem, { [styles.active]: isMount }];
 
     return (
         <div className={styles.root}>
-            <Helmet title="欢迎登录"/>
+            <Helmet title="欢迎登录" />
             <div className={styles.logo}>
-                <Logo/>
+                <Logo />
             </div>
             <div className={styles.box}>
                 <Form
@@ -79,7 +79,7 @@ export default config({
                             name="account"
                             allowClear
                             autoFocus
-                            prefix={<UserOutlined/>}
+                            prefix={<UserOutlined />}
                             placeholder="请输入用户名"
                             required
                         />
@@ -88,13 +88,13 @@ export default config({
                         <FormItem
                             type="password"
                             name="password"
-                            prefix={<LockOutlined/>}
+                            prefix={<LockOutlined />}
                             placeholder="请输入密码"
                             required
                         />
                     </div>
                     <div className={formItemClass}>
-                        <FormItem noStyle shouldUpdate style={{marginBottom: 0}}>
+                        <FormItem noStyle shouldUpdate style={{ marginBottom: 0 }}>
                             {() => (
                                 <Button
                                     className={styles.submitBtn}
@@ -105,7 +105,7 @@ export default config({
                                         // 用户没有操作过，或者没有setFieldsValue
                                         !form.isFieldsTouched(true)
                                         // 表单中存在错误
-                                        || form.getFieldsError().filter(({errors}) => errors.length).length
+                                        || form.getFieldsError().filter(({ errors }) => errors.length).length
                                     }
                                 >
                                     登录

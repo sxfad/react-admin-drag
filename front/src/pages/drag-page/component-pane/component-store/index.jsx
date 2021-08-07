@@ -23,9 +23,7 @@ export default config({
         stores,
         selectedStoreId,
         selectedSubCategoryId,
-        action: {
-            dragPage: dragPageAction,
-        },
+        action: {dragPage: dragPageAction},
     } = props;
 
 

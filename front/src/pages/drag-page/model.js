@@ -32,9 +32,11 @@ export default {
         // 组件库下拉
         stores: [],
         // 当前选中组价库
-        selectedStoreId : 'base',
+        selectedStoreId: 'base',
         // 当前选中组件库分类Id
         selectedSubCategoryId: null,
+        // 分类滚动方式
+        categoryScrollForce: false,
     },
 
     // 同步localStorage
@@ -50,7 +52,7 @@ export default {
         'propsPaneExpended',
     ],
 
-    setFields: fields => ({...fields}),
+    setFields: fields => ({ ...fields }),
 
     // 根据节点id，删除节点
     deleteNodeById(node, state) {
