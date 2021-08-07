@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { usePrevious } from 'ahooks';
 import config from 'src/commons/config-hoc';
 import s from './style.less';
 import { scrollElement } from 'src/pages/drag-page/util';
@@ -6,24 +7,30 @@ import { scrollElement } from 'src/pages/drag-page/util';
 export default config({
     connect: state => {
         return {
-            categoryScrollForce: state.dragPage.categoryScrollForce,
+            categoryScrollType: state.dragPage.categoryScrollType,
         };
     },
 })(function Category(props) {
     const {
         selectedId,
         dataSource,
-        categoryScrollForce,
+        categoryScrollType,
         action: { dragPage: dragPageAction },
     } = props;
+
+    const previousCategoryScrollType = usePrevious(categoryScrollType);
 
     const rootRef = useRef(null);
 
     // 选中分类，滚动到可见范围
     useEffect(() => {
+        // 点击分类，组件会滚动，组件滚动之后会改变 categoryScrollType ，导致 effect又按照 byScroll方式触发
+        // 这里做个判断，防止点击分类后触发两次滚动
+        if (previousCategoryScrollType === 'byClick' && categoryScrollType === 'byScroll') return;
+
         const element = document.getElementById(`subCategory_${selectedId}`);
-        scrollElement(rootRef.current, element, false, categoryScrollForce);
-    }, [selectedId, categoryScrollForce]);
+        scrollElement(rootRef.current, element, false, categoryScrollType === 'byScroll');
+    }, [selectedId, previousCategoryScrollType, categoryScrollType]);
 
     return (
         <div className={s.category} ref={rootRef}>
@@ -67,7 +74,7 @@ export default config({
                                     key={subCategoryId}
                                     id={`subCategory_${subCategoryId}`}
                                     className={[s.subCategory, { [s.active]: isActive }]}
-                                    onClick={() => dragPageAction.setFields({ selectedSubCategoryId: subCategoryId, categoryScrollForce: false })}
+                                    onClick={() => dragPageAction.setFields({ selectedSubCategoryId: subCategoryId, categoryScrollType: 'byClick' })}
                                     title={title}
                                 >
                                     {title}

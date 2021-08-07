@@ -35,8 +35,8 @@ export default {
         selectedStoreId: 'base',
         // 当前选中组件库分类Id
         selectedSubCategoryId: null,
-        // 分类滚动方式
-        categoryScrollForce: false,
+        // 分类滚动方式，无论是否可见都强制滚动
+        categoryScrollType: 'byClick',
     },
 
     // 同步localStorage

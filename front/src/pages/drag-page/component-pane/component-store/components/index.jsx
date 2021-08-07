@@ -1,31 +1,46 @@
-import React, { useRef } from 'react';
-import { useDebounceFn } from 'ahooks';
+import React, { useRef, useEffect } from 'react';
+import { useThrottleFn } from 'ahooks';
 import config from 'src/commons/config-hoc';
 import s from './style.less';
-import { isElementVisible } from 'src/pages/drag-page/util';
+import { isElementVisible, scrollElement } from 'src/pages/drag-page/util';
 
 export default config({
-    connect: true,
+    connect: state => {
+        return {
+            categoryScrollType: state.dragPage.categoryScrollType,
+        };
+    },
 })(function Components(props) {
     const {
         dataSource,
+        selectedId,
+        categoryScrollType,
         action: { dragPage: dragPageAction },
     } = props;
 
     const rootRef = useRef(null);
 
     // 滚动选中分类
-    const { run: handleScroll } = useDebounceFn(() => {
+    const { run: handleScroll } = useThrottleFn(() => {
         const allSubCategory = document.querySelectorAll('.componentSubCategory');
         for (const ele of Array.from(allSubCategory)) {
             const visible = isElementVisible(rootRef.current, ele);
             if (visible) {
                 const subCategoryId = ele.id.replace('componentSubCategory_', '');
-                dragPageAction.setFields({ selectedSubCategoryId: subCategoryId, categoryScrollForce: true });
+                dragPageAction.setFields({ selectedSubCategoryId: subCategoryId, categoryScrollType: 'byScroll' });
                 return;
             }
         }
-    }, { wait: 300 });
+    }, { wait: 500 });
+
+    // 分类改变 滚动组件
+    useEffect(() => {
+        if (categoryScrollType === 'byScroll') return;
+
+        const element = document.getElementById(`componentSubCategory_${selectedId}`);
+        scrollElement(rootRef.current, element, true, true);
+    }, [selectedId, categoryScrollType]);
+
 
     return (
         <div className={s.root} ref={rootRef} onScroll={handleScroll}>
