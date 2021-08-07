@@ -3,7 +3,7 @@ import from from '../../form';
 export default [
     {
         title: '查询条件',
-        subTitle: '查询条件 QueryBar',
+        subTitle: 'QueryBar',
         children: [
             {
                 title: '查询条件',
@@ -19,7 +19,7 @@ export default [
     },
     {
         title: '工具条',
-        subTitle: '工具条 ToolBar',
+        subTitle: 'ToolBar',
         children: [
             {
                 title: '工具条',
@@ -81,7 +81,7 @@ export default [
     },
     {
         title: '分页',
-        subTitle: '分页 Pagination',
+        subTitle: 'Pagination',
         children: [
             {
                 title: '分页',
@@ -101,7 +101,7 @@ export default [
     },
     {
         title: '图片验证码',
-        subTitle: '图片验证码 ImageCode',
+        subTitle: 'ImageCode',
         children: [
             {
                 title: '图片验证码',
@@ -119,7 +119,7 @@ export default [
     },
     {
         title: '短信验证码',
-        subTitle: '短信验证码 MessageCode',
+        subTitle: 'MessageCode',
         children: [
             {
                 title: '短信验证码',

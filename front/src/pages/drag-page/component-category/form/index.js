@@ -115,7 +115,7 @@ const formProps = {
 export default [
     {
         title: '表单',
-        subTitle: '表单 Form',
+        subTitle: 'Form',
         children: [
             {
                 title: '水平表单',

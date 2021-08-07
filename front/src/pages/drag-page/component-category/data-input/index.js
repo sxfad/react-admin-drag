@@ -4,7 +4,7 @@ import {Select} from 'antd';
 export default [
     {
         title: '自动完成',
-        subTitle: '自动完成 AutoComplete',
+        subTitle: 'AutoComplete',
         children: [
             {
                 title: '自动完成',
@@ -26,7 +26,7 @@ export default [
     },
     {
         title: '级联选择',
-        subTitle: '级联选择 Cascader',
+        subTitle: 'Cascader',
         children: [
             {
                 title: '级联选择',
@@ -76,7 +76,7 @@ export default [
     },
     {
         title: '多选框',
-        subTitle: '多选框 Checkbox',
+        subTitle: 'Checkbox',
         children: [
             {
                 title: '多选框',
@@ -104,7 +104,7 @@ export default [
     },
     {
         title: '日期选择框',
-        subTitle: '日期选择框 DatePicker',
+        subTitle: 'DatePicker',
         children: [
             {
                 title: '日期选择框',
@@ -124,7 +124,7 @@ export default [
     },
     {
         title: '输入框',
-        subTitle: '输入框 Input',
+        subTitle: 'Input',
         children: [
             {
                 title: '输入框',
@@ -181,7 +181,7 @@ export default [
     },
     {
         title: '提及',
-        subTitle: '提及 Mentions',
+        subTitle: 'Mentions',
         children: [
             {
                 title: '提及',
@@ -197,7 +197,7 @@ export default [
     },
     {
         title: '单选框',
-        subTitle: '单选框 Radio',
+        subTitle: 'Radio',
         children: [
             {
                 title: '单选框',
@@ -249,7 +249,7 @@ export default [
     },
     {
         title: '评分',
-        subTitle: '评分 Rate',
+        subTitle: 'Rate',
         children: [
             {
                 title: '评分',
@@ -267,7 +267,7 @@ export default [
     },
     {
         title: '选择器',
-        subTitle: '选择器 Select',
+        subTitle: 'Select',
         children: [
             {
                 title: '选择器',
@@ -303,7 +303,7 @@ export default [
     },
     {
         title: '滑动输入条',
-        subTitle: '滑动输入条 Slider',
+        subTitle: 'Slider',
         children: [
             {
                 title: '滑动输入条',
@@ -334,7 +334,7 @@ export default [
     },
     {
         title: '开关',
-        subTitle: '开关 Switch',
+        subTitle: 'Switch',
         children: [
             {
                 title: '开关',
@@ -347,7 +347,7 @@ export default [
     },
     {
         title: '时间选择框',
-        subTitle: '时间选择框 TimePicker',
+        subTitle: 'TimePicker',
         children: [
             {
                 title: '时间选择框',
@@ -367,7 +367,7 @@ export default [
     },
     {
         title: '穿梭框',
-        subTitle: '穿梭框 Transfer',
+        subTitle: 'Transfer',
         children: [
             {
                 title: '穿梭框',
@@ -381,7 +381,7 @@ export default [
     },
     {
         title: '树选择',
-        subTitle: '树选择 TreeSelect',
+        subTitle: 'TreeSelect',
         children: [
             {
                 title: '树选择',
@@ -418,7 +418,7 @@ export default [
     },
     {
         title: '上传',
-        subTitle: '上传 Upload',
+        subTitle: 'Upload',
         children: [
             {
                 title: '上传',

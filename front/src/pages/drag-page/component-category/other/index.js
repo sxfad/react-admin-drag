@@ -1,7 +1,7 @@
 export default [
     {
         title: '锚点',
-        subTitle: '锚点 Anchor',
+        subTitle: 'Anchor',
         children: [
             {
                 title: '锚点',
@@ -14,7 +14,7 @@ export default [
     },
     {
         title: '回到顶部',
-        subTitle: '回到顶部 BackTop',
+        subTitle: 'BackTop',
         children: [
             {
                 title: '回到顶部',

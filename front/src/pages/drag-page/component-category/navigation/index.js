@@ -1,7 +1,7 @@
 export default [
     {
         title: '固钉',
-        subTitle: '固钉 Affix',
+        subTitle: 'Affix',
         children: [
             {
                 title: '固钉',
@@ -14,7 +14,7 @@ export default [
     },
     {
         title: '面包屑',
-        subTitle: '面包屑 Breadcrumb',
+        subTitle: 'Breadcrumb',
         children: [
             {
                 title: '面包屑',
@@ -54,7 +54,7 @@ export default [
     },
     {
         title: '下拉菜单',
-        subTitle: '下拉菜单 Dropdown',
+        subTitle: 'Dropdown',
         children: [
             {
                 title: '下拉菜单',
@@ -67,7 +67,7 @@ export default [
     },
     {
         title: '导航菜单',
-        subTitle: '导航菜单 Menu',
+        subTitle: 'Menu',
         children: [
             {
                 title: '导航菜单',
@@ -165,7 +165,7 @@ export default [
     },
     {
         title: '页头',
-        subTitle: '页头 PageHeader',
+        subTitle: 'PageHeader',
         children: [
             {
                 title: '页头',
@@ -182,7 +182,7 @@ export default [
     },
     {
         title: '步骤条',
-        subTitle: '步骤条 Steps',
+        subTitle: 'Steps',
         children: [
             {
                 title: '步骤条',

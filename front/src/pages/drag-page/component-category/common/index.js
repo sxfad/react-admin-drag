@@ -4,7 +4,7 @@ import theme from 'src/theme.less';
 export default [
     {
         title: '按钮',
-        subTitle: '按钮 Button',
+        subTitle: 'Button',
         children: [
             ...[
                 {title: '主按钮', type: 'primary', text: '确定'},
@@ -42,7 +42,7 @@ export default [
     },
     {
         title: '栅格',
-        subTitle: '栅格 Grid',
+        subTitle: 'Grid',
         children: [
             {
                 title: '栅格行',
@@ -106,7 +106,7 @@ export default [
     },
     {
         title: '分割线',
-        subTitle: '分割线 Divider',
+        subTitle: 'Divider',
         children: [
             {
                 title: '分割线',
@@ -121,7 +121,7 @@ export default [
     },
     {
         title: '间距',
-        subTitle: '间距 Space',
+        subTitle: 'Space',
         children: [
             {
                 title: '间距',

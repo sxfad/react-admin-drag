@@ -12,7 +12,7 @@ import DrawerImage from './images/Drawer.png';
 export default [
     {
         title: '警告提示',
-        subTitle: '警告提示 Alert',
+        subTitle: 'Alert',
         children: [
             {
                 title: '警告提示',
@@ -29,7 +29,7 @@ export default [
     },
     {
         title: '抽屉',
-        subTitle: '抽屉 Drawer',
+        subTitle: 'Drawer',
         children: [
             {
                 title: '抽屉',
@@ -46,7 +46,7 @@ export default [
     },
     {
         title: '全局提示',
-        subTitle: '全局提示 Message',
+        subTitle: 'Message',
         children: [
             {
                 title: '全局提示',
@@ -62,7 +62,7 @@ export default [
     },
     {
         title: '对话框',
-        subTitle: '对话框 Modal',
+        subTitle: 'Modal',
         children: [
             {
                 title: '对话框',
@@ -234,7 +234,7 @@ export default [
     },
     {
         title: '通知提醒框',
-        subTitle: '通知提醒框 Notification',
+        subTitle: 'Notification',
         children: [
             {
                 title: '通知提醒框',
@@ -251,7 +251,7 @@ export default [
     },
     {
         title: '气泡确认框',
-        subTitle: '气泡确认框 Popconfirm',
+        subTitle: 'Popconfirm',
         children: [
             {
                 title: '气泡确认框',
@@ -275,7 +275,7 @@ export default [
     },
     {
         title: '进度条',
-        subTitle: '进度条 Progress',
+        subTitle: 'Progress',
         children: [
             {
                 title: '进度条',
@@ -291,7 +291,7 @@ export default [
     },
     {
         title: '结果',
-        subTitle: '结果 Result',
+        subTitle: 'Result',
         children: [
             {
                 title: '结果',
@@ -304,7 +304,7 @@ export default [
     },
     {
         title: '骨架屏',
-        subTitle: '骨架屏 Skeleton',
+        subTitle: 'Skeleton',
         children: [
             {
                 title: '骨架屏',
@@ -318,7 +318,7 @@ export default [
     },
     {
         title: '加载中',
-        subTitle: '加载中 Spin',
+        subTitle: 'Spin',
         children: [
             {
                 title: '加载中',

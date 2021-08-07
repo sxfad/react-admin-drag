@@ -8,7 +8,7 @@ import ImageImage from './Image.png';
 export default [
     {
         title: '头像',
-        subTitle: '头像 Avatar',
+        subTitle: 'Avatar',
         children: [
             {
                 title: '头像',
@@ -24,7 +24,7 @@ export default [
     },
     {
         title: '徽标数',
-        subTitle: '徽标数 Badge',
+        subTitle: 'Badge',
         children: [
             {
                 title: '徽标数',
@@ -41,7 +41,7 @@ export default [
     },
     {
         title: '日历',
-        subTitle: '日历 Calendar',
+        subTitle: 'Calendar',
         children: [
             {
                 title: '日历',
@@ -55,7 +55,7 @@ export default [
     },
     {
         title: '卡片',
-        subTitle: '卡片 Card',
+        subTitle: 'Card',
         children: [
             {
                 title: '卡片',
@@ -73,7 +73,7 @@ export default [
     },
     {
         title: '走马灯',
-        subTitle: '走马灯 Carousel',
+        subTitle: 'Carousel',
         children: [
             {
                 title: '走马灯',
@@ -133,7 +133,7 @@ export default [
     },
     {
         title: '折叠面板',
-        subTitle: '折叠面板 Collapse',
+        subTitle: 'Collapse',
         children: [
             {
                 title: '折叠面板',
@@ -165,7 +165,7 @@ export default [
 
     {
         title: '折叠面板页',
-        subTitle: '折叠面板页 Collapse.Panel',
+        subTitle: 'Collapse.Panel',
         children: [
             {
                 title: '折叠面板页',
@@ -192,7 +192,7 @@ export default [
     },
     {
         title: '评论',
-        subTitle: '评论 Comment',
+        subTitle: 'Comment',
         children: [
             {
                 title: '评论',
@@ -205,7 +205,7 @@ export default [
     },
     {
         title: '描述列表',
-        subTitle: '描述列表 Descriptions',
+        subTitle: 'Descriptions',
         children: [
             {
                 title: '描述列表',
@@ -230,7 +230,7 @@ export default [
     },
     {
         title: '空状态',
-        subTitle: '空状态 Empty',
+        subTitle: 'Empty',
         children: [
             {
                 title: '空状态',
@@ -243,7 +243,7 @@ export default [
     },
     {
         title: '图片',
-        subTitle: '图片 Image',
+        subTitle: 'Image',
         children: [
             {
                 title: '图片',
@@ -259,7 +259,7 @@ export default [
     },
     {
         title: '列表',
-        subTitle: '列表 List',
+        subTitle: 'List',
         children: [
             {
                 title: '列表',
@@ -272,7 +272,7 @@ export default [
     },
     {
         title: '气泡卡片',
-        subTitle: '气泡卡片 Popover',
+        subTitle: 'Popover',
         children: [
             {
                 title: '气泡卡片',
@@ -311,7 +311,7 @@ export default [
     },
     {
         title: '统计数值',
-        subTitle: '统计数值 Statistic',
+        subTitle: 'Statistic',
         children: [
             {
                 title: '统计数值',
@@ -339,7 +339,7 @@ export default [
     },
     {
         title: '表格',
-        subTitle: '表格 Table',
+        subTitle: 'Table',
         children: [
             {
                 title: '表格',
@@ -412,7 +412,7 @@ export default [
     },
     {
         title: '表格列',
-        subTitle: '表格列 Table.Column',
+        subTitle: 'Table.Column',
         children: [
             {
                 title: '表格列',
@@ -429,7 +429,7 @@ export default [
     },
     {
         title: '标签页',
-        subTitle: '标签页 Tabs',
+        subTitle: 'Tabs',
         children: [
             {
                 title: '标签页',
@@ -487,7 +487,7 @@ export default [
     },
     {
         title: '标签',
-        subTitle: '标签 Tag',
+        subTitle: 'Tag',
         children: [
             {
                 title: '标签',
@@ -506,7 +506,7 @@ export default [
     },
     {
         title: '时间轴',
-        subTitle: '时间轴 Timeline',
+        subTitle: 'Timeline',
         children: [
             {
                 title: '时间轴',
@@ -532,7 +532,7 @@ export default [
     },
     {
         title: '文字提示',
-        subTitle: '文字提示 Tooltip',
+        subTitle: 'Tooltip',
         children: [
             {
                 title: '文字提示',
@@ -563,7 +563,7 @@ export default [
     },
     {
         title: '树形控件',
-        subTitle: '树形控件 Tree',
+        subTitle: 'Tree',
         children: [
             {
                 title: '树形控件',

@@ -3,7 +3,7 @@ import * as antdIcon from '@ant-design/icons/lib/icons';
 export default [
     {
         title: 'antd官方',
-        subTitle: 'antd官方图标 Icon',
+        subTitle: 'Icon',
         children: [
             ...(Object.keys(antdIcon)
                 .filter((key, index) => {

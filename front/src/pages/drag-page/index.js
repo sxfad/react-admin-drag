@@ -1,5 +1,5 @@
-import {useRef, useEffect} from 'react';
-import {PageContent, useHeight} from '@ra-lib/admin';
+import { useRef, useEffect } from 'react';
+import { PageContent, useHeight } from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
 import Toolbar from 'src/pages/drag-page/toolbar';
 import ComponentPane from 'src/pages/drag-page/component-pane';
@@ -18,7 +18,7 @@ export default config({
 })(function(props) {
 
     const {
-        action: {dragPage: dragPageAction},
+        action: { dragPage: dragPageAction },
     } = props;
     const mainRef = useRef(null);
     const [height] = useHeight(mainRef);
@@ -27,7 +27,7 @@ export default config({
         // 设置组件库分类
         dragPageAction.setFields({
             stores: [
-                {value: 'base', label: '基础组件库', dataSource: baseStore},
+                { value: 'base', label: '基础组件库', dataSource: baseStore },
             ],
         });
     }, [dragPageAction]);
@@ -35,17 +35,17 @@ export default config({
     return (
         <PageContent className={s.root}>
             <div className={s.top}>
-                <Toolbar/>
+                <Toolbar />
             </div>
-            <div ref={mainRef} className={s.main} style={{flex: `0 0 ${height}px`, height}}>
+            <div ref={mainRef} className={s.main} style={{ flex: `0 0 ${height}px`, height }}>
                 <div className={s.left}>
-                    <ComponentPane/>
+                    <ComponentPane />
                 </div>
                 <div className={s.center}>
-                    <ComponentCanvas/>
+                    <ComponentCanvas />
                 </div>
                 <div className={s.right}>
-                    <PropsPane/>
+                    <PropsPane />
                 </div>
             </div>
         </PageContent>
