@@ -35,6 +35,7 @@ export default config({
 
     // 分类改变 滚动组件
     useEffect(() => {
+        // 如果是当前组件列表自己滚动，则不触发
         if (categoryScrollType === 'byScroll') return;
 
         const element = document.getElementById(`componentSubCategory_${selectedId}`);
