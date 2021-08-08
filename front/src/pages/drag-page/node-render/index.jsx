@@ -11,7 +11,11 @@ const loop = (obj, cb) => {
     // entries 可以同时遍历对象和数组
     Object.entries(obj)
         .forEach(([key, value]) => {
-            if (typeof value === 'object' && !isNode(value)) {
+            if (
+                typeof value === 'object'
+                && !isNode(value)
+                && !React.isValidElement(value)
+            ) {
                 loop(value, cb);
             } else {
                 cb(obj, key, value);
@@ -79,14 +83,26 @@ const NodeRender = React.memo(function(props) {
             return curr;
         });
 
-        return <NodeRender key={nextConfig.id} {...props} config={nextConfig} />;
+        return (
+            <NodeRender
+                key={nextConfig.id}
+                isPreview={isPreview}
+                config={nextConfig}
+            />
+        );
     }
 
     // props 属性处理，属性有可能是 节点 深层属性也有可能是节点
     loop(componentProps, (obj, key, value) => {
         // 是节点
         if (isNode(value)) {
-            obj[key] = <NodeRender key={value.id} {...props} config={value} />;
+            obj[key] = (
+                <NodeRender
+                    key={value.id}
+                    isPreview={isPreview}
+                    config={value}
+                />
+            );
         }
         // TODO 是state
         // TODO 是函数
@@ -97,12 +113,24 @@ const NodeRender = React.memo(function(props) {
 
     let childrenEle = null;
     if (children?.length > 1) {
-        childrenEle = children.map(childConfig => <NodeRender key={childConfig.id} {...props} config={childConfig} />);
+        childrenEle = children.map(childConfig => (
+            <NodeRender
+                key={childConfig.id}
+                isPreview={isPreview}
+                config={childConfig}
+            />
+        ));
     }
 
     if (children?.length === 1) {
         const childConfig = children[0];
-        childrenEle = <NodeRender key={childConfig.id} {...props} config={childConfig} />;
+        childrenEle = (
+            <NodeRender
+                key={childConfig.id}
+                isPreview={isPreview}
+                config={childConfig}
+            />
+        );
     }
 
     // 组件样式，将组件id拼接到样式中，有些组件无法自定义属性，统一通过样式标记
@@ -114,8 +142,12 @@ const NodeRender = React.memo(function(props) {
         ...componentProps,
         ...others,
         className: cls,
-        children: childrenEle
+        children: childrenEle,
     });
 });
+
+// 可以去掉antd的子元素类型检查提醒
+NodeRender.__ANT_BREADCRUMB_SEPARATOR = true;
+NodeRender.__ANT_BREADCRUMB_ITEM = true;
 
 export default NodeRender;
