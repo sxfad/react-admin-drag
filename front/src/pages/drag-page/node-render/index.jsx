@@ -1,14 +1,15 @@
-import React, { createElement } from 'react';
+import React, {createElement} from 'react';
 import classNames from 'classnames';
-import { getComponent, isFunctionString, getFieldOption } from 'src/pages/drag-page/util';
-import { isNode } from 'src/pages/drag-page/util/node-util';
-import { getComponentDisplayName, getComponentConfig } from 'src/pages/drag-page/component-config';
-import { cloneDeep } from 'lodash';
+import {getComponent, isFunctionString, getFieldOption} from 'src/pages/drag-page/util';
+import {isNode} from 'src/pages/drag-page/util/node-util';
+import {getComponentDisplayName, getComponentConfig} from 'src/pages/drag-page/component-config';
+import {cloneDeep} from 'lodash';
 import styles from './style.less';
 
 function getDragInfo(options) {
-    const { config, selectedNodeId, draggingNode } = options;
-    const { componentName, id: componentId } = config;
+    const {config, selectedNode, draggingNode} = options;
+    const {componentName, id: componentId} = config;
+    const selectedNodeId = selectedNode?.id;
     const componentConfig = getComponentConfig(componentName);
 
     let {
@@ -35,17 +36,17 @@ function getDragInfo(options) {
         'data-draggable-un-draggable': !draggable,
     };
 
-    return { dragProps, dragClassName };
+    return {dragProps, dragClassName};
 }
 
 export default function NodeRender(props) {
     let {
         config,
         pageConfig,
-        selectedNodeId,
+        selectedNode,
         draggingNode,
         dragPageAction,
-        activeSideKey, // 左侧激活面板
+        componentPaneActiveKey, // 左侧激活面板
         nodeSelectType, // 节点选中方式
         iframeDocument,
         isPreview = true,
@@ -55,6 +56,8 @@ export default function NodeRender(props) {
     } = props;
 
     if (!config) return null;
+
+    const selectedNodeId = selectedNode?.id;
 
     if (typeof config !== 'object' || Array.isArray(config)) return config;
 
@@ -74,13 +77,10 @@ export default function NodeRender(props) {
 
     let {
         render,
-        // withWrapper,
-        // wrapperStyle = {},
         actions = {},
         childrenDraggable,
         hooks = {},
         withDragProps,
-        // fields,
     } = componentConfig;
 
     componentProps = cloneDeep(componentProps || {});
@@ -162,7 +162,7 @@ export default function NodeRender(props) {
         }
     });
 
-    const { dragClassName, dragProps } = getDragInfo({ config, selectedNodeId, draggingNode });
+    const {dragClassName, dragProps} = getDragInfo({config, selectedNodeId, draggingNode});
 
     const _props = Object.entries(props).reduce((prev, curr) => {
         const [key, value] = curr;
@@ -206,9 +206,9 @@ export default function NodeRender(props) {
         // 比较特殊，需要作为父级的直接子节点，不能使用 NodeRender
         if (['Tabs.TabPane', 'Breadcrumb.Item', 'Breadcrumb.Separator'].includes(item.componentName)) {
             const itemConfig = getComponentConfig(item.componentName);
-            let { hooks = {}, withDragProps } = itemConfig;
-            const { dragClassName, dragProps } = getDragInfo({ config: item, selectedNodeId, draggingNode });
-            const isRender = hooks.beforeRender && hooks.beforeRender({ node: item, dragPageAction, iframeDocument });
+            let {hooks = {}, withDragProps} = itemConfig;
+            const {dragClassName, dragProps} = getDragInfo({config: item, selectedNodeId, draggingNode});
+            const isRender = hooks.beforeRender && hooks.beforeRender({node: item, dragPageAction, iframeDocument});
 
             if (isRender === false) return null;
 
@@ -262,7 +262,7 @@ export default function NodeRender(props) {
     if (wrapper?.length) {
         wrapper = cloneDeep(wrapper);
 
-        wrapper[0].children = [{ ...config, wrapper: null }];
+        wrapper[0].children = [{...config, wrapper: null}];
 
         const nextConfig = wrapper.reduce((prev, wrapperConfig) => {
             wrapperConfig.children = [prev];

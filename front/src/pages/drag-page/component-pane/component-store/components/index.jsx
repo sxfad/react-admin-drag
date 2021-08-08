@@ -97,6 +97,7 @@ const Components = config({
                     width={width - 80}
                     ref={rootRef}
                     onItemsRendered={handleScroll}
+                    className={s.componentList}
                 >
                     {({ index, style }) => {
                         const data = items[index];

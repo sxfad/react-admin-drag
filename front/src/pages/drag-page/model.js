@@ -1,3 +1,17 @@
+import {v4 as uuid} from 'uuid';
+
+// const rootHolderNode = () => ({id: uuid(), componentName: 'RootDragHolder'});
+const rootHolderNode = () => ({
+    id: uuid(),
+    componentName: 'Button',
+    props: {
+        type: 'primary',
+    },
+    children: [
+        {id: uuid(), componentName: 'Text', props: {text: '按钮'}},
+    ],
+});
+
 export default {
     state: {
         // 视图模式 布局模式 layout 预览模式 preview
@@ -23,8 +37,11 @@ export default {
         // 属性面板是否展开
         propsPaneExpended: true,
 
+
         // 当前选中节点
         selectedNode: null,
+        // 画布上节点选中方式 click: 单击 or  meta: mate(ctrl) + 单击
+        nodeSelectType: 'meta',
         // 当前拖拽节点
         draggingNode: null,
 
@@ -37,6 +54,19 @@ export default {
         selectedSubCategoryId: null,
         // 分类滚动方式，无论是否可见都强制滚动
         categoryScrollType: 'byClick',
+
+        // 画布尺寸，指的是iframe尺寸
+        canvasWidth: '100%',
+        canvasHeight: '100%',
+        canvasScale: 100,
+        // 画布document节点
+        canvasDocument: null,
+        // 画布上渲染组件根节点
+        canvasRenderRoot: null,
+
+        // 渲染页面的配置
+        pageConfig: rootHolderNode(),
+
     },
 
     // 同步localStorage
@@ -52,7 +82,7 @@ export default {
         'propsPaneExpended',
     ],
 
-    setFields: fields => ({ ...fields }),
+    setFields: fields => ({...fields}),
 
     // 根据节点id，删除节点
     deleteNodeById(node, state) {
