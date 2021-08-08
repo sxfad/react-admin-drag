@@ -35,9 +35,9 @@ export default {
     },
     hooks: {
         afterAdd: (options) => {
-            const {node, pageConfig} = options;
-            if (node.props.name) {
-                node.props.name = getFormItemName(node, pageConfig);
+            const {config, dragPageState: {pageConfig}} = options;
+            if (config.props.name) {
+                config.props.name = getFormItemName(config, pageConfig);
             }
         },
         beforeAddChildren: (options) => {

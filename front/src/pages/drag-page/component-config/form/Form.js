@@ -4,9 +4,9 @@ import {colFields} from '../common/Col';
 export default {
     hooks: {
         beforeRender: options => {
-            const {node} = options;
-            if (!node.props) node.props = {};
-            node.props.name = `formName_${uuid()}`;
+            const {config} = options;
+            if (!config.props) config.props = {};
+            config.props.name = `formName_${uuid()}`;
         },
     },
     fields: [

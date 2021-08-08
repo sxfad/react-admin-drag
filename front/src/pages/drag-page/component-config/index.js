@@ -194,7 +194,7 @@ export function getComponentConfig(componentName) {
         });
 
     // 冻结，不允许编辑
-    Object.freeze(config);
+    // Object.freeze(config);
 
     return config;
 }

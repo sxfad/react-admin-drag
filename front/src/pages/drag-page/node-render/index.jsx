@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createElement } from 'react';
 import { getComponent } from 'src/pages/drag-page/util';
 import { isNode } from 'src/pages/drag-page/util/node-util';
 import { getComponentConfig } from 'src/pages/drag-page/component-config';
@@ -19,10 +19,12 @@ const loop = (obj, cb) => {
         });
 };
 
-function NodeRender(props) {
+const NodeRender = React.memo(function(props) {
     let {
         config,
         isPreview = true,
+        className,
+        ...others
     } = props;
 
     // 配置并不是组件节点，直接返回配置内容
@@ -77,45 +79,43 @@ function NodeRender(props) {
             return curr;
         });
 
-        return NodeRender({ ...props, config: nextConfig });
+        return <NodeRender key={nextConfig.id} {...props} config={nextConfig} />;
     }
 
     // props 属性处理，属性有可能是 节点 深层属性也有可能是节点
     loop(componentProps, (obj, key, value) => {
         // 是节点
         if (isNode(value)) {
-            obj[key] = NodeRender({ ...props, config: value });
+            obj[key] = <NodeRender key={value.id} {...props} config={value} />;
         }
         // TODO 是state
         // TODO 是函数
     });
 
-    const Component = getComponent(config).component;
+    const component = getComponent(config).component;
     const dragProps = (isPreview || !withDragProps) ? {} : { draggable };
 
     let childrenEle = null;
     if (children?.length > 1) {
-        childrenEle = children.map(childConfig => NodeRender({ ...props, config: childConfig }));
+        childrenEle = children.map(childConfig => <NodeRender key={childConfig.id} {...props} config={childConfig} />);
     }
 
     if (children?.length === 1) {
         const childConfig = children[0];
-        childrenEle = NodeRender({ ...props, config: childConfig });
+        childrenEle = <NodeRender key={childConfig.id} {...props} config={childConfig} />;
     }
 
     // 组件样式，将组件id拼接到样式中，有些组件无法自定义属性，统一通过样式标记
-    const className = [componentProps.className, `id_${id}`].filter(item => !!item).join(' ');
+    const cls = [componentProps.className, `id_${id}`, className].filter(item => !!item).join(' ');
 
-    return (
-        <Component
-            key={id}
-            {...dragProps}
-            {...componentProps}
-            className={className}
-        >
-            {childrenEle}
-        </Component>
-    );
-}
+    return createElement(component, {
+        key: id,
+        ...dragProps,
+        ...componentProps,
+        ...others,
+        className: cls,
+        children: childrenEle
+    });
+});
 
-export default React.memo(NodeRender);
+export default NodeRender;
