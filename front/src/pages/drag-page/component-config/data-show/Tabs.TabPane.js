@@ -8,13 +8,13 @@ export default {
     withDragProps: false,
     hooks: {
         afterRender: options => {
-            const {node, pageConfig, iframeDocument} = options;
-            if (!iframeDocument) return;
+            const {node, pageConfig, canvasDocument} = options;
+            if (!canvasDocument) return;
             const {id} = node;
             const parentNode = findParentNodeById(pageConfig, id);
             const index = parentNode.children.findIndex(item => item.id === id);
             const selectors = `.id_${parentNode.id} > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane`;
-            const elements = iframeDocument.querySelectorAll(selectors);
+            const elements = canvasDocument.querySelectorAll(selectors);
             const ele = elements[index];
 
             fixDragProps({...options, element: ele});

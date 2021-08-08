@@ -1,63 +1,65 @@
 import React, {createElement} from 'react';
-import classNames from 'classnames';
 import {getComponent, isFunctionString, getFieldOption} from 'src/pages/drag-page/util';
 import {isNode} from 'src/pages/drag-page/util/node-util';
-import {getComponentDisplayName, getComponentConfig} from 'src/pages/drag-page/component-config';
+import {getComponentConfig} from 'src/pages/drag-page/component-config';
 import {cloneDeep} from 'lodash';
+import {store, actions} from 'src/models';
 import styles from './style.less';
 
 function getDragInfo(options) {
-    const {config, selectedNode, draggingNode} = options;
-    const {componentName, id: componentId} = config;
-    const selectedNodeId = selectedNode?.id;
+    const {config} = options;
+    const {componentName, id} = config;
     const componentConfig = getComponentConfig(componentName);
 
     let {
         draggable,
-        isContainer,
     } = componentConfig;
-
-    const componentDisplayName = getComponentDisplayName(config);
-
-    const dragClassName = classNames({
-        [`id_${componentId}`]: true,
-    });
 
     const dragProps = {
         draggable,
-        'data-component-display-name': componentDisplayName,
-        'data-component-id': componentId,
-        'data-is-container': isContainer,
-
-        // 控制样式，将相关样式通过属性控制，可以解决有些组件className被修改，样式丢失问题，比如 Tabs.Panel
-        'data-draggable-element': true,
-        'data-draggable-selected': componentId && selectedNodeId === componentId,
-        'data-draggable-dragging': componentId && draggingNode?.id === componentId,
-        'data-draggable-un-draggable': !draggable,
     };
 
-    return {dragProps, dragClassName};
+    return {dragProps, dragClassName: `id_${id}`};
 }
 
-export default function NodeRender(props) {
+function getHookArgs(options) {
+    const dragPageState = store.getState().dragPage;
+    const dragPageAction = actions.dragPage;
+
+    return {
+        dragPageState,
+        dragPageAction,
+        ...options,
+    };
+}
+
+// 遍历对象
+const loop = (obj, cb) => {
+    if (typeof obj !== 'object' || obj === null) return;
+
+    if (Array.isArray(obj)) {
+        obj.forEach(item => loop(item, cb));
+    } else {
+        Object.entries(obj)
+            .forEach(([key, value]) => {
+                if (typeof value === 'object' && !isNode(value)) {
+                    loop(value, cb);
+                } else {
+                    cb(obj, key, value);
+                }
+            });
+    }
+};
+
+export default React.memo(function NodeRender(props) {
     let {
         config,
-        pageConfig,
-        selectedNode,
-        draggingNode,
-        dragPageAction,
-        componentPaneActiveKey, // 左侧激活面板
-        nodeSelectType, // 节点选中方式
-        iframeDocument,
         isPreview = true,
         state,
-        contentEditable,
         ...others
     } = props;
 
     if (!config) return null;
-
-    const selectedNodeId = selectedNode?.id;
 
     if (typeof config !== 'object' || Array.isArray(config)) return config;
 
@@ -83,40 +85,20 @@ export default function NodeRender(props) {
         withDragProps,
     } = componentConfig;
 
-    componentProps = cloneDeep(componentProps || {});
     if (!componentProps.className) componentProps.className = '';
 
-    const isRender = hooks.beforeRender && hooks.beforeRender({
-        node: config,
-        props: componentProps,
-        dragPageAction,
-        iframeDocument,
+    config.props = componentProps;
+
+    const isRender = hooks.beforeRender && hooks.beforeRender(getHookArgs({
+        config,
         NodeRender,
         renderProps: props,
-    });
+    }));
 
     if (isRender === false) return null;
     if (render === false) return null;
 
     const component = getComponent(config).component;
-
-
-    const loop = (obj, cb) => {
-        if (typeof obj !== 'object' || obj === null) return;
-
-        if (Array.isArray(obj)) {
-            obj.forEach(item => loop(item, cb));
-        } else {
-            Object.entries(obj)
-                .forEach(([key, value]) => {
-                    if (typeof value === 'object' && !isNode(value)) {
-                        loop(value, cb);
-                    } else {
-                        cb(obj, key, value);
-                    }
-                });
-        }
-    };
 
     loop(componentProps, (obj, key, value) => {
         // 属性中的state数据处理
@@ -162,7 +144,7 @@ export default function NodeRender(props) {
         }
     });
 
-    const {dragClassName, dragProps} = getDragInfo({config, selectedNodeId, draggingNode});
+    const {dragClassName, dragProps} = getDragInfo({config});
 
     const _props = Object.entries(props).reduce((prev, curr) => {
         const [key, value] = curr;
@@ -207,23 +189,20 @@ export default function NodeRender(props) {
         if (['Tabs.TabPane', 'Breadcrumb.Item', 'Breadcrumb.Separator'].includes(item.componentName)) {
             const itemConfig = getComponentConfig(item.componentName);
             let {hooks = {}, withDragProps} = itemConfig;
-            const {dragClassName, dragProps} = getDragInfo({config: item, selectedNodeId, draggingNode});
-            const isRender = hooks.beforeRender && hooks.beforeRender({node: item, dragPageAction, iframeDocument});
+            const {dragClassName, dragProps} = getDragInfo({config: item});
+            const isRender = hooks.beforeRender && hooks.beforeRender(getHookArgs({config: item}));
 
             if (isRender === false) return null;
 
             if (hooks.afterRender) {
                 setTimeout(() => {
-                    hooks.afterRender({
-                        node: item,
-                        iframeDocument,
+                    hooks.afterRender(getHookArgs({
+                        config: item,
                         dragProps: withDragProps ? dragProps : {},
                         dragClassName,
-                        dragPageAction,
-                        pageConfig,
                         styles,
                         isPreview: childrenIsPreview,
-                    });
+                    }));
                 });
             }
 
@@ -283,11 +262,9 @@ export default function NodeRender(props) {
     const componentActions = Object.entries(actions)
         .reduce((prev, curr) => {
             const [key, value] = curr;
-            prev[key] = (...args) => value(...args)({
-                pageConfig,
-                dragPageAction,
-                node: config,
-            });
+            prev[key] = (...args) => value(...args)(getHookArgs({
+                config,
+            }));
             return prev;
         }, {});
     const commonProps = {
@@ -298,15 +275,13 @@ export default function NodeRender(props) {
 
     if (hooks.afterRender) {
         setTimeout(() => {
-            hooks.afterRender({
-                node: config,
-                iframeDocument,
+            hooks.afterRender(getHookArgs({
+                config,
                 dragProps,
                 dragClassName,
-                dragPageAction,
                 styles,
                 isPreview,
-            });
+            }));
         });
     }
 
@@ -373,5 +348,5 @@ export default function NodeRender(props) {
         ...(withDragProps ? dragProps : {}),
         className: [dragClassName, componentProps.className].join(' '),
     });
-}
+});
 

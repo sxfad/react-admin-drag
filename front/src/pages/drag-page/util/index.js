@@ -133,11 +133,11 @@ export function getFieldOption(node, field) {
 
 // 节点渲染之后，统一处理函数，用于给没有透传props属性的组件，添加拖拽相关属性
 export function fixDragProps(options) {
-    const { node, dragProps, iframeDocument, isPreview, element } = options;
-    if (!iframeDocument) return;
+    const { node, dragProps, canvasDocument, isPreview, element } = options;
+    if (!canvasDocument) return;
     const { id } = node;
 
-    const ele = element || iframeDocument.querySelector(`.id_${id}`);
+    const ele = element || canvasDocument.querySelector(`.id_${id}`);
 
     if (!ele) return;
 

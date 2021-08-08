@@ -5,7 +5,7 @@ export default type => function ModalMethod(props) {
     const {children, ...others} = props;
     const id = children?.props?.config?.id;
     const nodeSelectType = children?.props?.nodeSelectType;
-    const iframeDocument = children?.props?.iframeDocument;
+    const canvasDocument = children?.props?.canvasDocument;
     const dragPageAction = children?.props?.dragPageAction;
     const modalRef = useRef(null);
 
@@ -15,7 +15,7 @@ export default type => function ModalMethod(props) {
         if (nodeSelectType === 'meta' && (e.metaKey || e.ctrlKey)) return;
 
         modalRef.current = Modal[type]({
-            getContainer: () => iframeDocument?.body,
+            getContainer: () => canvasDocument?.body,
             ...others,
         });
 
@@ -30,8 +30,8 @@ export default type => function ModalMethod(props) {
     }
 
     useEffect(() => {
-        if (id && iframeDocument) {
-            const elements = iframeDocument.querySelectorAll(`.id_${id}`);
+        if (id && canvasDocument) {
+            const elements = canvasDocument.querySelectorAll(`.id_${id}`);
             if (elements?.length) {
                 elements.forEach(element => {
                     if (element.getAttribute(`data-modal-id-${modalId}`) !== 'true') {
@@ -49,7 +49,7 @@ export default type => function ModalMethod(props) {
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id, iframeDocument]);
+    }, [id, canvasDocument]);
 
     return children;
 }

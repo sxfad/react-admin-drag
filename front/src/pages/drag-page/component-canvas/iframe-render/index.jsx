@@ -31,10 +31,9 @@ export default React.memo(config({
             pageConfig: state.dragPage.pageConfig,
             viewMode: state.dragPage.viewMode,
             canvasRenderRoot: state.dragPage.canvasRenderRoot,
-            nodeSelectType: state.dragPage.nodeSelectType,
             selectedNode: state.dragPage.selectedNode,
             draggingNode: state.dragPage.draggingNode,
-            componentPaneActiveKey: state.dragPage.componentPaneActiveKey,
+            canvasDocument: state.dragPage.canvasDocument,
         };
     },
 })(function IframeRender(props) {
@@ -44,10 +43,9 @@ export default React.memo(config({
         viewMode,
         pageConfig,
         canvasRenderRoot,
-        nodeSelectType,
         selectedNode,
         draggingNode,
-        componentPaneActiveKey,
+        canvasDocument,
         action: {dragPage: dragPageAction},
     } = props;
     const iframeRef = useRef(null);
@@ -64,16 +62,7 @@ export default React.memo(config({
     // 根据pageConfig渲染页面
     useEffect(() => {
         if (!pageConfig || !canvasRenderRoot) return null;
-        const nodeProps = {
-            config: pageConfig,
-            pageConfig,
-            selectedNode,
-            nodeSelectType,
-            isPreview,
-            dragPageAction,
-            draggingNode,
-            componentPaneActiveKey,
-        };
+        const state = {};
         ReactDOM.render(
             <ConfigProvider
                 locale={zhCN}
@@ -82,7 +71,9 @@ export default React.memo(config({
                 getContainer={() => canvasRenderRoot}
             >
                 <NodeRender
-                    {...nodeProps}
+                    config={pageConfig}
+                    isPreview={isPreview}
+                    state={state}
                 />
             </ConfigProvider>,
             canvasRenderRoot,
@@ -91,11 +82,10 @@ export default React.memo(config({
         pageConfig,
         canvasRenderRoot,
         isPreview,
-        nodeSelectType,
-        componentPaneActiveKey,
         draggingNode,
         dragPageAction,
         selectedNode,
+        canvasDocument,
     ]);
 
     return (

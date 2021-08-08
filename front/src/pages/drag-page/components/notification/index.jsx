@@ -7,7 +7,7 @@ export default function Notification(props) {
 
     const id = children?.props?.config?.id;
     const nodeSelectType = children?.props?.nodeSelectType;
-    const iframeDocument = children?.props?.iframeDocument;
+    const canvasDocument = children?.props?.canvasDocument;
     const dragPageAction = children?.props?.dragPageAction;
 
     const modalId = others['data-component-id'];
@@ -16,7 +16,7 @@ export default function Notification(props) {
         if (nodeSelectType === 'meta' && (e.metaKey || e.ctrlKey)) return;
 
         notification[type]({
-            getContainer: () => iframeDocument?.body,
+            getContainer: () => canvasDocument?.body,
             ...others,
         });
 
@@ -25,8 +25,8 @@ export default function Notification(props) {
     }
 
     useEffect(() => {
-        if (id && iframeDocument) {
-            const elements = iframeDocument.querySelectorAll(`.id_${id}`);
+        if (id && canvasDocument) {
+            const elements = canvasDocument.querySelectorAll(`.id_${id}`);
             if (elements?.length) {
                 elements.forEach(element => {
                     if (element.getAttribute(`data-notification-id-${modalId}`) !== 'true') {
@@ -44,7 +44,7 @@ export default function Notification(props) {
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id, iframeDocument]);
+    }, [id, canvasDocument]);
 
 
     return children;
