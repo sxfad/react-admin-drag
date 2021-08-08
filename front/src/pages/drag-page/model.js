@@ -3,12 +3,18 @@ import {v4 as uuid} from 'uuid';
 // const rootHolderNode = () => ({id: uuid(), componentName: 'RootDragHolder'});
 const rootHolderNode = () => ({
     id: uuid(),
-    componentName: 'Button',
-    props: {
-        type: 'primary',
-    },
+    componentName: 'PageContent',
     children: [
-        {id: uuid(), componentName: 'Text', props: {text: '按钮'}},
+        {
+            id: uuid(),
+            componentName: 'Button',
+            props: {
+                type: 'primary',
+            },
+            children: [
+                {id: uuid(), componentName: 'Text', props: {text: '按钮'}},
+            ],
+        }
     ],
 });
 

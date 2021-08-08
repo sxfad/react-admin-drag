@@ -6,7 +6,9 @@ export default React.memo(function ComponentCanvas(props) {
 
     return (
         <div className={s.root}>
-            <IframeRender/>
+            <div className={s.iframeRender}>
+                <IframeRender/>
+            </div>
         </div>
     );
 });
