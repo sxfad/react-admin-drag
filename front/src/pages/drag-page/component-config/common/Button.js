@@ -2,6 +2,7 @@ import {targetOptions, buttonTypeOptions} from '../options';
 
 export default {
     isContainer: false,
+    childrenDraggable: false,
     renderAsDisplayName: true,
     componentDisplayName: options => {
         const {node} = options;

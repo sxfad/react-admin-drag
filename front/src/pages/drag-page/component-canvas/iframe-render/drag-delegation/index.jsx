@@ -1,6 +1,5 @@
-import React, {useCallback} from 'react';
-import {usePrevious} from 'ahooks';
-import {setDragImage, getIdByElement, getNodeEle} from 'src/pages/drag-page/util';
+import React, {useCallback, useRef} from 'react';
+import {setDragImage, getIdByElement, getNodeEle, getTargetNode} from 'src/pages/drag-page/util';
 import {findNodeById} from 'src/pages/drag-page-old/node-util';
 
 export default React.memo(function DragDelegation(props) {
@@ -10,9 +9,10 @@ export default React.memo(function DragDelegation(props) {
         dragPageAction,
         pageConfig,
         componentPaneActiveKey,
+        draggingNode,
     } = props;
 
-    const prevComponentPaneActiveKey = usePrevious(componentPaneActiveKey);
+    const prevComponentPaneActiveKeyRef = useRef(null);
 
     const handleDragStart = useCallback((e) => {
         e.stopPropagation();
@@ -22,8 +22,10 @@ export default React.memo(function DragDelegation(props) {
 
         // 设置拖拽缩略图
         setDragImage(e);
+
         // 打开组树，不是用timeout会导致拖拽失效
         setTimeout(() => {
+            prevComponentPaneActiveKeyRef.current = componentPaneActiveKey;
             dragPageAction.setFields({componentPaneActiveKey: 'componentTree'});
         });
 
@@ -39,18 +41,20 @@ export default React.memo(function DragDelegation(props) {
                 config,
             },
         });
-
-    }, [pageConfig, dragPageAction]);
+    }, [pageConfig, dragPageAction, componentPaneActiveKey]);
 
     const handleDragEnd = useCallback((e) => {
         e && e.stopPropagation();
 
         dragPageAction.setFields({
-            componentPaneActiveKey: prevComponentPaneActiveKey,
+            componentPaneActiveKey: prevComponentPaneActiveKeyRef.current,
             draggingNode: null,
             draggingElement: null,
+            targetNode: null,
+            targetElement: null,
         });
-    }, [dragPageAction, prevComponentPaneActiveKey]);
+    }, [dragPageAction]);
+
 
     const handleDragEnter = useCallback((e) => {
         e.stopPropagation();
@@ -62,22 +66,14 @@ export default React.memo(function DragDelegation(props) {
 
         const componentId = getIdByElement(targetElement);
 
-        const config = findNodeById(pageConfig, componentId);
-        if (!config) return;
+        const targetNode = getTargetNode({draggingNode, pageConfig, componentId});
 
         dragPageAction.setFields({
-            targetNode: config,
-            targetElement,
+            targetNode,
+            targetElement: targetNode ? targetElement : null,
         });
 
-    }, [pageConfig, dragPageAction]);
-
-    const handleDragLeave = useCallback((e) => {
-        // dragPageAction.setFields({
-        //     targetNode: null,
-        //     targetElement: null,
-        // });
-    }, [dragPageAction]);
+    }, [pageConfig, draggingNode, dragPageAction]);
 
     return (
         <div
@@ -85,7 +81,6 @@ export default React.memo(function DragDelegation(props) {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             onDragEnter={handleDragEnter}
-            onDragLeave={handleDragLeave}
         >
             {children}
         </div>

@@ -50,6 +50,7 @@ const NodeRender = React.memo(function(props) {
 
     let {
         draggable,
+        childrenDraggable,
         render,
         hooks: {
             beforeRender,
@@ -134,17 +135,18 @@ const NodeRender = React.memo(function(props) {
             <NodeRender
                 key={childConfig.id}
                 {...renderProps}
+                isPreview={childrenDraggable === false ? true : isPreview}
                 config={childConfig}
             />
         ));
     }
-
     if (children?.length === 1) {
         const childConfig = children[0];
         childrenEle = (
             <NodeRender
                 key={childConfig.id}
                 {...renderProps}
+                isPreview={childrenDraggable === false ? true : isPreview}
                 config={childConfig}
             />
         );

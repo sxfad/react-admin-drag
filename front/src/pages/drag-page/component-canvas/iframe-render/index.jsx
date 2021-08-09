@@ -48,11 +48,12 @@ export default React.memo(config({
         canvasHeight,
         viewMode,
         pageConfig,
+        canvasDocument,
         canvasRenderRoot,
         componentPaneActiveKey,
-        // draggingNode,
+        draggingNode,
         draggingElement,
-        // targetNode,
+        targetNode,
         targetElement,
         action: {dragPage: dragPageAction},
     } = props;
@@ -81,11 +82,14 @@ export default React.memo(config({
                 <DragGuide
                     draggingElement={draggingElement}
                     targetElement={targetElement}
+                    targetNode={targetNode}
+                    canvasDocument={canvasDocument}
                 />
                 <DragDelegation
                     componentPaneActiveKey={componentPaneActiveKey}
                     pageConfig={pageConfig}
                     dragPageAction={dragPageAction}
+                    draggingNode={draggingNode}
                 >
                     <NodeRender
                         config={pageConfig}
@@ -99,12 +103,15 @@ export default React.memo(config({
         );
     }, [
         pageConfig,
+        canvasDocument,
         canvasRenderRoot,
         isPreview,
         dragPageAction,
         componentPaneActiveKey,
         draggingElement,
+        draggingNode,
         targetElement,
+        targetNode,
     ]);
 
     return (

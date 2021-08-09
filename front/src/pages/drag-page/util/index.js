@@ -1,5 +1,5 @@
 import {getComponentConfig} from 'src/pages/drag-page/component-config';
-import {findNodesByName, findParentNodeByName} from 'src/pages/drag-page/util/node-util';
+import {findNodesByName, findParentNodeByName, findNodeById} from 'src/pages/drag-page/util/node-util';
 import * as raLibComponent from '@ra-lib/admin';
 import * as components from 'src/pages/drag-page/components';
 import * as antdComponent from 'antd/es';
@@ -8,6 +8,48 @@ import componentImage from './component-16.png';
 
 export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
 
+export function getTargetNode({draggingNode, componentId, pageConfig}) {
+    // 如果投放的目标节点是当前拖拽节点的子节点，不作为投放目标节点
+    if (findNodeById(draggingNode, componentId)) return null;
+
+    const targetNode = findNodeById(pageConfig, componentId);
+
+    const {isContainer} = getComponentConfig(targetNode.componentName);
+    // 不是容器
+    if (!isContainer) return null;
+
+    let {dropInTo} = draggingNode;
+
+    const args = {
+        draggingNode,
+        targetNode,
+        pageConfig,
+    };
+
+    if (typeof dropInTo === 'function') {
+        if (!dropInTo(args)) return null;
+    }
+
+    if (typeof dropInTo === 'string') dropInTo = [dropInTo];
+
+    if (Array.isArray(dropInTo)) {
+        if (!dropInTo.includes(targetNode.componentName)) return null;
+    }
+
+    let {dropAccept} = targetNode;
+
+    if (typeof dropAccept === 'function') {
+        if (!dropAccept(args)) return null;
+    }
+
+    if (typeof dropAccept === 'string') dropAccept = [dropAccept];
+
+    if (!Array.isArray(dropAccept)) return null;
+
+    if (!dropAccept.some(name => name === draggingNode?.config?.componentName)) return null;
+
+    return targetNode;
+}
 
 // 获取节点元素
 export function getNodeEle(target) {
@@ -15,7 +57,10 @@ export function getNodeEle(target) {
 
     if (typeof target.getAttribute !== 'function') return null;
 
-    let isNodeEle = target.className.includes('id_');
+    let isNodeEle = (typeof target.className === 'string')
+        && target.className.includes('id_')
+        && target.getAttribute('draggable') === 'true'
+    ;
 
     if (isNodeEle) return target;
 
@@ -29,10 +74,10 @@ export function getNodeEle(target) {
  */
 export function getIdByElement(element) {
     const result = /id_(.*)/.exec(element.className);
-    if (!result) return;
+    if (!result) return '';
 
     let id = result[1];
-    if (!id) return;
+    if (!id) return '';
 
     id = id.split(' ')[0];
     return id;

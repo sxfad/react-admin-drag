@@ -38,6 +38,9 @@ export default React.memo(config({
         dragPageAction.setFields({
             componentPaneActiveKey: 'componentStore',
             draggingNode: null,
+            draggingElement: null,
+            targetNode: null,
+            targetElement: null,
         });
     }, [dragPageAction]);
 
