@@ -5,6 +5,7 @@ import s from './style.less';
 import {ConfigProvider} from 'antd';
 import zhCN from 'antd/lib/locale-provider/zh_CN';
 import NodeRender from 'src/pages/drag-page/node-render';
+import DragDelegation from './drag-delegation';
 
 // 构建iframe内容
 const headHtml = document.head.innerHTML;
@@ -70,11 +71,13 @@ export default React.memo(config({
                 getTargetContainer={() => canvasRenderRoot}
                 getContainer={() => canvasRenderRoot}
             >
-                <NodeRender
-                    config={pageConfig}
-                    isPreview={isPreview}
-                    state={state}
-                />
+                <DragDelegation dragPageAction={dragPageAction}>
+                    <NodeRender
+                        config={pageConfig}
+                        isPreview={isPreview}
+                        state={state}
+                    />
+                </DragDelegation>
             </ConfigProvider>,
             canvasRenderRoot,
         );

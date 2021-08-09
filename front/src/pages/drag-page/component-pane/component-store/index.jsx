@@ -9,6 +9,7 @@ import Category from './cagetory';
 import Components from './components';
 import s from './style.less';
 import { filterTree } from 'src/pages/drag-page/util';
+import DragDelegation from './drag-delegation';
 
 const ComponentStore = config({
     connect: state => {
@@ -94,10 +95,10 @@ const ComponentStore = config({
                         <Empty description="暂无组件" />
                     </div>
                 ) : (
-                    <div className={s.main}>
+                    <DragDelegation className={s.main}>
                         <Category dataSource={dataSource} selectedId={selectedSubCategoryId} />
                         <Components dataSource={dataSource} selectedId={selectedSubCategoryId} />
-                    </div>
+                    </DragDelegation>
                 )}
             </Content>
         </Container>

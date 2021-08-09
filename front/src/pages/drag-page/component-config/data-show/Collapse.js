@@ -1,11 +1,6 @@
-import {fixDragProps} from 'src/pages/drag-page/util';
-
 export default {
     isContainer: true,
     withDragProps: false,
-    hooks: {
-        afterRender: fixDragProps,
-    },
     dropAccept: ['Collapse.Panel'],
     fields: [
         {label: '手风琴模式', category: '选项', field: 'accordion', type: 'boolean', defaultValue: false, version: '', desc: '手风琴模式'},

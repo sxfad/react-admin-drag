@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useMemo } from 'react';
-import { useDebounceFn } from 'ahooks';
-import { VariableSizeList } from 'react-window';
+import React, {useRef, useEffect, useMemo} from 'react';
+import {useDebounceFn} from 'ahooks';
+import {VariableSizeList} from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import config from 'src/commons/config-hoc';
 import Item from './Item';
@@ -17,7 +17,7 @@ const Components = config({
         dataSource,
         selectedId,
         categoryScrollType,
-        action: { dragPage: dragPageAction },
+        action: {dragPage: dragPageAction},
     } = props;
 
     const rootRef = useRef(null);
@@ -25,11 +25,11 @@ const Components = config({
     const items = useMemo(() => {
         const result = [];
         dataSource.forEach((category) => {
-            const { id: categoryId, children: subCategories = [], hidden } = category;
+            const {id: categoryId, children: subCategories = [], hidden} = category;
             if (hidden) return;
 
             subCategories.forEach((subCategory) => {
-                const { id: subCategoryId, title, subTitle, children = [], hidden } = subCategory;
+                const {id: subCategoryId, title, subTitle, children = [], hidden} = subCategory;
                 if (hidden) return;
 
                 result.push({
@@ -43,7 +43,7 @@ const Components = config({
                 });
 
                 children.forEach(item => {
-                    const { hidden, renderPreview, previewHeight = 200 } = item;
+                    const {hidden, renderPreview, previewHeight = 200} = item;
                     if (hidden) return;
 
                     result.push({
@@ -59,12 +59,12 @@ const Components = config({
     }, [dataSource]);
 
     // 滚动选中分类
-    const { run: handleScroll } = useDebounceFn((info) => {
-        const { visibleStartIndex, visibleStopIndex } = info;
+    const {run: handleScroll} = useDebounceFn((info) => {
+        const {visibleStartIndex, visibleStopIndex} = info;
         const index = categoryScrollType === 'byScroll' ? Math.floor((visibleStartIndex + visibleStopIndex) / 2) : visibleStartIndex;
-        const { subCategoryId } = items[index];
-        dragPageAction.setFields({ selectedSubCategoryId: subCategoryId, categoryScrollType: 'byScroll' });
-    }, { wait: 300 });
+        const {subCategoryId} = items[index];
+        dragPageAction.setFields({selectedSubCategoryId: subCategoryId, categoryScrollType: 'byScroll'});
+    }, {wait: 300});
 
     // 分类改变 滚动组件
     useEffect(() => {
@@ -88,7 +88,7 @@ const Components = config({
 
     return (
         <AutoSizer>
-            {({ height, width }) => (
+            {({height, width}) => (
                 <VariableSizeList
                     height={height} // 列表可视区域的高度
                     itemCount={items.length} // 列表数据长度
@@ -99,9 +99,9 @@ const Components = config({
                     onItemsRendered={handleScroll}
                     className={s.componentList}
                 >
-                    {({ index, style }) => {
+                    {({index, style}) => {
                         const data = items[index];
-                        const { type, subCategoryId, title, subTitle } = data;
+                        const {type, subCategoryId, title, subTitle} = data;
 
                         if (type === 'title') {
                             return (
@@ -119,7 +119,7 @@ const Components = config({
 
                         return (
                             <div style={style}>
-                                <Item data={data} />
+                                <Item data={data}/>
                             </div>
                         );
                     }}

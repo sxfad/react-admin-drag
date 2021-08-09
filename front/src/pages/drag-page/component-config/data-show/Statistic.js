@@ -1,11 +1,6 @@
-import {fixDragProps} from 'src/pages/drag-page/util';
-
 export default {
     isContainer: false,
     withDragProps: false,
-    hooks: {
-        afterRender: fixDragProps,
-    },
     fields: [
         {label: '小数点', field: 'decimalSeparator', type: 'string', defaultValue: '.', version: '', desc: '设置小数点'},
         {label: '千分位标识符', field: 'groupSeparator', type: 'string', defaultValue: ',', version: '', desc: '设置千分位标识符'},

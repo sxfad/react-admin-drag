@@ -1,8 +1,8 @@
-import React, { createElement } from 'react';
-import { getComponent } from 'src/pages/drag-page/util';
-import { isNode } from 'src/pages/drag-page/util/node-util';
-import { getComponentConfig } from 'src/pages/drag-page/component-config';
-import { store, actions } from 'src/models';
+import React, {createElement} from 'react';
+import {getComponent} from 'src/pages/drag-page/util';
+import {isNode} from 'src/pages/drag-page/util/node-util';
+import {getComponentConfig} from 'src/pages/drag-page/component-config';
+import {store, actions} from 'src/models';
 
 // 遍历对象 基本类型以及节点属性
 const loop = (obj, cb) => {
@@ -12,14 +12,14 @@ const loop = (obj, cb) => {
     Object.entries(obj)
         .forEach(([key, value]) => {
             if (
-                typeof value === 'object'
-                && !isNode(value)
-                && !React.isValidElement(value)
+                typeof value !== 'object'
+                || isNode(value)
+                || React.isValidElement(value)
             ) {
-                loop(value, cb);
-            } else {
-                cb(obj, key, value);
+                return cb(obj, key, value);
             }
+
+            loop(value, cb);
         });
 };
 
@@ -59,10 +59,15 @@ const NodeRender = React.memo(function(props) {
 
     if (render === false) return;
 
+    const renderProps = {
+        isPreview,
+    };
+
     // hooks 可以得到的参数
     const hooksArgs = {
         config,
         NodeRender,
+        renderProps,
         dragPageState: store.getState().dragPage,
         dragPageAction: actions.dragPage,
     };
@@ -75,7 +80,7 @@ const NodeRender = React.memo(function(props) {
 
     // 存在 wrapper，进行wrapper转换为父元素
     if (wrapper?.length) {
-        wrapper[0].children = [{ ...config, wrapper: null }];
+        wrapper[0].children = [{...config, wrapper: null}];
 
         const nextConfig = wrapper.reduce((prev, curr) => {
             curr.children = [prev];
@@ -109,7 +114,7 @@ const NodeRender = React.memo(function(props) {
     });
 
     const component = getComponent(config).component;
-    const dragProps = (isPreview || !withDragProps) ? {} : { draggable };
+    const dragProps = (isPreview || !withDragProps) ? {} : {draggable};
 
     let childrenEle = null;
     if (children?.length > 1) {

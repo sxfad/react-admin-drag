@@ -1,5 +1,5 @@
 import React from 'react';
-import {fixDragProps, getFieldOption} from 'src/pages/drag-page/util';
+import {getFieldOption} from 'src/pages/drag-page/util';
 
 export default {
     dropAccept: 'Table.Column',
@@ -14,7 +14,6 @@ export default {
                 Reflect.deleteProperty(node.props, 'columns');
             }
         },
-        afterRender: fixDragProps,
         beforeToCode: ({node}) => {
             const {columns, rowSelection} = node.props || {};
             const {children = []} = node;
@@ -98,7 +97,7 @@ export default {
 };
 
 
-function setTableColumns({node: tableNode, NodeRender, renderProps, props}) {
+function setTableColumns({config: tableNode, NodeRender, renderProps, config: {props}}) {
     if (!tableNode) return;
 
     let {children} = tableNode;

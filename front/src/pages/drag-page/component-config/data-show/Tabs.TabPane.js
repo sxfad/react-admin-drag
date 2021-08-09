@@ -1,4 +1,3 @@
-import {fixDragProps} from 'src/pages/drag-page/util';
 import {findParentNodeById} from 'src/pages/drag-page/util/node-util';
 
 export default {
@@ -8,16 +7,18 @@ export default {
     withDragProps: false,
     hooks: {
         afterRender: options => {
-            const {node, pageConfig, canvasDocument} = options;
+            const {config, dragPageState} = options;
+            const {pageConfig, canvasDocument} = dragPageState;
             if (!canvasDocument) return;
-            const {id} = node;
+            const {id} = config;
             const parentNode = findParentNodeById(pageConfig, id);
             const index = parentNode.children.findIndex(item => item.id === id);
             const selectors = `.id_${parentNode.id} > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane`;
             const elements = canvasDocument.querySelectorAll(selectors);
             const ele = elements[index];
-
-            fixDragProps({...options, element: ele});
+            console.log(ele);
+            // TODO
+            // fixDragProps({...options, element: ele});
         },
     },
     fields: [

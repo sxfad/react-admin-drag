@@ -1,12 +1,7 @@
-import {fixDragProps} from 'src/pages/drag-page/util';
-
 export default {
     isFormElement: true,
     isContainer: false,
     withDragProps: false,
-    hooks: {
-        afterRender: fixDragProps,
-    },
     fields: [
         {label: '禁用', field: 'disabled', type: 'boolean'},
         {label: '选项配置', field: 'options', type: 'options'},

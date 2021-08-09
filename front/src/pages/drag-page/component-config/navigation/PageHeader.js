@@ -1,10 +1,5 @@
-import {fixDragProps} from 'src/pages/drag-page/util';
-
 export default {
     isContainer: true,
-    hooks: {
-        afterRender: fixDragProps,
-    },
     fields: [
         {
             label: '标题', field: 'title',

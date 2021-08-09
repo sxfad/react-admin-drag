@@ -1,13 +1,9 @@
-import {fixDragProps} from 'src/pages/drag-page/util';
 import timePickerConfig from './TimePicker';
 
 export default {
     isFormElement: true,
     isContainer: false,
     withDragProps: false,
-    hooks: {
-        afterRender: fixDragProps,
-    },
     fields: [
         ...timePickerConfig.fields.filter(item => item.field !== 'placeholder'),
         {label: '输入框提示', field: 'placeholder', type: 'string', defaultValue: '请选择时间', version: '', desc: '没有值的时候显示的内容'},

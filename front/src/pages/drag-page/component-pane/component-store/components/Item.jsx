@@ -1,8 +1,8 @@
-import s from './style.less';
-import { cloneDeep } from 'lodash';
-import { setNodeId } from 'src/pages/drag-page-old/node-util';
-import NodeRender from 'src/pages/drag-page/node-render';
 import React from 'react';
+import {cloneDeep} from 'lodash';
+import {setNodeId} from 'src/pages/drag-page-old/node-util';
+import NodeRender from 'src/pages/drag-page/node-render';
+import s from './style.less';
 
 function renderPreview(data) {
     const {
@@ -40,7 +40,7 @@ function renderPreview(data) {
     }
 
     let preview = renderPreview === true ? (
-        <NodeRender config={componentConfig} />
+        <NodeRender config={componentConfig}/>
     ) : renderPreview;
 
     if (typeof preview === 'function') {
@@ -50,7 +50,7 @@ function renderPreview(data) {
     return (
         <div className={s.preview} style={previewWrapperStyle}>
             {previewZoom ? (
-                <div className={s.previewZoom} style={{ zoom: previewZoom || 1 }}>
+                <div className={s.previewZoom} style={{zoom: previewZoom || 1}}>
                     {preview}
                 </div>
             ) : preview}
@@ -59,13 +59,17 @@ function renderPreview(data) {
 }
 
 
-export default function ComponentItem(props) {
-    const { data } = props;
-    const { title, image } = data;
+export default React.memo(function ComponentItem(props) {
+    const {data} = props;
+    const {title, image} = data;
 
     return (
         <div className={s.itemWrapper}>
-            <div className={s.item}>
+            <div
+                className={s.item}
+                draggable
+                data-config={JSON.stringify(data.config)}
+            >
                 {title}
                 {data.renderPreview ? (
                     <div className={s.preview}>
@@ -73,7 +77,7 @@ export default function ComponentItem(props) {
                             <div
                                 draggable={false}
                                 className={s.img}
-                                style={{ backgroundImage: `url(${image})` }}
+                                style={{backgroundImage: `url(${image})`}}
                             />
                         ) : (
                             renderPreview(data)
@@ -83,4 +87,4 @@ export default function ComponentItem(props) {
             </div>
         </div>
     );
-}
+});

@@ -4,8 +4,22 @@ import * as raLibComponent from '@ra-lib/admin';
 import * as components from 'src/pages/drag-page/components';
 import * as antdComponent from 'antd/es';
 import * as antdIcon from '@ant-design/icons';
+import componentImage from './component-16.png';
 
 export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
+
+
+/**
+ * 设置拖拽图片
+ * @param e 拖拽事件
+ * @param node
+ */
+export function setDragImage(e) {
+    const img = new Image();
+    img.src = componentImage;
+    img.style.width = '30px';
+    e.dataTransfer.setDragImage(img, 0, 16);
+}
 
 // 树过滤函数
 export function filterTree(array, filter) {
@@ -129,26 +143,6 @@ export function getFieldOption(node, field) {
     };
 
     return loopFields(fields);
-}
-
-// 节点渲染之后，统一处理函数，用于给没有透传props属性的组件，添加拖拽相关属性
-export function fixDragProps(options) {
-    const { node, dragProps, canvasDocument, isPreview, element } = options;
-    if (!canvasDocument) return;
-    const { id } = node;
-
-    const ele = element || canvasDocument.querySelector(`.id_${id}`);
-
-    if (!ele) return;
-
-    Object.entries(dragProps)
-        .forEach(([key, value]) => {
-            if (isPreview) {
-                ele.removeAttribute(key);
-            } else {
-                ele.setAttribute(key, value);
-            }
-        });
 }
 
 /**

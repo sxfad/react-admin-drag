@@ -1,12 +1,7 @@
-import {fixDragProps} from 'src/pages/drag-page/util';
-
 export default {
     isFormElement: true,
     isContainer: false,
     withDragProps: false,
-    hooks: {
-        afterRender: fixDragProps,
-    },
     fields: [
         {label: '禁用', category: '选项', field: 'disabled', type: 'boolean', defaultValue: false, version: '', desc: '是否禁用'},
         {label: '单向', category: '选项', field: 'oneWay', type: 'boolean', defaultValue: false, version: '4.3.0', desc: '展示为单向样式'},

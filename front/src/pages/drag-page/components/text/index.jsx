@@ -1,10 +1,23 @@
 import React from 'react';
+import c from 'classnames';
 import s from './style.less';
 
 function Text(props) {
-    const { text, isDraggable, ...others } = props;
+    const {
+        text,
+        isDraggable,
+        className,
+        ...others
+    } = props;
+
     return (
-        <span className={isDraggable ? s.draggable : s.unDraggable} {...others}>
+        <span
+            className={c(
+                isDraggable ? s.draggable : s.unDraggable,
+                className,
+            )}
+            {...others}
+        >
             {text}
         </span>
     );

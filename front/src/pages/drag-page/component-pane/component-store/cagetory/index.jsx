@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from 'react';
-import { usePrevious } from 'ahooks';
+import React, {useEffect, useRef} from 'react';
+import {usePrevious} from 'ahooks';
 import config from 'src/commons/config-hoc';
 import s from './style.less';
-import { scrollElement } from 'src/pages/drag-page/util';
+import {scrollElement} from 'src/pages/drag-page/util';
 
 export default config({
     connect: state => {
@@ -15,7 +15,7 @@ export default config({
         selectedId,
         dataSource,
         categoryScrollType,
-        action: { dragPage: dragPageAction },
+        action: {dragPage: dragPageAction},
     } = props;
 
     const previousCategoryScrollType = usePrevious(categoryScrollType);
@@ -50,7 +50,7 @@ export default config({
 
                         {/* 二级分类标题 */}
                         {children.map(subCategory => {
-                            const { id: subCategoryId, title: subCategoryTitle, hidden, children = [] } = subCategory;
+                            const {id: subCategoryId, title: subCategoryTitle, hidden, children = []} = subCategory;
                             if (hidden) return null;
 
                             const isActive = subCategoryId === selectedId;
@@ -61,9 +61,8 @@ export default config({
                             );
                             const component = children[0];
                             if (component) {
-                                // TODO 可拖拽
                                 title = (
-                                    <div>
+                                    <div draggable data-config={JSON.stringify(component.config)}>
                                         {title}
                                     </div>
                                 );
@@ -73,8 +72,8 @@ export default config({
                                 <div
                                     key={subCategoryId}
                                     id={`subCategory_${subCategoryId}`}
-                                    className={[s.subCategory, { [s.active]: isActive }]}
-                                    onClick={() => dragPageAction.setFields({ selectedSubCategoryId: subCategoryId, categoryScrollType: 'byClick' })}
+                                    className={[s.subCategory, {[s.active]: isActive}]}
+                                    onClick={() => dragPageAction.setFields({selectedSubCategoryId: subCategoryId, categoryScrollType: 'byClick'})}
                                     title={title}
                                 >
                                     {title}

@@ -1,11 +1,6 @@
-import {fixDragProps} from 'src/pages/drag-page/util';
-
 export default {
     isContainer: false,
     withDragProps: false,
-    hooks: {
-        afterRender: fixDragProps,
-    },
     fields: [
         {label: '是否全屏显示', field: 'fullscreen', type: 'boolean', defaultValue: true, version: '', desc: '是否全屏显示'},
         {label: '初始模式', field: 'mode', type: 'radio-group', defaultValue: 'month', version: '', options: [{value: 'month', label: '月份'}, {value: 'year', label: '年份'}], desc: '初始模式'},
