@@ -195,6 +195,12 @@ export default {
         nodeSelectType: 'meta',
         // 当前拖拽节点
         draggingNode: null,
+        // 当前拖拽节点对应的dom元素
+        draggingElement: null,
+        // 投放目标节点
+        targetNode: null,
+        // 投放目标节点对应的dom元素
+        targetElement: null,
 
 
         // 组件库下拉

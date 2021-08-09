@@ -8,7 +8,6 @@ export default {
     isContainer: true,
     dropInTo: 'Collapse',
     withHolder: true,
-    withDragProps: false,
     fields: [
         // { // 不好用
         //     label: '是否可折叠', field: 'collapsible', type: 'radio-group', version: '4.9.0',

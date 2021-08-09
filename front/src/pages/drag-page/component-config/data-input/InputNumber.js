@@ -1,7 +1,6 @@
 export default {
     isFormElement: true,
     isContainer: false,
-    withDragProps: false,
     fields: [
         {label: '边框', category: '选项', field: 'bordered', type: 'boolean', defaultValue: true, version: '4.12.0', desc: '是否有边框'},
         {label: '禁用', category: '选项', field: 'disabled', type: 'boolean', defaultValue: false, version: '-', desc: '禁用'},

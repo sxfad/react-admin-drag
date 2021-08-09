@@ -2,7 +2,6 @@ export default {
     isFormElement: true,
     isContainer: false,
     childrenDraggable: false,
-    withDragProps: false,
     fields: [
         {label: '禁用', category: '选项', field: 'disabled', type: 'boolean', defaultValue: false, version: '', desc: '是否禁用'},
         {label: '多选文件', category: '选项', field: 'multiple', type: 'boolean', defaultValue: false, version: '', desc: '是否支持多选文件，ie10+ 支持。开启后按住 ctrl 可选择多个文件'},

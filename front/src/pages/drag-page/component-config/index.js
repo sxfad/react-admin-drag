@@ -61,7 +61,6 @@ export const defaultConfig = {
     draggable: true, // 组件是否可拖拽 默认 true
     isWrapper: false, // 是否是包裹类组件，比如Tooltip、Badge ，包裹其他组件的
     isContainer: true, // 组件是否是容器，默认true，如果是容器，则可托放入子节点
-    withDragProps: true, // 不使用dragProps 有些组件dragProps添加的位置不准确或者没有添加上，通过 afterRender修复，这时候可能不需要NodeRender中添加dragProps了
 
     // dropAccept: undefined, // 'text' || ['Text'] || function({draggingNode, targetNode, pageConfig,}), // 可接受拖入的组件，默认 任意组件都接收
     // dropInto: undefined, // 'text' || ['Text'] || function({draggingNode, targetNode, pageConfig,}), // 可放入的目标组件，默认 可以放入任何组件中

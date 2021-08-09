@@ -1,7 +1,6 @@
 export default {
     isFormElement: true,
     isContainer: false,
-    withDragProps: false,
     fields: [
         {label: '可清除', category: '选项', field: 'allowClear', type: 'boolean', defaultValue: true, version: '', desc: '是否允许再次点击后清除'},
         {label: '可半选', category: '选项', field: 'allowHalf', type: 'boolean', defaultValue: false, version: '', desc: '是否允许半选'},

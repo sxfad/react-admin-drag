@@ -4,7 +4,6 @@ export default {
     isContainer: true,
     dropInTo: ['Tabs'],
     withHolder: true,
-    withDragProps: false,
     hooks: {
         afterRender: options => {
             const {config, dragPageState} = options;

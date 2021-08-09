@@ -1,7 +1,6 @@
 export default {
     isFormElement: true,
     isContainer: false,
-    withDragProps: false,
     fields: [
         {label: '可清除', category: '选项', field: 'allowClear', type: 'boolean', defaultValue: false, version: '', desc: '支持清除, 单选模式有效'},
         {label: '禁用', category: '选项', field: 'disabled', type: 'boolean', defaultValue: false, version: '', desc: '值为 true 时，滑块为禁用状态'},

@@ -1,6 +1,5 @@
 export default {
     isContainer: true,
-    withDragProps: false,
     fields: [
         {label: '自动切换', field: 'autoplay', type: 'boolean', defaultValue: false, version: '', desc: '是否自动切换'},
         {

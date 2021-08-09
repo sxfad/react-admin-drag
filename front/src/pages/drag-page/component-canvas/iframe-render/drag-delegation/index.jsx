@@ -1,18 +1,24 @@
 import React, {useCallback} from 'react';
-import config from 'src/commons/config-hoc';
-import {setDragImage} from 'src/pages/drag-page/util';
-import {setNodeId} from 'src/pages/drag-page/util/node-util';
+import {usePrevious} from 'ahooks';
+import {setDragImage, getIdByElement, getNodeEle} from 'src/pages/drag-page/util';
+import {findNodeById} from 'src/pages/drag-page-old/node-util';
 
 export default React.memo(function DragDelegation(props) {
     const {
         className,
         children,
         dragPageAction,
+        pageConfig,
+        componentPaneActiveKey,
     } = props;
+
+    const prevComponentPaneActiveKey = usePrevious(componentPaneActiveKey);
 
     const handleDragStart = useCallback((e) => {
         e.stopPropagation();
-        const dragEle = e.target;
+        const draggingElement = getNodeEle(e.target);
+
+        if (!draggingElement) return;
 
         // 设置拖拽缩略图
         setDragImage(e);
@@ -20,35 +26,57 @@ export default React.memo(function DragDelegation(props) {
         setTimeout(() => {
             dragPageAction.setFields({componentPaneActiveKey: 'componentTree'});
         });
-        const result = /id_(.*)/.exec(dragEle.className);
-        if (!result) return;
-        let componentId = result[1];
-        if (!componentId) return;
-        componentId = componentId.split(' ')[0];
 
+        const componentId = getIdByElement(draggingElement);
 
-        console.log(componentId);
-        //
-        //
-        // const config = JSON.parse(e.target.dataset.config);
-        //
-        // // 设置唯一id
-        // setNodeId(config);
-        // dragPageAction.setFields({
-        //     draggingNode: {
-        //         id: config.id,
-        //         isNewAdd: true,
-        //         config,
-        //     },
-        // });
+        const config = findNodeById(pageConfig, componentId);
+        if (!config) return;
 
-    }, [dragPageAction]);
+        dragPageAction.setFields({
+            draggingElement,
+            draggingNode: {
+                id: config.id,
+                config,
+            },
+        });
+
+    }, [pageConfig, dragPageAction]);
 
     const handleDragEnd = useCallback((e) => {
+        e && e.stopPropagation();
+
         dragPageAction.setFields({
-            componentPaneActiveKey: 'componentStore',
+            componentPaneActiveKey: prevComponentPaneActiveKey,
             draggingNode: null,
+            draggingElement: null,
         });
+    }, [dragPageAction, prevComponentPaneActiveKey]);
+
+    const handleDragEnter = useCallback((e) => {
+        e.stopPropagation();
+        e.preventDefault();
+
+        const targetElement = getNodeEle(e.target);
+
+        if (!targetElement) return;
+
+        const componentId = getIdByElement(targetElement);
+
+        const config = findNodeById(pageConfig, componentId);
+        if (!config) return;
+
+        dragPageAction.setFields({
+            targetNode: config,
+            targetElement,
+        });
+
+    }, [pageConfig, dragPageAction]);
+
+    const handleDragLeave = useCallback((e) => {
+        // dragPageAction.setFields({
+        //     targetNode: null,
+        //     targetElement: null,
+        // });
     }, [dragPageAction]);
 
     return (
@@ -56,6 +84,8 @@ export default React.memo(function DragDelegation(props) {
             className={className}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
         >
             {children}
         </div>

@@ -1,7 +1,6 @@
 export default {
     isFormElement: true,
     isContainer: false,
-    withDragProps: false,
     fields: [
         {label: '可清除', category: '选项', field: 'allowClear', type: 'boolean', defaultValue: true, version: '', desc: '是否支持清除'},
         {label: '边框', category: '选项', field: 'bordered', type: 'boolean', defaultValue: true, version: '', desc: '是否有边框'},

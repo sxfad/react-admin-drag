@@ -3,7 +3,6 @@ import {getFieldOption} from 'src/pages/drag-page/util';
 
 export default {
     dropAccept: 'Table.Column',
-    withDragProps: false,
     hooks: {
         beforeRender: options => {
             setTableColumns(options);

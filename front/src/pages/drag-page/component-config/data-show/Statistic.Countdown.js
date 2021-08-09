@@ -1,6 +1,5 @@
 export default {
     isContainer: false,
-    withDragProps: false,
     fields: [
         {label: '格式化t', field: 'format', type: 'string', defaultValue: 'HH:mm:ss', version: '', desc: '格式化倒计时展示，参考 moment'},
         {

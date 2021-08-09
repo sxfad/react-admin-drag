@@ -1,5 +1,5 @@
-import { getComponentConfig } from 'src/pages/drag-page/component-config';
-import { findNodesByName, findParentNodeByName } from 'src/pages/drag-page/util/node-util';
+import {getComponentConfig} from 'src/pages/drag-page/component-config';
+import {findNodesByName, findParentNodeByName} from 'src/pages/drag-page/util/node-util';
 import * as raLibComponent from '@ra-lib/admin';
 import * as components from 'src/pages/drag-page/components';
 import * as antdComponent from 'antd/es';
@@ -8,6 +8,35 @@ import componentImage from './component-16.png';
 
 export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
 
+
+// 获取节点元素
+export function getNodeEle(target) {
+    if (!target) return target;
+
+    if (typeof target.getAttribute !== 'function') return null;
+
+    let isNodeEle = target.className.includes('id_');
+
+    if (isNodeEle) return target;
+
+    return getNodeEle(target.parentNode);
+}
+
+/**
+ * 根据dom元素获取配置id
+ * @param element
+ * @returns {string}
+ */
+export function getIdByElement(element) {
+    const result = /id_(.*)/.exec(element.className);
+    if (!result) return;
+
+    let id = result[1];
+    if (!id) return;
+
+    id = id.split(' ')[0];
+    return id;
+}
 
 /**
  * 设置拖拽图片
@@ -30,7 +59,7 @@ export function filterTree(array, filter) {
         }
         if (Array.isArray(node.children)) {
             const children = node.children.reduce(getNodes, []);
-            if (children.length) result.push({ ...node, children });
+            if (children.length) result.push({...node, children});
         }
         return result;
     };
@@ -40,9 +69,9 @@ export function filterTree(array, filter) {
 
 // 根据 componentName 获取组件
 export function getComponent(options) {
-    let { componentName } = options;
+    let {componentName} = options;
     const componentConfig = getComponentConfig(componentName);
-    const { renderComponentName, componentType } = componentConfig;
+    const {renderComponentName, componentType} = componentConfig;
 
     componentName = renderComponentName || componentName;
 
@@ -119,7 +148,7 @@ export function getFieldOption(node, field) {
     const config = getComponentConfig(node?.componentName);
     if (!config) return null;
 
-    const { fields } = config;
+    const {fields} = config;
 
 
     const loopFields = fields => {

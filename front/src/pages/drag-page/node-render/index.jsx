@@ -27,6 +27,7 @@ const NodeRender = React.memo(function(props) {
     let {
         config,
         isPreview = true,
+        canvasRenderRoot,
         className,
         ...others
     } = props;
@@ -48,7 +49,6 @@ const NodeRender = React.memo(function(props) {
     const componentConfig = getComponentConfig(componentName);
 
     let {
-        withDragProps,
         draggable,
         render,
         hooks: {
@@ -61,6 +61,7 @@ const NodeRender = React.memo(function(props) {
 
     const renderProps = {
         isPreview,
+        canvasRenderRoot,
     };
 
     // hooks 可以得到的参数
@@ -76,7 +77,19 @@ const NodeRender = React.memo(function(props) {
 
     if (isRender === false) return null;
 
-    setTimeout(() => afterRender && afterRender(hooksArgs));
+    setTimeout(() => {
+        afterRender && afterRender(hooksArgs);
+
+        const dragProps = isPreview ? null : {draggable};
+        if (!dragProps) return;
+        // 部分组件draggable属性没有设置到dom节点上，这里直接手动设置
+        const ele = canvasRenderRoot.querySelector(`.id_${id}`);
+        if (!ele) return;
+
+        Object.entries(dragProps).forEach(([key, value]) => {
+            ele.setAttribute(key, value);
+        });
+    });
 
     // 存在 wrapper，进行wrapper转换为父元素
     if (wrapper?.length) {
@@ -91,7 +104,7 @@ const NodeRender = React.memo(function(props) {
         return (
             <NodeRender
                 key={nextConfig.id}
-                isPreview={isPreview}
+                {...renderProps}
                 config={nextConfig}
             />
         );
@@ -104,7 +117,7 @@ const NodeRender = React.memo(function(props) {
             obj[key] = (
                 <NodeRender
                     key={value.id}
-                    isPreview={isPreview}
+                    {...renderProps}
                     config={value}
                 />
             );
@@ -114,14 +127,13 @@ const NodeRender = React.memo(function(props) {
     });
 
     const component = getComponent(config).component;
-    const dragProps = (isPreview || !withDragProps) ? {} : {draggable};
 
     let childrenEle = null;
     if (children?.length > 1) {
         childrenEle = children.map(childConfig => (
             <NodeRender
                 key={childConfig.id}
-                isPreview={isPreview}
+                {...renderProps}
                 config={childConfig}
             />
         ));
@@ -132,7 +144,7 @@ const NodeRender = React.memo(function(props) {
         childrenEle = (
             <NodeRender
                 key={childConfig.id}
-                isPreview={isPreview}
+                {...renderProps}
                 config={childConfig}
             />
         );
@@ -143,7 +155,6 @@ const NodeRender = React.memo(function(props) {
 
     return createElement(component, {
         key: id,
-        ...dragProps,
         ...componentProps,
         ...others,
         className: cls,
