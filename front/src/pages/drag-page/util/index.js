@@ -1,5 +1,5 @@
 import { getComponentConfig } from 'src/pages/drag-page/component-config';
-import { findNodesByName, findParentNodeByName, findNodeById } from 'src/pages/drag-page/util/node-util';
+import { findNodesByName, findParentNodeByName, findNodeById, findParentNodeById } from 'src/pages/drag-page/util/node-util';
 import * as raLibComponent from '@ra-lib/admin';
 import * as components from 'src/pages/drag-page/components';
 import * as antdComponent from 'antd/es';
@@ -44,32 +44,14 @@ export function getTargetNode(
         documentElement,
         viewSize: true,
         hoverPosition: true,
+        horizontal: true,
         pageY,
         pageX,
     });
 
-    let targetNode = findNodeById(pageConfig, componentId);
+    const targetNode = findNodeById(pageConfig, componentId);
 
-    const { isContainer } = getComponentConfig(targetNode.componentName);
-    if (
-        hoverPosition === 'center'
-        && isContainer
-        && isAccept({ draggingNode, targetNode, pageConfig })
-    ) {
-        return {
-            targetNode,
-            targetElement,
-            targetHoverPosition: hoverPosition,
-            targetElementSize: {
-                top,
-                left,
-                width,
-                height,
-            },
-        };
-    }
-
-    return {
+    const result = {
         targetNode,
         targetElement,
         targetHoverPosition: hoverPosition,
@@ -80,6 +62,27 @@ export function getTargetNode(
             height,
         },
     };
+
+    const { isContainer } = getComponentConfig(targetNode.componentName);
+    if (
+        hoverPosition === 'center'
+        && isContainer
+        && isAccept({ draggingNode, targetNode, pageConfig })
+    ) {
+        return result;
+    }
+
+    if (hoverPosition && hoverPosition !== 'center') {
+        const parentNode = findParentNodeById(pageConfig, targetNode.id);
+        if (!parentNode) return null;
+
+        const { isContainer } = getComponentConfig(parentNode.componentName);
+        if (isContainer && isAccept({ draggingNode, targetNode: parentNode, pageConfig })) {
+            return result;
+        }
+    }
+
+    return loopParent();
 }
 
 function isAccept({ draggingNode, targetNode, pageConfig }) {
@@ -315,17 +318,29 @@ export function getElementInfo(element, options) {
     let hoverPosition;
 
     if (options?.hoverPosition) {
-        let { documentElement, pageY, pageX } = options;
+        let { documentElement, pageY, pageX, horizontal } = options;
         const { scrollTop, scrollLeft } = documentElement;
 
         pageY = pageY - scrollTop;
         pageX = pageX - scrollLeft;
 
         hoverPosition = (() => {
-            if (pageY > top && pageY < top + TRIGGER_SIZE) return 'top';
-            if (pageY > top + height - TRIGGER_SIZE && pageY < top + height) return 'bottom';
-            if (pageX > left && pageX < left + TRIGGER_SIZE) return 'left';
-            if (pageX > left + width - TRIGGER_SIZE && pageX < left + width) return 'right';
+            const isTop = pageY > top && pageY < top + TRIGGER_SIZE;
+            const isBottom = pageY > top + height - TRIGGER_SIZE && pageY < top + height;
+            const isLeft = pageX > left && pageX < left + TRIGGER_SIZE;
+            const isRight = pageX > left + width - TRIGGER_SIZE && pageX < left + width;
+
+            if (horizontal) {
+                if (isLeft) return 'left';
+                if (isRight) return 'right';
+                if (isTop) return 'top';
+                if (isBottom) return 'bottom';
+            }
+            if (isTop) return 'top';
+            if (isBottom) return 'bottom';
+            if (isLeft) return 'left';
+            if (isRight) return 'right';
+
             return 'center';
         })();
     }

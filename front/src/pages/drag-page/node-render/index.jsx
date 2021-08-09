@@ -1,8 +1,9 @@
-import React, {createElement} from 'react';
-import {getComponent} from 'src/pages/drag-page/util';
-import {isNode} from 'src/pages/drag-page/util/node-util';
-import {getComponentConfig} from 'src/pages/drag-page/component-config';
-import {store, actions} from 'src/models';
+import React, { createElement } from 'react';
+import { getComponent } from 'src/pages/drag-page/util';
+import { isNode } from 'src/pages/drag-page/util/node-util';
+import { getComponentConfig } from 'src/pages/drag-page/component-config';
+import { store, actions } from 'src/models';
+import s from './style.less';
 
 // 遍历对象 基本类型以及节点属性
 const loop = (obj, cb) => {
@@ -81,20 +82,28 @@ const NodeRender = React.memo(function(props) {
     setTimeout(() => {
         afterRender && afterRender(hooksArgs);
 
-        const dragProps = isPreview ? null : {draggable};
-        if (!dragProps) return;
+        const dragProps = { draggable };
+
         // 部分组件draggable属性没有设置到dom节点上，这里直接手动设置
-        const ele = canvasRenderRoot.querySelector(`.id_${id}`);
+        const ele = canvasRenderRoot?.querySelector(`.id_${id}`);
         if (!ele) return;
 
-        Object.entries(dragProps).forEach(([key, value]) => {
-            ele.setAttribute(key, value);
-        });
+        if (isPreview) {
+            ele.classList.remove(s.draggable);
+            Object.entries(dragProps).forEach(([key, value]) => {
+                ele.removeAttribute(key);
+            });
+        } else {
+            ele.classList.add(s.draggable);
+            Object.entries(dragProps).forEach(([key, value]) => {
+                ele.setAttribute(key, value);
+            });
+        }
     });
 
     // 存在 wrapper，进行wrapper转换为父元素
     if (wrapper?.length) {
-        wrapper[0].children = [{...config, wrapper: null}];
+        wrapper[0].children = [{ ...config, wrapper: null }];
 
         const nextConfig = wrapper.reduce((prev, curr) => {
             curr.children = [prev];
@@ -135,7 +144,7 @@ const NodeRender = React.memo(function(props) {
             <NodeRender
                 key={childConfig.id}
                 {...renderProps}
-                isPreview={childrenDraggable === false ? true : isPreview}
+                isPreview={isPreview || childrenDraggable === false}
                 config={childConfig}
             />
         ));
@@ -146,7 +155,7 @@ const NodeRender = React.memo(function(props) {
             <NodeRender
                 key={childConfig.id}
                 {...renderProps}
-                isPreview={childrenDraggable === false ? true : isPreview}
+                isPreview={isPreview || childrenDraggable === false}
                 config={childConfig}
             />
         );

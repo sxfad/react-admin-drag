@@ -1,4 +1,4 @@
-import {v4 as uuid} from 'uuid';
+import { v4 as uuid } from 'uuid';
 
 const testConfig = {
     id: uuid(),
@@ -157,9 +157,20 @@ const rootHolderNode = () => ({
                 type: 'primary',
             },
             children: [
-                {id: uuid(), componentName: 'Text', props: {text: '按钮'}},
+                { id: uuid(), componentName: 'Text', props: { text: '按钮' } },
             ],
-        }
+        },
+        {
+            id: uuid(),
+            componentName: 'div',
+            props: {
+                style: {
+                    width: 500,
+                    height: 500,
+                    background: 'red',
+                },
+            },
+        },
     ],
 });
 
@@ -243,7 +254,7 @@ export default {
         'propsPaneExpended',
     ],
 
-    setFields: fields => ({...fields}),
+    setFields: fields => ({ ...fields }),
 
     // 根据节点id，删除节点
     deleteNodeById(node, state) {
