@@ -7,15 +7,19 @@ import * as antdIcon from '@ant-design/icons';
 import componentImage from './component-16.png';
 
 export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
+export const TRIGGER_SIZE = 20;
 
-export function getTargetNode({draggingNode, componentId, pageConfig}) {
+export function getTargetNode({draggingNode, componentId, pageConfig, hoverPosition}) {
     // 如果投放的目标节点是当前拖拽节点的子节点，不作为投放目标节点
     if (findNodeById(draggingNode, componentId)) return null;
 
-    const targetNode = findNodeById(pageConfig, componentId);
+    let targetNode = findNodeById(pageConfig, componentId);
 
     const {isContainer} = getComponentConfig(targetNode.componentName);
-    // 不是容器
+
+    // TODO 判断目标节点
+    console.log(hoverPosition);
+    // 不是容器 查找父级元素
     if (!isContainer) return null;
 
     let {dropInTo} = draggingNode;
@@ -44,15 +48,15 @@ export function getTargetNode({draggingNode, componentId, pageConfig}) {
 
     if (typeof dropAccept === 'string') dropAccept = [dropAccept];
 
-    if (!Array.isArray(dropAccept)) return null;
+    if (Array.isArray(dropAccept)) {
+        if (!(dropAccept.some(name => name === draggingNode?.config?.componentName))) return null;
+    }
 
-    if (!dropAccept.some(name => name === draggingNode?.config?.componentName)) return null;
-
-    return targetNode;
+    return {targetNode, targetElement: null};
 }
 
-// 获取节点元素
-export function getNodeEle(target) {
+// 获取可拖拽节点dome元素
+export function getDraggableNodeEle(target) {
     if (!target) return target;
 
     if (typeof target.getAttribute !== 'function') return null;
@@ -64,7 +68,7 @@ export function getNodeEle(target) {
 
     if (isNodeEle) return target;
 
-    return getNodeEle(target.parentNode);
+    return getDraggableNodeEle(target.parentNode);
 }
 
 /**
@@ -222,20 +226,58 @@ export function getFieldOption(node, field) {
 /**
  * 获取元素在可视窗口内位置、尺寸、滚动等信息
  * @param element
+ * @param options
  * @returns {{top: number, left: number, bottom: number, width: number, right: number, scrollTop, height: number}}
  */
-export function getElementInfo(element) {
-    const rect = element.getBoundingClientRect();
+export function getElementInfo(element, options) {
+    let {top, left, bottom, right, width, height} = element.getBoundingClientRect();
     const scrollTop = element.scrollTop;
 
+    if (options?.viewSize) {
+        const {documentElement} = options;
+        const {clientHeight, clientWidth} = documentElement;
+
+        if (top < 0) {
+            height = height + top;
+            top = 0;
+        }
+        if (height + top > clientHeight) height = clientHeight - top;
+
+        if (left < 0) {
+            width = width + left;
+            left = 0;
+        }
+        if (width + left > clientWidth) width = clientWidth - left;
+    }
+
+
+    let hoverPosition;
+
+    if (options?.hoverPosition) {
+        let {documentElement, pageY, pageX} = options;
+        const {scrollTop, scrollLeft} = documentElement;
+
+        pageY = pageY - scrollTop;
+        pageX = pageX - scrollLeft;
+
+        hoverPosition = (() => {
+            if (pageY > top && pageY < top + TRIGGER_SIZE) return 'top';
+            if (pageY > top + height - TRIGGER_SIZE && pageY < top + height) return 'bottom';
+            if (pageX > left && pageX < left + TRIGGER_SIZE) return 'left';
+            if (pageX > left + width - TRIGGER_SIZE && pageX < left + width) return 'right';
+            return 'center';
+        })();
+    }
+
     return {
-        width: rect.width,
-        height: rect.height,
-        top: rect.top,
-        right: rect.right,
-        bottom: rect.bottom,
-        left: rect.left,
+        width,
+        height,
+        top,
+        right,
+        bottom,
+        left,
         scrollTop,
+        hoverPosition,
     };
 }
 

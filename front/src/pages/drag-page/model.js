@@ -201,6 +201,8 @@ export default {
         targetNode: null,
         // 投放目标节点对应的dom元素
         targetElement: null,
+        // 悬停目标节点的位置 top right bottom left center
+        hoverTargetPosition: 'children',
 
 
         // 组件库下拉

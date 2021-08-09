@@ -32,19 +32,20 @@ export default React.memo(function DragGuide(props) {
             return;
         }
 
-        const info = getElementInfo(targetElement);
-
         const componentDisplayName = getComponentDisplayName(targetNode);
-
         guideBgEle.setAttribute('data-component-display-name', componentDisplayName);
         guideBgEle.classList.add(s.guideBgActive);
 
-        const {top, left, width, height} = info;
 
-        guideBgEle.style.top = `${top}px`;
-        guideBgEle.style.left = `${left}px`;
-        guideBgEle.style.width = `${width}px`;
-        guideBgEle.style.height = `${height}px`;
+        const {top, left, width, height} = getElementInfo(targetElement, {
+            viewSize: true,
+            documentElement: canvasDocument.documentElement,
+        });
+
+        guideBgEle.style.top = `${top + 1}px`;
+        guideBgEle.style.left = `${left + 1}px`;
+        guideBgEle.style.width = `${width - 2}px`;
+        guideBgEle.style.height = `${height - 2}px`;
     }, [targetNode, targetElement, draggingElement, canvasDocument]);
 
     return null;
