@@ -1,5 +1,5 @@
-import {getComponentConfig} from 'src/pages/drag-page/component-config';
-import {findNodesByName, findParentNodeByName, findNodeById} from 'src/pages/drag-page/util/node-util';
+import { getComponentConfig } from 'src/pages/drag-page/component-config';
+import { findNodesByName, findParentNodeByName, findNodeById } from 'src/pages/drag-page/util/node-util';
 import * as raLibComponent from '@ra-lib/admin';
 import * as components from 'src/pages/drag-page/components';
 import * as antdComponent from 'antd/es';
@@ -9,20 +9,81 @@ import componentImage from './component-16.png';
 export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
 export const TRIGGER_SIZE = 20;
 
-export function getTargetNode({draggingNode, componentId, pageConfig, hoverPosition}) {
+export function getTargetNode(
+    {
+        draggingNode,
+        pageConfig,
+        documentElement,
+        targetElement,
+        pageY,
+        pageX,
+    },
+) {
+    if (!targetElement) return null;
+
+    const componentId = getIdByElement(targetElement);
+    const loopParent = () => getTargetNode({
+        draggingNode,
+        pageConfig,
+        documentElement,
+        targetElement: getDraggableNodeEle(targetElement.parentNode),
+        pageY,
+        pageX,
+    });
+
     // 如果投放的目标节点是当前拖拽节点的子节点，不作为投放目标节点
-    if (findNodeById(draggingNode, componentId)) return null;
+    if (findNodeById(draggingNode, componentId)) return loopParent();
+
+    const {
+        hoverPosition,
+        top,
+        left,
+        width,
+        height,
+    } = getElementInfo(targetElement, {
+        documentElement,
+        viewSize: true,
+        hoverPosition: true,
+        pageY,
+        pageX,
+    });
 
     let targetNode = findNodeById(pageConfig, componentId);
 
-    const {isContainer} = getComponentConfig(targetNode.componentName);
+    const { isContainer } = getComponentConfig(targetNode.componentName);
+    if (
+        hoverPosition === 'center'
+        && isContainer
+        && isAccept({ draggingNode, targetNode, pageConfig })
+    ) {
+        return {
+            targetNode,
+            targetElement,
+            targetHoverPosition: hoverPosition,
+            targetElementSize: {
+                top,
+                left,
+                width,
+                height,
+            },
+        };
+    }
 
-    // TODO 判断目标节点
-    console.log(hoverPosition);
-    // 不是容器 查找父级元素
-    if (!isContainer) return null;
+    return {
+        targetNode,
+        targetElement,
+        targetHoverPosition: hoverPosition,
+        targetElementSize: {
+            top,
+            left,
+            width,
+            height,
+        },
+    };
+}
 
-    let {dropInTo} = draggingNode;
+function isAccept({ draggingNode, targetNode, pageConfig }) {
+    let { dropInTo } = draggingNode;
 
     const args = {
         draggingNode,
@@ -31,28 +92,28 @@ export function getTargetNode({draggingNode, componentId, pageConfig, hoverPosit
     };
 
     if (typeof dropInTo === 'function') {
-        if (!dropInTo(args)) return null;
+        if (!dropInTo(args)) return false;
     }
 
     if (typeof dropInTo === 'string') dropInTo = [dropInTo];
 
     if (Array.isArray(dropInTo)) {
-        if (!dropInTo.includes(targetNode.componentName)) return null;
+        if (!dropInTo.includes(targetNode.componentName)) return false;
     }
 
-    let {dropAccept} = targetNode;
+    let { dropAccept } = targetNode;
 
     if (typeof dropAccept === 'function') {
-        if (!dropAccept(args)) return null;
+        if (!dropAccept(args)) return false;
     }
 
     if (typeof dropAccept === 'string') dropAccept = [dropAccept];
 
     if (Array.isArray(dropAccept)) {
-        if (!(dropAccept.some(name => name === draggingNode?.config?.componentName))) return null;
+        if (!(dropAccept.some(name => name === draggingNode?.config?.componentName))) return false;
     }
 
-    return {targetNode, targetElement: null};
+    return true;
 }
 
 // 获取可拖拽节点dome元素
@@ -108,7 +169,7 @@ export function filterTree(array, filter) {
         }
         if (Array.isArray(node.children)) {
             const children = node.children.reduce(getNodes, []);
-            if (children.length) result.push({...node, children});
+            if (children.length) result.push({ ...node, children });
         }
         return result;
     };
@@ -118,9 +179,9 @@ export function filterTree(array, filter) {
 
 // 根据 componentName 获取组件
 export function getComponent(options) {
-    let {componentName} = options;
+    let { componentName } = options;
     const componentConfig = getComponentConfig(componentName);
-    const {renderComponentName, componentType} = componentConfig;
+    const { renderComponentName, componentType } = componentConfig;
 
     componentName = renderComponentName || componentName;
 
@@ -197,7 +258,7 @@ export function getFieldOption(node, field) {
     const config = getComponentConfig(node?.componentName);
     if (!config) return null;
 
-    const {fields} = config;
+    const { fields } = config;
 
 
     const loopFields = fields => {
@@ -230,12 +291,12 @@ export function getFieldOption(node, field) {
  * @returns {{top: number, left: number, bottom: number, width: number, right: number, scrollTop, height: number}}
  */
 export function getElementInfo(element, options) {
-    let {top, left, bottom, right, width, height} = element.getBoundingClientRect();
+    let { top, left, bottom, right, width, height } = element.getBoundingClientRect();
     const scrollTop = element.scrollTop;
 
     if (options?.viewSize) {
-        const {documentElement} = options;
-        const {clientHeight, clientWidth} = documentElement;
+        const { documentElement } = options;
+        const { clientHeight, clientWidth } = documentElement;
 
         if (top < 0) {
             height = height + top;
@@ -254,8 +315,8 @@ export function getElementInfo(element, options) {
     let hoverPosition;
 
     if (options?.hoverPosition) {
-        let {documentElement, pageY, pageX} = options;
-        const {scrollTop, scrollLeft} = documentElement;
+        let { documentElement, pageY, pageX } = options;
+        const { scrollTop, scrollLeft } = documentElement;
 
         pageY = pageY - scrollTop;
         pageX = pageX - scrollLeft;

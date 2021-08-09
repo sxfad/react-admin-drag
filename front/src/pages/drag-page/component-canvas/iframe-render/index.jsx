@@ -38,6 +38,7 @@ export default React.memo(config({
             draggingElement: state.dragPage.draggingElement,
             targetNode: state.dragPage.targetNode,
             targetElement: state.dragPage.targetElement,
+            targetElementSize: state.dragPage.targetElementSize,
             canvasDocument: state.dragPage.canvasDocument,
             componentPaneActiveKey: state.dragPage.componentPaneActiveKey,
         };
@@ -55,6 +56,7 @@ export default React.memo(config({
         draggingElement,
         targetNode,
         targetElement,
+        targetElementSize,
         action: {dragPage: dragPageAction},
     } = props;
     const iframeRef = useRef(null);
@@ -84,6 +86,7 @@ export default React.memo(config({
                     targetElement={targetElement}
                     targetNode={targetNode}
                     canvasDocument={canvasDocument}
+                    targetElementSize={targetElementSize}
                 />
                 <DragDelegation
                     componentPaneActiveKey={componentPaneActiveKey}
@@ -113,6 +116,7 @@ export default React.memo(config({
         draggingNode,
         targetElement,
         targetNode,
+        targetElementSize,
     ]);
 
     return (

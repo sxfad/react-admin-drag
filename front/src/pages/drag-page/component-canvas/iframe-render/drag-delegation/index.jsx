@@ -1,13 +1,12 @@
-import React, {useCallback, useRef} from 'react';
-import {useThrottleFn} from 'ahooks';
+import React, { useCallback, useRef } from 'react';
+import { useThrottleFn } from 'ahooks';
 import {
     setDragImage,
     getIdByElement,
     getDraggableNodeEle,
     getTargetNode,
-    getElementInfo,
 } from 'src/pages/drag-page/util';
-import {findNodeById} from 'src/pages/drag-page-old/node-util';
+import { findNodeById } from 'src/pages/drag-page-old/node-util';
 
 export default React.memo(function DragDelegation(props) {
     const {
@@ -35,7 +34,7 @@ export default React.memo(function DragDelegation(props) {
         // 打开组树，不是用timeout会导致拖拽失效
         setTimeout(() => {
             prevComponentPaneActiveKeyRef.current = componentPaneActiveKey;
-            dragPageAction.setFields({componentPaneActiveKey: 'componentTree'});
+            dragPageAction.setFields({ componentPaneActiveKey: 'componentTree' });
         });
 
         const componentId = getIdByElement(draggingElement);
@@ -64,11 +63,11 @@ export default React.memo(function DragDelegation(props) {
         });
     }, [dragPageAction]);
 
-    const {run: handleDragOver} = useThrottleFn((e) => {
+    const { run: handleDragOver } = useThrottleFn((e) => {
         e.stopPropagation();
         e.preventDefault();
 
-        let {pageY, pageX} = e;
+        let { pageY, pageX } = e;
         const mousePosition = `${pageY},${pageX}`;
 
         // 如果鼠标位置没有改变，直接返回
@@ -78,29 +77,28 @@ export default React.memo(function DragDelegation(props) {
         const element = getDraggableNodeEle(e.target);
         if (!element) return;
 
-        const {hoverPosition} = getElementInfo(element, {
-            documentElement: canvasDocument.documentElement,
-            viewSize: true,
-            hoverPosition: true,
-            pageY,
-            pageX,
-        });
-
-        const componentId = getIdByElement(element);
-
-        const {targetNode, targetElement} = getTargetNode({
+        const { documentElement } = canvasDocument;
+        const {
+            targetNode,
+            targetElement,
+            targetElementSize,
+            targetHoverPosition,
+        } = getTargetNode({
+            documentElement,
             draggingNode,
             pageConfig,
-            componentId,
-            hoverPosition,
-        }) || {targetNode: null, targetElement: null};
+            targetElement: element,
+            pageY,
+            pageX,
+        }) || { targetNode: null, targetElement: null };
 
         dragPageAction.setFields({
             targetNode,
             targetElement,
+            targetElementSize,
+            targetHoverPosition,
         });
-
-    }, {wait: 200});
+    }, { wait: 200 });
 
     return (
         <div

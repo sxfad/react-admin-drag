@@ -1,6 +1,5 @@
-import React, {useEffect} from 'react';
-import {getElementInfo} from 'src/pages/drag-page/util';
-import {getComponentDisplayName} from 'src/pages/drag-page-old/component-config';
+import React, { useEffect } from 'react';
+import { getComponentDisplayName } from 'src/pages/drag-page-old/component-config';
 import s from './style.less';
 
 export default React.memo(function DragGuide(props) {
@@ -8,6 +7,7 @@ export default React.memo(function DragGuide(props) {
         canvasDocument,
         draggingElement,
         targetElement,
+        targetElementSize,
         targetNode,
     } = props;
 
@@ -36,17 +36,12 @@ export default React.memo(function DragGuide(props) {
         guideBgEle.setAttribute('data-component-display-name', componentDisplayName);
         guideBgEle.classList.add(s.guideBgActive);
 
-
-        const {top, left, width, height} = getElementInfo(targetElement, {
-            viewSize: true,
-            documentElement: canvasDocument.documentElement,
-        });
-
+        const { top, left, width, height } = targetElementSize;
         guideBgEle.style.top = `${top + 1}px`;
         guideBgEle.style.left = `${left + 1}px`;
         guideBgEle.style.width = `${width - 2}px`;
         guideBgEle.style.height = `${height - 2}px`;
-    }, [targetNode, targetElement, draggingElement, canvasDocument]);
+    }, [targetNode, targetElement, canvasDocument, targetElementSize]);
 
     return null;
 });
