@@ -291,10 +291,11 @@ export default {
     /**
      * 插入节点
      * draggingNode 是否能插入 targetNode 在targetNode获取函数中已经检测过，包裹各种插入类型
-     * 插入类型：
-     *  before 在targetNode之前插入
-     *  after 在targetNode之前插入
-     *  children 作为 targetNode children
+     * 插入类型 dropType：
+     *  new || move
+     *      before 在targetNode之前插入
+     *      after 在targetNode之前插入
+     *      children 作为 targetNode children
      *  props 作为 targetNode某个属性 快捷键 Alt
      *  wrapper 作为 target的wrapper，快捷键：Ctrl或meta 本质上渲染成target的父级，移动时随targetNode一起
      *  replace 替换targetNode 快捷键：Shift
@@ -304,14 +305,28 @@ export default {
      */
     insertNode(_, state) {
         const {pageConfig, draggingNode, targetNode, targetHoverPosition} = state;
-        const {config: draggingNodeConfig, type} = draggingNode;
+        const {config: draggingNodeConfig, dropType} = draggingNode;
+        const parentNode = findParentNodeById(pageConfig, draggingNode?.id);
+
+        // TODO 其他类型drop
+        // 设置属性 state func node等都有可能
+        if (dropType === 'props') {
+
+        }
+
+        if (dropType === 'wrapper') {
+
+        }
+
+        if (dropType === 'replace') {
+
+        }
+
         // 根节点为站位符时，直接替换
         if (pageConfig.componentName === 'DragHolder') {
             return {pageConfig: draggingNodeConfig};
         }
-
         const targetNodeId = targetNode.id;
-        console.log(type);
 
         const isBefore = ['top', 'left'].includes(targetHoverPosition);
         const isAfter = ['right', 'bottom'].includes(targetHoverPosition);
@@ -335,6 +350,9 @@ export default {
             }
             insertChildren(pageConfig, draggingNodeConfig, targetNode);
         }
+
+        // 节点被拖拽出去之后，尝试给父级添加DragHolder
+        addDragHolder(parentNode);
 
         return {
             pageConfig: {...pageConfig},

@@ -87,6 +87,7 @@ export default React.memo(config({
                 getContainer={() => canvasRenderRoot}
             >
                 <DragGuide
+                    draggingNode={draggingNode}
                     draggingElement={draggingElement}
                     targetElement={targetElement}
                     targetNode={targetNode}

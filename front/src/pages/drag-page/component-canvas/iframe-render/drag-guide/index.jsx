@@ -12,9 +12,10 @@ export default React.memo(function DragGuide(props) {
         targetHoverPosition,
         targetNode,
         selectedNode,
+        draggingNode,
     } = props;
 
-    const showGuideBg = useCallback((targetElement, targetNode, targetElementSize) => {
+    const showGuideBg = useCallback((draggingNode, targetElement, targetNode, targetElementSize) => {
         if (!canvasDocument) return;
         const guideBgEle = canvasDocument.getElementById('drop-guide-bg');
         if (!targetElement) {
@@ -30,6 +31,15 @@ export default React.memo(function DragGuide(props) {
         guideBgEle.style.left = `${left + 1}px`;
         guideBgEle.style.width = `${width - 2}px`;
         guideBgEle.style.height = `${height - 2}px`;
+
+        // 改变背景颜色，不同投放类型，对应不同的样色
+        const colors = {
+            'props': 'rgba(255, 0, 0, 0.3)', // 红
+            'replace': 'rgba(255, 255, 0, 0.3)', // 黄
+            'wrapper': 'rgba(0, 0, 255, 0.3)', // 蓝色
+        };
+        guideBgEle.style.backgroundColor = colors[draggingNode?.dropType] || 'rgba(0, 255, 0, 0.1)'; // 绿;
+
     }, [canvasDocument]);
 
     const showGuideLine = useCallback((targetElement, targetNode, targetElementSize, targetHoverPosition) => {
@@ -91,15 +101,15 @@ export default React.memo(function DragGuide(props) {
             viewSize: true,
         });
 
-        showGuideBg(targetElement, selectedNode, targetElementSize);
+        showGuideBg(draggingNode, targetElement, selectedNode, targetElementSize);
 
-    }, [canvasDocument, selectedNode, showGuideBg]);
+    }, [canvasDocument, selectedNode, draggingNode, showGuideBg]);
 
     // 投放目标元素样式
     useEffect(() => {
-        showGuideBg(targetElement, targetNode, targetElementSize);
+        showGuideBg(draggingNode, targetElement, targetNode, targetElementSize);
         showGuideLine(targetElement, targetNode, targetElementSize, targetHoverPosition);
-    }, [showGuideBg, showGuideLine, targetElement, targetNode, targetElementSize, targetHoverPosition]);
+    }, [showGuideBg, showGuideLine, draggingNode, targetElement, targetNode, targetElementSize, targetHoverPosition]);
 
     return null;
 });

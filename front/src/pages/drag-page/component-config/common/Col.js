@@ -50,6 +50,7 @@ export function getOnKeyDown(cb, ancestorComponentName = 'Row') {
 
 export default {
     withHolder: true,
+    holderProps: {style: {height: 54}},
     dropInTo: 'Row', // Col 只能放入Row中
     fields: [
         {

@@ -70,6 +70,32 @@ export default React.memo(function DragDelegation(props) {
         e.stopPropagation();
         e.preventDefault();
 
+        // 监听键盘案件 修改 draggingNode.type
+        const {metaKey, ctrlKey, altKey, shiftKey} = e;
+        const metaOrCtrl = metaKey || ctrlKey;
+
+        let dropType;
+        if (metaOrCtrl) dropType = 'wrapper';
+        if (altKey) dropType = 'props';
+        if (shiftKey) dropType = 'replace';
+
+        if (draggingNode.dropType !== dropType) {
+            dragPageAction.setFields({draggingNode: {...draggingNode, dropType}});
+
+            // 改变鼠标样式 TODO 不好使。。。
+            const cursors = {
+                'new': 'copy',
+                'move': 'move',
+                'props': 'link',
+                'wrapper': 'link',
+                'replace': 'link',
+            };
+
+            const cursor = cursors[dropType] || cursors[draggingNode?.type] || 'auto';
+            console.log(cursor);
+            e.dataTransfer.dropEffect = cursor;
+        }
+
         let {pageY, pageX} = e;
         const mousePosition = `${pageY},${pageX}`;
 
@@ -135,6 +161,7 @@ export default React.memo(function DragDelegation(props) {
 
     }, [dragPageAction, nodeSelectType, pageConfig]);
 
+    // 键盘事件
     useEffect(() => {
         const handleKeyDown = (e) => {
 
