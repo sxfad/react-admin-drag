@@ -1,4 +1,5 @@
-import { v4 as uuid } from 'uuid';
+import {v4 as uuid} from 'uuid';
+import {insertAfter, insertBefore, insertChildren} from 'src/pages/drag-page/util/node-util';
 
 const testConfig = {
     id: uuid(),
@@ -157,7 +158,7 @@ const rootHolderNode = () => ({
                 type: 'primary',
             },
             children: [
-                { id: uuid(), componentName: 'Text', props: { text: '按钮' } },
+                {id: uuid(), componentName: 'Text', props: {text: '按钮'}},
             ],
         },
         {
@@ -254,7 +255,7 @@ export default {
         'propsPaneExpended',
     ],
 
-    setFields: fields => ({ ...fields }),
+    setFields: fields => ({...fields}),
 
     // 根据节点id，删除节点
     deleteNodeById(node, state) {
@@ -269,5 +270,33 @@ export default {
     // 保存页面配置到服务端
     savePageConfig() {
         // TODO
+    },
+
+    // 插入节点
+    insertNode(_, state) {
+        const {pageConfig, draggingNode, targetNode, targetHoverPosition} = state;
+        const {config: draggingNodeConfig, type} = draggingNode;
+        const targetNodeId = targetNode.id;
+        console.log(type);
+
+        const isBefore = ['top', 'left'].includes(targetHoverPosition);
+        const isAfter = ['right', 'bottom'].includes(targetHoverPosition);
+        const isChildren = ['center'].includes(targetHoverPosition);
+
+        if (isBefore) {
+            insertBefore(pageConfig, draggingNodeConfig, targetNodeId);
+        }
+
+        if (isAfter) {
+            insertAfter(pageConfig, draggingNodeConfig, targetNodeId);
+        }
+
+        if (isChildren) {
+            insertChildren(pageConfig, draggingNodeConfig, targetNode);
+        }
+
+        return {
+            pageConfig: {...pageConfig},
+        };
     },
 };

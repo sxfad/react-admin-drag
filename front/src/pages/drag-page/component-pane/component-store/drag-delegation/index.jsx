@@ -27,7 +27,7 @@ export default React.memo(config({
         dragPageAction.setFields({
             draggingNode: {
                 id: config.id,
-                isNewAdd: true,
+                type: 'new',
                 config,
             },
         });

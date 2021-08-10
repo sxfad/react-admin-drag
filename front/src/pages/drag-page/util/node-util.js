@@ -291,6 +291,16 @@ export function insertAfter(root, sourceNode, id) {
     }
 }
 
+export function insertChildren(root, sourceNode, targetNode) {
+    if (!sourceNode) return null;
+
+    // 如果存在，先删除，相当于移动位置
+    deleteNodeById(root, sourceNode.id);
+
+    if (!targetNode.children) targetNode.children = [];
+    targetNode.children.push(sourceNode);
+}
+
 /**
  * 将节点转换为源码
  * @param node

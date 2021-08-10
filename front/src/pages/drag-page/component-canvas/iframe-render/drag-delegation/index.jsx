@@ -1,12 +1,12 @@
-import React, { useCallback, useRef } from 'react';
-import { useThrottleFn } from 'ahooks';
+import React, {useCallback, useRef} from 'react';
+import {useThrottleFn} from 'ahooks';
 import {
     setDragImage,
     getIdByElement,
     getDraggableNodeEle,
     getTargetNode,
 } from 'src/pages/drag-page/util';
-import { findNodeById } from 'src/pages/drag-page-old/node-util';
+import {findNodeById} from 'src/pages/drag-page-old/node-util';
 
 export default React.memo(function DragDelegation(props) {
     const {
@@ -34,7 +34,7 @@ export default React.memo(function DragDelegation(props) {
         // 打开组树，不是用timeout会导致拖拽失效
         setTimeout(() => {
             prevComponentPaneActiveKeyRef.current = componentPaneActiveKey;
-            dragPageAction.setFields({ componentPaneActiveKey: 'componentTree' });
+            dragPageAction.setFields({componentPaneActiveKey: 'componentTree'});
         });
 
         const componentId = getIdByElement(draggingElement);
@@ -46,6 +46,7 @@ export default React.memo(function DragDelegation(props) {
             draggingElement,
             draggingNode: {
                 id: config.id,
+                type: 'move',
                 config,
             },
         });
@@ -53,6 +54,7 @@ export default React.memo(function DragDelegation(props) {
 
     const handleDragEnd = useCallback((e) => {
         e && e.stopPropagation();
+        e && e.preventDefault();
 
         dragPageAction.setFields({
             componentPaneActiveKey: prevComponentPaneActiveKeyRef.current,
@@ -63,11 +65,11 @@ export default React.memo(function DragDelegation(props) {
         });
     }, [dragPageAction]);
 
-    const { run: handleDragOver } = useThrottleFn((e) => {
+    const {run: handleDragOver} = useThrottleFn((e) => {
         e.stopPropagation();
         e.preventDefault();
 
-        let { pageY, pageX } = e;
+        let {pageY, pageX} = e;
         const mousePosition = `${pageY},${pageX}`;
 
         // 如果鼠标位置没有改变，直接返回
@@ -77,7 +79,7 @@ export default React.memo(function DragDelegation(props) {
         const element = getDraggableNodeEle(e.target);
         if (!element) return;
 
-        const { documentElement } = canvasDocument;
+        const {documentElement} = canvasDocument;
         const {
             targetNode,
             targetElement,
@@ -90,7 +92,7 @@ export default React.memo(function DragDelegation(props) {
             targetElement: element,
             pageY,
             pageX,
-        }) || { targetNode: null, targetElement: null };
+        }) || {targetNode: null, targetElement: null};
 
         dragPageAction.setFields({
             targetNode,
@@ -98,14 +100,33 @@ export default React.memo(function DragDelegation(props) {
             targetElementSize,
             targetHoverPosition,
         });
-    }, { wait: 200 });
+    }, {wait: 200});
+
+
+    const handleDrop = useCallback((e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // 执行insertNode之后，会导致 handleDragEnd 不触发
+        dragPageAction.insertNode();
+
+        // 手动调用一次dragEnd方法
+        handleDragEnd();
+
+    }, [dragPageAction, handleDragEnd]);
 
     return (
         <div
             className={className}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
-            onDragOver={handleDragOver}
+            onDragOver={e => {
+                // 阻止默认事件，否则drop 不触发
+                e.preventDefault();
+                e.stopPropagation();
+                handleDragOver(e);
+            }}
+            onDrop={handleDrop}
         >
             {children}
         </div>
