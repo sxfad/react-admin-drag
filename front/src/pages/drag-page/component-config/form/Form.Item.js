@@ -69,8 +69,8 @@ export default {
                 node.children.splice(index, 1);
             }
         },
-        beforeRender: ({config}) => {
-            const {props} = config;
+        beforeRender: ({node}) => {
+            const {props} = node;
             if (props?.rules?.length) {
                 props.rules = props.rules.map(item => {
                     const data = ruleOptions.find(it => it.value === item);

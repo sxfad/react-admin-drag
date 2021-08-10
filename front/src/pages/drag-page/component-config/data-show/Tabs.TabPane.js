@@ -6,10 +6,10 @@ export default {
     withHolder: true,
     hooks: {
         afterRender: options => {
-            const {config, dragPageState} = options;
+            const {node, dragPageState} = options;
             const {pageConfig, canvasDocument} = dragPageState;
             if (!canvasDocument) return;
-            const {id} = config;
+            const {id} = node;
             const parentNode = findParentNodeById(pageConfig, id);
             const index = parentNode.children.findIndex(item => item.id === id);
             const selectors = `.id_${parentNode.id} > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane`;

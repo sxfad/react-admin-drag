@@ -1,5 +1,13 @@
 import {v4 as uuid} from 'uuid';
-import {insertAfter, insertBefore, insertChildren} from 'src/pages/drag-page/util/node-util';
+import {
+    deleteNodeById,
+    findParentNodeById,
+    insertAfter,
+    insertBefore,
+    insertChildren,
+} from 'src/pages/drag-page/util/node-util';
+import {addDragHolder} from 'src/pages/drag-page/util';
+import {getComponentConfig} from 'src/pages/drag-page/component-config';
 
 const testConfig = {
     id: uuid(),
@@ -166,13 +174,22 @@ const rootHolderNode = () => ({
             componentName: 'div',
             props: {
                 style: {
-                    width: 500,
-                    height: 500,
+                    width: 50,
+                    height: 50,
                     background: 'red',
                 },
             },
         },
     ],
+});
+
+
+const rootNode = () => ({
+    id: uuid(),
+    componentName: 'DragHolder',
+    props: {
+        style: {height: '500px'},
+    },
 });
 
 export default {
@@ -199,7 +216,6 @@ export default {
         propsPaneWidth: 400,
         // 属性面板是否展开
         propsPaneExpended: true,
-
 
         // 当前选中节点
         selectedNode: null,
@@ -272,10 +288,28 @@ export default {
         // TODO
     },
 
-    // 插入节点
+    /**
+     * 插入节点
+     * draggingNode 是否能插入 targetNode 在targetNode获取函数中已经检测过，包裹各种插入类型
+     * 插入类型：
+     *  before 在targetNode之前插入
+     *  after 在targetNode之前插入
+     *  children 作为 targetNode children
+     *  props 作为 targetNode某个属性 快捷键 Alt
+     *  wrapper 作为 target的wrapper，快捷键：Ctrl或meta 本质上渲染成target的父级，移动时随targetNode一起
+     *  replace 替换targetNode 快捷键：Shift
+     * @param _
+     * @param state
+     * @returns {{pageConfig}}
+     */
     insertNode(_, state) {
         const {pageConfig, draggingNode, targetNode, targetHoverPosition} = state;
         const {config: draggingNodeConfig, type} = draggingNode;
+        // 根节点为站位符时，直接替换
+        if (pageConfig.componentName === 'DragHolder') {
+            return {pageConfig: draggingNodeConfig};
+        }
+
         const targetNodeId = targetNode.id;
         console.log(type);
 
@@ -284,6 +318,7 @@ export default {
         const isChildren = ['center'].includes(targetHoverPosition);
 
         if (isBefore) {
+            // 方法内部会做： 如果存在，先删除，相当于移动位置
             insertBefore(pageConfig, draggingNodeConfig, targetNodeId);
         }
 
@@ -292,11 +327,74 @@ export default {
         }
 
         if (isChildren) {
+            // 清除占位符
+            if (targetNode?.children?.length === 1
+                && targetNode.children[0].componentName === 'DragHolder'
+            ) {
+                targetNode.children = [];
+            }
             insertChildren(pageConfig, draggingNodeConfig, targetNode);
         }
 
         return {
             pageConfig: {...pageConfig},
+        };
+    },
+    /**
+     * 删除选中节点
+     */
+    deleteSelectedNode(_, state) {
+        const {pageConfig, selectedNode} = state;
+        if (!selectedNode) return;
+
+        const nodeConfig = getComponentConfig(selectedNode?.componentName);
+        const parentNode = findParentNodeById(pageConfig, selectedNode?.id);
+        const parentNodeConfig = getComponentConfig(parentNode?.componentName);
+
+        const {beforeDelete = () => undefined, afterDelete = () => undefined} = nodeConfig?.hooks || {};
+        const {beforeDeleteChildren = () => undefined, afterDeleteChildren = () => undefined} = parentNodeConfig?.hooks || {};
+
+        const deleteResult = beforeDelete({pageConfig, node: selectedNode, parentNode: parentNode});
+        if (deleteResult === false) return;
+
+        const deleteChildrenResult = beforeDeleteChildren({pageConfig, node: parentNode, childNode: selectedNode});
+        if (deleteChildrenResult === false) return;
+
+
+        // 删除的是跟节点
+        if (selectedNode.id === pageConfig.id) {
+            return {
+                pageConfig: rootNode(),
+                selectedNode: null,
+            };
+        }
+
+        const children = parentNode?.children || [];
+
+        const deleteIndex = children.findIndex(item => item.id === selectedNode?.id);
+
+        deleteNodeById(pageConfig, selectedNode?.id);
+
+        afterDelete && afterDelete({pageConfig, node: selectedNode, parentNode: parentNode});
+        afterDeleteChildren && afterDeleteChildren({pageConfig, node: parentNode, childNode: selectedNode});
+
+        // 如果父节点中没有子节点，尝试添加占位符
+        addDragHolder(parentNode);
+
+        // 没有子节点了，选中父节点
+        if (!children?.length) {
+            return {
+                pageConfig: {...pageConfig},
+                selectedNode: parentNode,
+            };
+        }
+        // 选择下一个兄弟节点 或 上一个兄弟节点
+        const nextNode = children[deleteIndex];
+        const prevNode = children[deleteIndex - 1];
+
+        return {
+            pageConfig: {...pageConfig},
+            selectedNode: nextNode || prevNode,
         };
     },
 };

@@ -68,7 +68,7 @@ function NodeRender(props) {
 
     // hooks 可以得到的参数
     const hooksArgs = {
-        config,
+        node: config,
         NodeRender,
         renderProps,
         dragPageState: store.getState().dragPage,

@@ -5,7 +5,7 @@ import s from './style.less';
 import {ConfigProvider} from 'antd';
 import zhCN from 'antd/lib/locale-provider/zh_CN';
 import NodeRender from 'src/pages/drag-page/node-render';
-import DragDelegation from './drag-delegation';
+import ActionDelegation from './action-delegation';
 import DragGuide from './drag-guide';
 
 // 构建iframe内容
@@ -34,6 +34,7 @@ export default React.memo(config({
             viewMode: state.dragPage.viewMode,
             canvasRenderRoot: state.dragPage.canvasRenderRoot,
             selectedNode: state.dragPage.selectedNode,
+            nodeSelectType: state.dragPage.nodeSelectType,
             draggingNode: state.dragPage.draggingNode,
             draggingElement: state.dragPage.draggingElement,
             targetNode: state.dragPage.targetNode,
@@ -53,6 +54,8 @@ export default React.memo(config({
         canvasDocument,
         canvasRenderRoot,
         componentPaneActiveKey,
+        selectedNode,
+        nodeSelectType,
         draggingNode,
         draggingElement,
         targetNode,
@@ -87,16 +90,18 @@ export default React.memo(config({
                     draggingElement={draggingElement}
                     targetElement={targetElement}
                     targetNode={targetNode}
+                    selectedNode={selectedNode}
                     canvasDocument={canvasDocument}
                     targetElementSize={targetElementSize}
                     targetHoverPosition={targetHoverPosition}
                 />
-                <DragDelegation
+                <ActionDelegation
                     componentPaneActiveKey={componentPaneActiveKey}
                     pageConfig={pageConfig}
                     dragPageAction={dragPageAction}
                     draggingNode={draggingNode}
                     canvasDocument={canvasDocument}
+                    nodeSelectType={nodeSelectType}
                 >
                     <NodeRender
                         config={pageConfig}
@@ -104,7 +109,7 @@ export default React.memo(config({
                         canvasRenderRoot={canvasRenderRoot}
                         state={state}
                     />
-                </DragDelegation>
+                </ActionDelegation>
             </ConfigProvider>,
             canvasRenderRoot,
         );
@@ -115,12 +120,15 @@ export default React.memo(config({
         isPreview,
         dragPageAction,
         componentPaneActiveKey,
+        selectedNode,
+        nodeSelectType,
         draggingElement,
         draggingNode,
         targetElement,
         targetNode,
         targetElementSize,
         targetHoverPosition,
+
     ]);
 
     return (

@@ -96,7 +96,7 @@ export default {
 };
 
 
-function setTableColumns({config: tableNode, NodeRender, renderProps, config: {props}}) {
+function setTableColumns({node: tableNode, NodeRender, renderProps, config: {props}}) {
     if (!tableNode) return;
 
     let {children} = tableNode;

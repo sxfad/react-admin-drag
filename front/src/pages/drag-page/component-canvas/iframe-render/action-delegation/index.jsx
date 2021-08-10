@@ -1,4 +1,4 @@
-import React, {useCallback, useRef} from 'react';
+import React, {useCallback, useRef, useEffect} from 'react';
 import {useThrottleFn} from 'ahooks';
 import {
     setDragImage,
@@ -17,6 +17,7 @@ export default React.memo(function DragDelegation(props) {
         componentPaneActiveKey,
         draggingNode,
         canvasDocument,
+        nodeSelectType,
     } = props;
 
     const prevComponentPaneActiveKeyRef = useRef(null);
@@ -115,6 +116,45 @@ export default React.memo(function DragDelegation(props) {
 
     }, [dragPageAction, handleDragEnd]);
 
+    const handleClick = useCallback((e) => {
+        const element = getDraggableNodeEle(e.target);
+        if (!element) return;
+        const componentId = getIdByElement(element);
+        const selectedNode = findNodeById(pageConfig, componentId);
+        if (!selectedNode) return;
+
+        if (nodeSelectType === 'meta' && (e.metaKey || e.ctrlKey)) {
+            e.stopPropagation && e.stopPropagation();
+            e.preventDefault && e.preventDefault();
+            dragPageAction.setFields({selectedNode});
+        }
+
+        if (nodeSelectType === 'click') {
+            dragPageAction.setFields({selectedNode});
+        }
+
+    }, [dragPageAction, nodeSelectType, pageConfig]);
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+
+            const {metaKey, ctrlKey, key} = e;
+            const metaOrCtrl = metaKey || ctrlKey;
+
+            // commend(ctrl) + d 删除选中节点
+            if (metaOrCtrl && key === 'd') {
+                e.stopPropagation();
+                e.preventDefault();
+                dragPageAction.deleteSelectedNode();
+            }
+        };
+
+        canvasDocument.body.addEventListener('keydown', handleKeyDown);
+        return () => {
+            canvasDocument.body.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [canvasDocument.body, dragPageAction]);
+
     return (
         <div
             className={className}
@@ -127,6 +167,7 @@ export default React.memo(function DragDelegation(props) {
                 handleDragOver(e);
             }}
             onDrop={handleDrop}
+            onClick={handleClick}
         >
             {children}
         </div>
