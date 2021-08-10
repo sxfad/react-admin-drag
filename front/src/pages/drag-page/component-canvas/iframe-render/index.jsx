@@ -20,7 +20,9 @@ const iframeSrcDoc = `
             <div id="drop-guide-line" style="display: none">
                 <span>前</span>
             </div>
-            <div id="drop-guide-bg" style="display: none;"></div>
+            <div id="drop-guide-bg" style="display: none;">
+                <div id="drop-guide-name"/>
+            </div>
         </body>
     </html>
 `;

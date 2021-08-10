@@ -1,4 +1,4 @@
-@guide-color: green;
+@guide-color: rgb(0, 180, 0);
 @select-guide-color: red;
 @guide-size: 2px;
 @large-size: 15px;
@@ -13,10 +13,16 @@
         transition: 100ms;
     }
 
-    #drop-guide-bg:before {
+    #drop-guide-name {
+        &:before{
+            content: attr(data-component-display-name);
+            letter-spacing: 0;
+            font-size: 12px;
+            color: #fff;
+            word-break: keep-all;
+            padding: 0 4px;
+        }
         pointer-events: none;
-        content: attr(data-component-display-name);
-        letter-spacing: 0;
         position: absolute;
         width: auto;
         height: auto;
@@ -24,14 +30,9 @@
         top: 0;
         right: auto;
         bottom: auto;
-        font-size: 12px;
-        padding: 0 4px;
         transform-origin: 0 0;
         transform: scale(.8);
         opacity: .5;
-        background: @guide-color;
-        color: #fff;
-        word-break: keep-all;
         z-index: 9999;
     }
 }

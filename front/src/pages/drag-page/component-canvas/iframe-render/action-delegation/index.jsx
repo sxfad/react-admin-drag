@@ -66,36 +66,37 @@ export default React.memo(function DragDelegation(props) {
         });
     }, [dragPageAction]);
 
-    const {run: handleDragOver} = useThrottleFn((e) => {
-        e.stopPropagation();
-        e.preventDefault();
-
-        // 监听键盘案件 修改 draggingNode.type
+    // 监听键盘事件 修改 draggingNode.type
+    const {run: handleChangeDropType} = useThrottleFn((e) => {
+        if(!draggingNode) return;
         const {metaKey, ctrlKey, altKey, shiftKey} = e;
         const metaOrCtrl = metaKey || ctrlKey;
 
-        let dropType;
-        if (metaOrCtrl) dropType = 'wrapper';
-        if (altKey) dropType = 'props';
-        if (shiftKey) dropType = 'replace';
+        let dropType = draggingNode.dropType;
+        if (metaOrCtrl) dropType === 'wrapper' ? dropType = null : dropType = 'wrapper' ;
+        if (altKey) dropType === 'props' ? dropType = null : dropType = 'props' ;
+        if (shiftKey) dropType === 'replace' ? dropType = null : dropType = 'replace' ;
 
-        if (draggingNode.dropType !== dropType) {
-            dragPageAction.setFields({draggingNode: {...draggingNode, dropType}});
+        if (draggingNode.dropType === dropType) return;
 
-            // 改变鼠标样式 TODO 不好使。。。
-            const cursors = {
-                'new': 'copy',
-                'move': 'move',
-                'props': 'link',
-                'wrapper': 'link',
-                'replace': 'link',
-            };
+        dragPageAction.setFields({draggingNode: {...draggingNode, dropType}});
 
-            const cursor = cursors[dropType] || cursors[draggingNode?.type] || 'auto';
-            console.log(cursor);
-            e.dataTransfer.dropEffect = cursor;
-        }
+        // 改变鼠标样式 TODO 不好使。。。
+        const cursors = {
+            'new': 'copy',
+            'move': 'move',
+            'props': 'link',
+            'wrapper': 'link',
+            'replace': 'link',
+        };
 
+        const cursor = cursors[dropType] || cursors[draggingNode?.type] || 'auto';
+        console.log(cursor);
+        e.dataTransfer.dropEffect = cursor;
+
+    }, {wait: 100})
+
+    const {run: handleDragOver} = useThrottleFn((e) => {
         let {pageY, pageX} = e;
         const mousePosition = `${pageY},${pageX}`;
 
@@ -128,7 +129,6 @@ export default React.memo(function DragDelegation(props) {
             targetHoverPosition,
         });
     }, {wait: 200});
-
 
     const handleDrop = useCallback((e) => {
         e.preventDefault();
@@ -191,6 +191,7 @@ export default React.memo(function DragDelegation(props) {
                 // 阻止默认事件，否则drop 不触发
                 e.preventDefault();
                 e.stopPropagation();
+                handleChangeDropType(e);
                 handleDragOver(e);
             }}
             onDrop={handleDrop}
