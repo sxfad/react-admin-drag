@@ -76,6 +76,7 @@ const ComponentStore = config({
             <Header icon={icon} title={title} />
             <div className={s.top}>
                 <Input
+                    id="search-component"
                     allowClear
                     placeholder="请输入关键词搜索组件"
                     onChange={handleSearchChange}

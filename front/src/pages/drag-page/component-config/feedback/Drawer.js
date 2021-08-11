@@ -114,7 +114,7 @@ export default {
 [
     {label:'切换抽屉时动画结束后的回调',field:'afterVisibleChange',type:'function(visible)',version:'',desc:'切换抽屉时动画结束后的回调'},
     {label:'可用于设置 Drawer 内容部分的样式',field:'bodyStyle',type:'CSSProperties',version:'',desc:'可用于设置 Drawer 内容部分的样式'},
-    {label:'对话框外层容器的类名',field:'className',type:'string',version:'',desc:'对话框外层容器的类名'},
+    {label:'弹框外层容器的类名',field:'className',type:'string',version:'',desc:'弹框外层容器的类名'},
     {label:'是否显示右上角的关闭按钮',field:'closable',type:'boolean',defaultValue:true,version:'',desc:'是否显示右上角的关闭按钮'},
     {label:'自定义关闭图标',field:'closeIcon',type:'ReactNode',defaultValue:'<CloseOutlined />',version:'',desc:'自定义关闭图标'},
     {label:'可用于设置 Drawer 包裹内容部分的样式',field:'contentWrapperStyle',type:'CSSProperties',version:'',desc:'可用于设置 Drawer 包裹内容部分的样式'},

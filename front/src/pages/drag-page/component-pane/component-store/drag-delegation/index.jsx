@@ -2,6 +2,8 @@ import React, {useCallback} from 'react';
 import config from 'src/commons/config-hoc';
 import {setDragImage} from 'src/pages/drag-page/util';
 import {setNodeId} from 'src/pages/drag-page/util/node-util';
+import {getComponentConfig} from 'src/pages/drag-page/component-config';
+import {cloneDeep} from 'lodash';
 
 export default React.memo(config({
     connect: true,
@@ -20,7 +22,19 @@ export default React.memo(config({
             dragPageAction.setFields({componentPaneActiveKey: 'componentTree'});
         });
 
+
         const config = JSON.parse(e.target.dataset.config);
+
+        const nodeConfig = getComponentConfig(config.componentName);
+        const {propsToSet, isWrapper} = nodeConfig;
+
+        let dropType;
+        let dropTypeChangeable = true;
+        if (propsToSet) dropType = 'props';
+        if (isWrapper) {
+            dropTypeChangeable = false;
+            dropType = 'wrapper';
+        }
 
         // 设置唯一id
         setNodeId(config);
@@ -29,6 +43,9 @@ export default React.memo(config({
                 id: config.id,
                 type: 'new',
                 config,
+                propsToSet: cloneDeep(propsToSet),
+                dropTypeChangeable,
+                dropType: dropType,
             },
         });
 

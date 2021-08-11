@@ -61,11 +61,11 @@ export default [
         ],
     },
     {
-        title: '对话框',
+        title: '弹框',
         subTitle: 'Modal',
         children: [
             {
-                title: '对话框',
+                title: '弹框',
                 image: ModalImage,
                 config: {
                     componentName: 'Modal',
@@ -135,7 +135,7 @@ export default [
                 },
             },
             {
-                title: '对话框底部',
+                title: '弹框底部',
                 renderPreview: true,
                 previewProps: {style: {width: '100%'}},
                 previewZoom: .68,

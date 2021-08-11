@@ -3,6 +3,7 @@ import {getComponent} from 'src/pages/drag-page/util';
 import {isNode} from 'src/pages/drag-page/util/node-util';
 import {getComponentConfig} from 'src/pages/drag-page/component-config';
 import {store, actions} from 'src/models';
+import {cloneDeep} from 'lodash';
 import s from './style.less';
 
 // 遍历对象 基本类型以及节点属性
@@ -44,8 +45,9 @@ function NodeRender(props) {
         wrapper,
         componentName,
         children,
-        props: componentProps = {},
     } = config;
+
+    const componentProps = cloneDeep(config.props || {});
 
     const componentConfig = getComponentConfig(componentName);
 

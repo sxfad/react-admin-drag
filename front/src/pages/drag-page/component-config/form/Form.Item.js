@@ -15,7 +15,7 @@ export default {
     withHolder: true,
     holderProps: {
         tip: '请拖入表单元素',
-        style: {height: 50},
+        style: {height: 'auto'},
     },
     // childrenDraggable: true, // 子节点不可拖拽
     // dropAccept: options => { // 值接受表单元素

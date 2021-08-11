@@ -4,185 +4,11 @@ import {
     findParentNodeById,
     insertAfter,
     insertBefore,
-    insertChildren,
+    insertChildren, replaceNode,
+    setNodeId,
 } from 'src/pages/drag-page/util/node-util';
 import {addDragHolder} from 'src/pages/drag-page/util';
 import {getComponentConfig} from 'src/pages/drag-page/component-config';
-
-const testConfig = {
-    id: uuid(),
-    componentName: 'Form',
-    props: {
-        layout: 'inline',
-        name: 'formName_6acde693-d28e-4f98-b725-018d5c40519f',
-        onFinish: values => alert(JSON.stringify(values)),
-    },
-    children: [
-        {
-            id: uuid(),
-            componentName: 'Form.Item',
-            props: {
-                label: '姓名',
-                name: 'field1',
-            },
-            children: [
-                {
-                    id: uuid(),
-                    componentName: 'Input',
-                    props: {
-                        placeholder: '请输入',
-                    },
-                },
-            ],
-        },
-        {
-            id: uuid(),
-            componentName: 'Form.Item',
-            props: {
-                label: '年龄',
-                name: 'field2',
-            },
-            children: [
-                {
-                    id: uuid(),
-                    componentName: 'InputNumber',
-                    props: {
-                        style: {
-                            width: '100%',
-                        },
-                        placeholder: '请输入',
-                        min: 0,
-                    },
-                },
-            ],
-        },
-        {
-            id: uuid(),
-            componentName: 'Form.Item',
-            props: {
-                label: '工作',
-                name: 'field3',
-            },
-            children: [
-                {
-                    id: uuid(),
-                    componentName: 'Select',
-                    props: {
-                        style: {
-                            width: '100%',
-                        },
-                        placeholder: '请选择',
-                        options: [
-                            {
-                                value: '1',
-                                label: '选项1',
-                            },
-                            {
-                                value: '2',
-                                label: '选项2',
-                            },
-                        ],
-                    },
-                },
-            ],
-        },
-        {
-            id: uuid(),
-            componentName: 'Form.Item',
-            props: {
-                label: '入职日期',
-                name: 'field4',
-            },
-            children: [
-                {
-                    id: uuid(),
-                    componentName: 'DatePicker',
-                    props: {
-                        style: {
-                            width: '100%',
-                        },
-                        placeholder: '请选择日期',
-                    },
-                },
-            ],
-        },
-        {
-            id: uuid(),
-            componentName: 'Form.Item',
-            children: [
-                {
-                    id: uuid(),
-                    componentName: 'Space',
-                    children: [
-                        {
-                            id: uuid(),
-                            componentName: 'Button',
-                            props: {
-                                type: 'primary',
-                                htmlType: 'submit',
-                            },
-                            children: [
-                                {
-                                    id: uuid(),
-                                    componentName: 'Text',
-                                    props: {
-                                        text: '提交',
-                                        isDraggable: false,
-                                    },
-                                },
-                            ],
-                        },
-                        {
-                            id: uuid(),
-                            componentName: 'Button',
-                            children: [
-                                {
-                                    id: uuid(),
-                                    componentName: 'Text',
-                                    props: {
-                                        text: '重置',
-                                        isDraggable: false,
-                                    },
-                                },
-                            ],
-                        },
-                    ],
-                },
-            ],
-        },
-    ],
-};
-
-// const rootHolderNode = () => ({id: uuid(), componentName: 'RootDragHolder'});
-const rootHolderNode = () => ({
-    id: uuid(),
-    componentName: 'PageContent',
-    children: [
-        testConfig,
-        {
-            id: uuid(),
-            componentName: 'Button',
-            props: {
-                type: 'primary',
-            },
-            children: [
-                {id: uuid(), componentName: 'Text', props: {text: '按钮'}},
-            ],
-        },
-        {
-            id: uuid(),
-            componentName: 'div',
-            props: {
-                style: {
-                    width: 50,
-                    height: 50,
-                    background: 'red',
-                },
-            },
-        },
-    ],
-});
-
 
 const rootNode = () => ({
     id: uuid(),
@@ -254,12 +80,13 @@ export default {
         canvasRenderRoot: null,
 
         // 渲染页面的配置
-        pageConfig: rootHolderNode(),
+        pageConfig: rootNode(),
 
     },
 
     // 同步localStorage
     syncLocal: [
+        'pageConfig',
         'viewMode',
 
         'componentPaneWidth',
@@ -300,7 +127,7 @@ export default {
      */
     insertNode({draggingNode, targetNode, targetHoverPosition}, state) {
         const {pageConfig} = state;
-        const {config: draggingNodeConfig, dropType} = draggingNode;
+        const {config: draggingNodeConfig, dropType, propsToSet} = draggingNode;
 
         const parentNode = findParentNodeById(pageConfig, targetNode?.id);
         const nodeConfig = getComponentConfig(targetNode?.componentName);
@@ -320,19 +147,47 @@ export default {
             afterAddChildren: parentAfterAddChildren = () => undefined,
         } = (parentNodeConfig?.hooks || {});
 
-
-        // TODO 其他类型drop
         // 设置属性 state func node等都有可能
-        if (dropType === 'props') {
+        if (dropType === 'props' && propsToSet) {
+            if (!targetNode.props) targetNode.props = {};
 
+            // 可能会有节点，尝试设置id
+            setNodeId(propsToSet);
+
+            Object.entries(propsToSet)
+                .forEach(([key, value]) => {
+                    targetNode.props[key] = value;
+                });
+            return {
+                pageConfig: {...pageConfig},
+                selectedNode: null,
+            };
         }
 
         if (dropType === 'wrapper') {
+            // 移除拖动节点
+            deleteNodeById(pageConfig, draggingNodeConfig?.id);
 
+            if (!targetNode?.wrapper?.length) targetNode.wrapper = [];
+
+            targetNode.wrapper.push(draggingNodeConfig);
+
+            return {
+                pageConfig: {...pageConfig},
+                selectedNode: draggingNodeConfig,
+            };
         }
 
         if (dropType === 'replace') {
+            // 保留wrapper
+            draggingNodeConfig.wrapper = targetNode.wrapper;
 
+            replaceNode(pageConfig, draggingNodeConfig, targetNode);
+
+            return {
+                pageConfig: {...pageConfig},
+                selectedNode: draggingNodeConfig,
+            };
         }
 
         // 根节点为站位符时，直接替换

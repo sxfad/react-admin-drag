@@ -85,7 +85,7 @@ export default {
         },
     },
     fields: [
-        // {label: '显示弹框', field: 'visible', type: 'boolean', version: '', desc: '对话框是否可见'},
+        // {label: '显示弹框', field: 'visible', type: 'boolean', version: '', desc: '弹框是否可见'},
         {label: '弹框标题', field: 'title', type: 'string', version: '', desc: '标题'},
         {label: '弹框宽度', field: 'width', type: 'unit', defaultValue: 520, version: '', desc: '宽度'},
         {label: '遮罩', category: '选项', field: 'mask', type: 'boolean', defaultValue: true, version: '', desc: '是否展示遮罩'},
@@ -105,7 +105,7 @@ export default {
         {label: '是否显示右上角的关闭按钮', field: 'closable', type: 'boolean', defaultValue: true, version: '', desc: '是否显示右上角的关闭按钮'},
         {label: '自定义关闭图标', field: 'closeIcon', type: 'ReactNode', defaultValue: '<CloseOutlined />', version: '', desc: '自定义关闭图标'},
         {label: '关闭时销毁 Modal 里的子元素', field: 'destroyOnClose', type: 'boolean', defaultValue: false, version: '', desc: '关闭时销毁 Modal 里的子元素'},
-        {label: '对话框关闭后是否需要聚焦触发元素', field: 'focusTriggerAfterClose', type: 'boolean', defaultValue: true, version: '4.9.0', desc: '对话框关闭后是否需要聚焦触发元素'},
+        {label: '弹框关闭后是否需要聚焦触发元素', field: 'focusTriggerAfterClose', type: 'boolean', defaultValue: true, version: '4.9.0', desc: '弹框关闭后是否需要聚焦触发元素'},
 
         {label: '强制渲染 Modal', field: 'forceRender', type: 'boolean', defaultValue: false, version: '', desc: '强制渲染 Modal'},
         {
@@ -120,10 +120,10 @@ export default {
 
 
         {label: '遮罩样式', field: 'maskStyle', type: 'CSSProperties', defaultValue: '', version: '', desc: '遮罩样式'},
-        {label: '自定义渲染对话框', field: 'modalRender', type: '(node: ReactNode) => ReactNode', version: '4.7.0', desc: '自定义渲染对话框'},
+        {label: '自定义渲染弹框', field: 'modalRender', type: '(node: ReactNode) => ReactNode', version: '4.7.0', desc: '自定义渲染弹框'},
         {label: 'ok 按钮 props', field: 'okButtonProps', type: 'ButtonProps', version: '', desc: 'ok 按钮 props'},
         {label: '可用于设置浮层的样式，调整浮层位置等', field: 'style', type: 'CSSProperties', version: '', desc: '可用于设置浮层的样式，调整浮层位置等'},
-        {label: '对话框外层容器的类名', field: 'wrapClassName', type: 'string', version: '', desc: '对话框外层容器的类名'},
+        {label: '弹框外层容器的类名', field: 'wrapClassName', type: 'string', version: '', desc: '弹框外层容器的类名'},
         {label: '点击遮罩层或右上角叉或取消按钮的回调', field: 'onCancel', type: 'function(e)', version: '', desc: '点击遮罩层或右上角叉或取消按钮的回调'},
         {label: '点击确定回调', field: 'onOk', type: 'function(e)', version: '', desc: '点击确定回调'},
         */

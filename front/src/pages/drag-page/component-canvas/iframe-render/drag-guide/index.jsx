@@ -44,7 +44,7 @@ export default React.memo(function DragGuide(props) {
             viewSize: true,
         });
 
-        if (!targetElementSize) {
+        if (!targetElementSize || targetElementSize.height < 0 || targetElementSize.width < 0) {
             guideBgEle.classList.remove(s.guideBgActive);
             return;
         }

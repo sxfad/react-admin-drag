@@ -127,6 +127,37 @@ export default [
                 title: '间距',
                 config: {
                     componentName: 'Space',
+                    children: [
+                        {
+                            componentName: 'Button',
+                            props: {type: 'primary'},
+                            children: [
+                                {
+                                    componentName: 'Text',
+                                    props: {text: '按钮1'},
+                                },
+                            ],
+                        },
+                        {
+                            componentName: 'Button',
+                            props: {danger: true},
+                            children: [
+                                {
+                                    componentName: 'Text',
+                                    props: {text: '按钮2'},
+                                },
+                            ],
+                        },
+                        {
+                            componentName: 'Button',
+                            children: [
+                                {
+                                    componentName: 'Text',
+                                    props: {text: '按钮3'},
+                                },
+                            ],
+                        },
+                    ],
                 },
             },
         ],
