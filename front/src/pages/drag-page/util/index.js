@@ -110,10 +110,6 @@ export function getTargetNode(
 
     const {
         hoverPosition,
-        top,
-        left,
-        width,
-        height,
     } = getElementInfo(targetElement, {
         documentElement,
         viewSize: true,
@@ -128,14 +124,7 @@ export function getTargetNode(
 
     const result = {
         targetNode,
-        targetElement,
         targetHoverPosition: hoverPosition,
-        targetElementSize: {
-            top,
-            left,
-            width,
-            height,
-        },
     };
 
     // 如果是设置属性或者设置包裹，直接返回，不做accept判断

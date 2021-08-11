@@ -66,7 +66,6 @@ export default React.memo(function DragDelegation(props) {
             draggingNode: null,
             draggingElement: null,
             targetNode: null,
-            targetElement: null,
         });
     }, [dragPageAction]);
 
@@ -135,8 +134,6 @@ export default React.memo(function DragDelegation(props) {
         const {documentElement} = canvasDocument;
         const {
             targetNode,
-            targetElement,
-            targetElementSize,
             targetHoverPosition,
         } = getTargetNode({
             documentElement,
@@ -149,8 +146,6 @@ export default React.memo(function DragDelegation(props) {
 
         dragPageAction.setFields({
             targetNode,
-            targetElement,
-            targetElementSize,
             targetHoverPosition,
         });
     }, {wait: 200});

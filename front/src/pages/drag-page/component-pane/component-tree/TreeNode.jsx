@@ -10,6 +10,8 @@ export default config({
             pageConfig: state.dragPage.pageConfig,
             draggingNode: state.dragPage.draggingNode,
             canvasDocument: state.dragPage.canvasDocument,
+            targetNode: state.dragPage.targetNode,
+            targetHoverPosition: state.dragPage.targetHoverPosition,
         };
     },
 })(function TreeNode(props) {
@@ -21,6 +23,8 @@ export default config({
         expandedKeys,
         onExpand,
         canvasDocument,
+        targetNode,
+        targetHoverPosition,
 
         action: { dragPage: dragPageAction },
     } = props;
@@ -33,7 +37,6 @@ export default config({
     const nodeRef = useRef(null);
     const [dragIn, setDragIn] = useState(false);
     const [accept, setAccept] = useState(true);
-    const [dropPosition, /*setDropPosition*/] = useState('');
 
     const handleDragStart = useCallback((e) => {
         e.stopPropagation();
@@ -71,8 +74,6 @@ export default config({
         const { documentElement } = canvasDocument;
         const {
             targetNode,
-            // targetElement,
-            // targetElementSize,
             targetHoverPosition,
         } = getTargetNode({
             documentElement,
@@ -84,7 +85,6 @@ export default config({
             horizontal: false,
             simple: true,
         }) || { targetNode: null, targetElement: null };
-
 
         // 自身上，直接返回
         if (draggingNode?.id === key) return;
@@ -98,11 +98,8 @@ export default config({
             }, 300);
         }
 
-        console.log(targetHoverPosition);
         dragPageAction.setFields({
             targetNode,
-            // targetElement,
-            // targetElementSize,
             targetHoverPosition,
         });
     }, { wait: THROTTLE_TIME, trailing: false });
@@ -161,9 +158,15 @@ export default config({
         e.preventDefault();
         e.stopPropagation();
 
-        // TODO 投放
+        dragPageAction.insertNode({
+            draggingNode,
+            targetNode,
+            targetHoverPosition,
+        });
 
-    }, [draggable, handleDragEnd, handleDragLeave]);
+        end();
+
+    }, [dragPageAction, draggingNode, targetHoverPosition, targetNode, draggable, handleDragEnd, handleDragLeave]);
 
     const isSelected = selectedKey === key;
     const isDragging = draggingNode?.id === key;
@@ -180,7 +183,7 @@ export default config({
             id={`treeNode_${key}`}
             className={[
                 `id_${key}`,
-                s[dropPosition],
+                s[targetHoverPosition],
                 {
                     [s.treeNode]: true,
                     [s.selected]: isSelected,
@@ -202,9 +205,9 @@ export default config({
             onDragEnd={handleDragEnd}
         >
             {name}
-            {dropPosition ? (
+            {targetHoverPosition ? (
                 <div className={s.dragGuide} style={{ display: dragIn && draggingNode ? 'flex' : 'none' }}>
-                    <span>{positionMap[dropPosition]}</span>
+                    <span>{positionMap[targetHoverPosition]}</span>
                 </div>
             ) : null}
         </div>

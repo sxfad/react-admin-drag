@@ -40,7 +40,6 @@ export default React.memo(config({
             draggingNode: state.dragPage.draggingNode,
             draggingElement: state.dragPage.draggingElement,
             targetNode: state.dragPage.targetNode,
-            targetElement: state.dragPage.targetElement,
             targetElementSize: state.dragPage.targetElementSize,
             targetHoverPosition: state.dragPage.targetHoverPosition,
             canvasDocument: state.dragPage.canvasDocument,
@@ -63,7 +62,6 @@ export default React.memo(config({
         draggingNode,
         draggingElement,
         targetNode,
-        targetElement,
         targetElementSize,
         targetHoverPosition,
         componentPaneWidth,
@@ -95,7 +93,6 @@ export default React.memo(config({
                 <DragGuide
                     draggingNode={draggingNode}
                     draggingElement={draggingElement}
-                    targetElement={targetElement}
                     targetNode={targetNode}
                     selectedNode={selectedNode}
                     canvasDocument={canvasDocument}
@@ -136,7 +133,6 @@ export default React.memo(config({
         nodeSelectType,
         draggingElement,
         draggingNode,
-        targetElement,
         targetNode,
         targetElementSize,
         targetHoverPosition,

@@ -1,7 +1,7 @@
-import React, {useEffect, useCallback, useState} from 'react';
-import {useDebounceFn} from 'ahooks';
-import {getComponentDisplayName} from 'src/pages/drag-page/component-config';
-import {getElementInfo} from 'src/pages/drag-page/util';
+import React, { useEffect, useCallback, useState } from 'react';
+import { useDebounceFn } from 'ahooks';
+import { getComponentDisplayName } from 'src/pages/drag-page/component-config';
+import { getElementInfo } from 'src/pages/drag-page/util';
 import s from './style.less';
 
 // 改变背景颜色，不同投放类型，对应不同的样色
@@ -17,8 +17,6 @@ export default React.memo(function DragGuide(props) {
     const {
         canvasDocument,
         draggingElement,
-        targetElement,
-        targetElementSize,
         targetHoverPosition,
         targetNode,
         selectedNode,
@@ -55,7 +53,7 @@ export default React.memo(function DragGuide(props) {
         guideNameEle.setAttribute('data-component-display-name', componentDisplayName);
         guideBgEle.classList.add(s.guideBgActive);
 
-        const {top, left, width, height} = targetElementSize;
+        const { top, left, width, height } = targetElementSize;
 
         guideBgEle.style.top = `${top + 1}px`;
         guideBgEle.style.left = `${left + 1}px`;
@@ -72,8 +70,11 @@ export default React.memo(function DragGuide(props) {
 
     }, [canvasDocument, draggingNode]);
 
-    const showGuideLine = useCallback((targetElement, targetNode, targetElementSize, targetHoverPosition) => {
+    const showGuideLine = useCallback((targetNode, targetHoverPosition) => {
         if (!canvasDocument) return;
+
+        const targetElement = canvasDocument.querySelector(`.id_${targetNode?.id}`);
+
         const guideLineEle = canvasDocument.getElementById('drop-guide-line');
         const guildTipEle = guideLineEle.querySelector('span');
 
@@ -83,13 +84,19 @@ export default React.memo(function DragGuide(props) {
             // 投放位置不存在
             || !targetHoverPosition
             // 属性、包裹、替换时，也不现实line
-            || ['props', 'wrapper', 'replace'].includes(draggingNode.dropType)
+            || (draggingNode && ['props', 'wrapper', 'replace'].includes(draggingNode.dropType))
         ) {
             guideLineEle.classList.remove(s.guideLineActive);
             return;
         }
 
-        const {top, left, width, height} = targetElementSize;
+        const targetElementSize = getElementInfo(targetElement, {
+            documentElement: canvasDocument.documentElement,
+            viewSize: true,
+        });
+
+
+        const { top, left, width, height } = targetElementSize;
         guideLineEle.classList.add(s.guideLineActive);
         guideLineEle.classList.remove(s.gLeft);
         guideLineEle.classList.remove(s.gRight);
@@ -106,11 +113,11 @@ export default React.memo(function DragGuide(props) {
         // 设置提示线条样式
         const lineSize = 2;
         let guideLineStyle = ({
-            left: {left: left - lineSize * 2, top, width: lineSize, height},
-            right: {left: left + width + lineSize, top, width: lineSize, height},
-            top: {left, top: top - lineSize * 2, width, height: lineSize},
-            bottom: {left, top: top + height + lineSize, width, height: lineSize},
-            center: {left, top: top + height / 2, width, height: lineSize},
+            left: { left: left - lineSize * 2, top, width: lineSize, height },
+            right: { left: left + width + lineSize, top, width: lineSize, height },
+            top: { left, top: top - lineSize * 2, width, height: lineSize },
+            bottom: { left, top: top + height + lineSize, width, height: lineSize },
+            center: { left, top: top + height / 2, width, height: lineSize },
         })[targetHoverPosition];
 
         Object.entries(guideLineStyle).forEach(([key, value]) => {
@@ -133,22 +140,20 @@ export default React.memo(function DragGuide(props) {
     useEffect(() => {
         // 拖拽过程中，通过 targetNode 显示背景，其他情况通过 selectedNode 显示背景
         showGuideBg(targetNode || selectedNode);
-        showGuideLine(targetElement, targetNode, targetElementSize, targetHoverPosition);
+        showGuideLine(targetNode, targetHoverPosition);
     }, [
         showGuideBg,
         draggingNode,
         showGuideLine,
-        targetElement,
         targetNode,
         selectedNode,
-        targetElementSize,
         targetHoverPosition,
         refresh,
         componentPaneWidth,
         propsPaneWidth,
     ]);
 
-    const {run: handleScroll} = useDebounceFn(() => setRefresh({}), {wait: 200});
+    const { run: handleScroll } = useDebounceFn(() => setRefresh({}), { wait: 200 });
 
     // 滚动时，刷新
     useEffect(() => {
