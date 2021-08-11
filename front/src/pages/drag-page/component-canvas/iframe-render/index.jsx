@@ -105,6 +105,7 @@ export default React.memo(config({
                     draggingNode={draggingNode}
                     canvasDocument={canvasDocument}
                     nodeSelectType={nodeSelectType}
+                    selectedNode={selectedNode}
                 >
                     <NodeRender
                         config={pageConfig}

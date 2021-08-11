@@ -5,8 +5,9 @@ import {
     getIdByElement,
     getDraggableNodeEle,
     getTargetNode,
+    copyTextToClipboard,
 } from 'src/pages/drag-page/util';
-import {findNodeById} from 'src/pages/drag-page-old/node-util';
+import {findNodeById, isNode, setNodeId} from 'src/pages/drag-page/util/node-util';
 
 export default React.memo(function DragDelegation(props) {
     const {
@@ -18,6 +19,7 @@ export default React.memo(function DragDelegation(props) {
         draggingNode,
         canvasDocument,
         nodeSelectType,
+        selectedNode,
     } = props;
 
     const prevComponentPaneActiveKeyRef = useRef(null);
@@ -68,14 +70,17 @@ export default React.memo(function DragDelegation(props) {
 
     // 监听键盘事件 修改 draggingNode.type
     const {run: handleChangeDropType} = useThrottleFn((e) => {
-        if(!draggingNode) return;
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!draggingNode) return;
         const {metaKey, ctrlKey, altKey, shiftKey} = e;
         const metaOrCtrl = metaKey || ctrlKey;
 
         let dropType = draggingNode.dropType;
-        if (metaOrCtrl) dropType === 'wrapper' ? dropType = null : dropType = 'wrapper' ;
-        if (altKey) dropType === 'props' ? dropType = null : dropType = 'props' ;
-        if (shiftKey) dropType === 'replace' ? dropType = null : dropType = 'replace' ;
+        if (metaOrCtrl) dropType === 'wrapper' ? dropType = null : dropType = 'wrapper';
+        if (altKey) dropType === 'props' ? dropType = null : dropType = 'props';
+        if (shiftKey) dropType === 'replace' ? dropType = null : dropType = 'replace';
 
         if (draggingNode.dropType === dropType) return;
 
@@ -91,10 +96,28 @@ export default React.memo(function DragDelegation(props) {
         };
 
         const cursor = cursors[dropType] || cursors[draggingNode?.type] || 'auto';
-        console.log(cursor);
+
         e.dataTransfer.dropEffect = cursor;
 
-    }, {wait: 100})
+
+    }, {wait: 100});
+
+    const handleDropEffect = useCallback((e) => {
+        if (!draggingNode) return;
+
+        const {dropType, type} = draggingNode;
+        // 改变鼠标样式
+        const cursors = {
+            'new': 'copy',
+            'move': 'move',
+            'props': 'link',
+            'wrapper': 'link',
+            'replace': 'link',
+        };
+
+        e.dataTransfer.dropEffect = cursors[dropType] || cursors[type] || 'auto';
+        setDragImage(e, dropType || type);
+    }, [draggingNode]);
 
     const {run: handleDragOver} = useThrottleFn((e) => {
         let {pageY, pageX} = e;
@@ -142,6 +165,7 @@ export default React.memo(function DragDelegation(props) {
 
     }, [dragPageAction, handleDragEnd]);
 
+    // 鼠标点击事件 选中节点
     const handleClick = useCallback((e) => {
         const element = getDraggableNodeEle(e.target);
         if (!element) return;
@@ -168,19 +192,70 @@ export default React.memo(function DragDelegation(props) {
             const {metaKey, ctrlKey, key} = e;
             const metaOrCtrl = metaKey || ctrlKey;
 
-            // commend(ctrl) + d 删除选中节点
+            // command(ctrl) + d 删除选中节点
             if (metaOrCtrl && key === 'd') {
                 e.stopPropagation();
                 e.preventDefault();
                 dragPageAction.deleteSelectedNode();
             }
+
+            // command(ctrl) + c 复制当前选中节点
+            if (metaOrCtrl && key === 'c') {
+                if (!selectedNode) return;
+
+                const selection = window.getSelection();
+                const selectionText = selection + '';
+
+                // 用户有选中内容
+                if (selectionText) return;
+
+                // 将当前选中节点，保存到剪切板中
+                copyTextToClipboard(JSON.stringify(selectedNode));
+            }
+
+        };
+
+        const handlePaste = (e) => {
+            if (!selectedNode) return;
+            try {
+                const clipboardData = e.clipboardData || window.clipboardData;
+                const text = clipboardData.getData('text/plain');
+                // 不是对象字符串
+                if (!text || !text.startsWith('{')) return;
+                const cloneNode = JSON.parse(text);
+                // 不是节点
+                if (!isNode(cloneNode)) return;
+                setNodeId(cloneNode, true);
+
+                dragPageAction.setFields({
+                    targetNode: selectedNode,
+                    draggingNode: {
+                        id: cloneNode.id,
+                        type: 'copy',
+                        config: cloneNode,
+                    },
+                    targetHoverPosition: 'right',
+                });
+                setTimeout(() => {
+                    dragPageAction.insertNode();
+                    dragPageAction.setFields({
+                        draggingNode: null,
+                        targetHoverPosition: null,
+                    });
+                });
+            } catch (e) {
+                console.error(e);
+            }
+
         };
 
         canvasDocument.body.addEventListener('keydown', handleKeyDown);
+        canvasDocument.body.addEventListener('paste', handlePaste);
         return () => {
             canvasDocument.body.removeEventListener('keydown', handleKeyDown);
+            canvasDocument.body.removeEventListener('paste', handlePaste);
         };
-    }, [canvasDocument.body, dragPageAction]);
+    }, [canvasDocument.body, dragPageAction, selectedNode]);
 
     return (
         <div
@@ -191,6 +266,7 @@ export default React.memo(function DragDelegation(props) {
                 // 阻止默认事件，否则drop 不触发
                 e.preventDefault();
                 e.stopPropagation();
+                handleDropEffect(e);
                 handleChangeDropType(e);
                 handleDragOver(e);
             }}

@@ -69,7 +69,7 @@ export default {
     hooks: {
         afterDelete: options => {
             // 弹框删除之后，清除关联节点的onClick
-            const {pageConfig} = options;
+            const {dragPageState: {pageConfig}} = options;
             const propsToSet = options?.node?.propsToSet;
 
             if (propsToSet) {

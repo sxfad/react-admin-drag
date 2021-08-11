@@ -306,7 +306,25 @@ export default {
     insertNode(_, state) {
         const {pageConfig, draggingNode, targetNode, targetHoverPosition} = state;
         const {config: draggingNodeConfig, dropType} = draggingNode;
-        const parentNode = findParentNodeById(pageConfig, draggingNode?.id);
+
+        const parentNode = findParentNodeById(pageConfig, targetNode?.id);
+        const nodeConfig = getComponentConfig(targetNode?.componentName);
+        const parentNodeConfig = getComponentConfig(parentNode?.componentName);
+        const {
+            beforeAdd = () => undefined,
+            afterAdd = () => undefined,
+            beforeAddChildren = () => undefined,
+            afterAddChildren = () => undefined,
+        } = (nodeConfig?.hooks || {});
+
+        const result = beforeAdd({dragPageState: state, node: draggingNode, parentNode});
+        if (result === false) return {pageConfig};
+
+        const {
+            beforeAddChildren: parentBeforeAddChildren = () => undefined,
+            afterAddChildren: parentAfterAddChildren = () => undefined,
+        } = (parentNodeConfig?.hooks || {});
+
 
         // TODO 其他类型drop
         // 设置属性 state func node等都有可能
@@ -332,13 +350,16 @@ export default {
         const isAfter = ['right', 'bottom'].includes(targetHoverPosition);
         const isChildren = ['center'].includes(targetHoverPosition);
 
-        if (isBefore) {
-            // 方法内部会做： 如果存在，先删除，相当于移动位置
-            insertBefore(pageConfig, draggingNodeConfig, targetNodeId);
-        }
+        if (isBefore || isAfter) {
+            const args = {node: parentNode, childNode: draggingNodeConfig, dragPageState: state};
+            const result = parentBeforeAddChildren(args);
+            if (result === false) return {pageConfig};
 
-        if (isAfter) {
-            insertAfter(pageConfig, draggingNodeConfig, targetNodeId);
+            // 方法内部会做： 如果存在，先删除，相当于移动位置
+            isBefore && insertBefore(pageConfig, draggingNodeConfig, targetNodeId);
+            isAfter && insertAfter(pageConfig, draggingNodeConfig, targetNodeId);
+
+            parentAfterAddChildren(args);
         }
 
         if (isChildren) {
@@ -348,11 +369,20 @@ export default {
             ) {
                 targetNode.children = [];
             }
+
+            const args = {node: targetNode, childNode: draggingNodeConfig, dragPageState: state};
+            const result = beforeAddChildren(args);
+            if (result === false) return {pageConfig};
+
             insertChildren(pageConfig, draggingNodeConfig, targetNode);
+
+            afterAddChildren(args);
         }
 
         // 节点被拖拽出去之后，尝试给父级添加DragHolder
         addDragHolder(parentNode);
+
+        afterAdd({dragPageState: state, node: draggingNode, parentNode});
 
         return {
             pageConfig: {...pageConfig},
@@ -369,13 +399,19 @@ export default {
         const parentNode = findParentNodeById(pageConfig, selectedNode?.id);
         const parentNodeConfig = getComponentConfig(parentNode?.componentName);
 
-        const {beforeDelete = () => undefined, afterDelete = () => undefined} = nodeConfig?.hooks || {};
-        const {beforeDeleteChildren = () => undefined, afterDeleteChildren = () => undefined} = parentNodeConfig?.hooks || {};
+        const {
+            beforeDelete = () => undefined,
+            afterDelete = () => undefined,
+        } = nodeConfig?.hooks || {};
+        const {
+            beforeDeleteChildren = () => undefined,
+            afterDeleteChildren = () => undefined,
+        } = parentNodeConfig?.hooks || {};
 
-        const deleteResult = beforeDelete({pageConfig, node: selectedNode, parentNode: parentNode});
+        const deleteResult = beforeDelete({dragPageState: state, node: selectedNode, parentNode: parentNode});
         if (deleteResult === false) return;
 
-        const deleteChildrenResult = beforeDeleteChildren({pageConfig, node: parentNode, childNode: selectedNode});
+        const deleteChildrenResult = beforeDeleteChildren({dragPageState: state, node: parentNode, childNode: selectedNode});
         if (deleteChildrenResult === false) return;
 
 
@@ -393,8 +429,8 @@ export default {
 
         deleteNodeById(pageConfig, selectedNode?.id);
 
-        afterDelete && afterDelete({pageConfig, node: selectedNode, parentNode: parentNode});
-        afterDeleteChildren && afterDeleteChildren({pageConfig, node: parentNode, childNode: selectedNode});
+        afterDelete({dragPageState: state, node: selectedNode, parentNode: parentNode});
+        afterDeleteChildren({dragPageState: state, node: parentNode, childNode: selectedNode});
 
         // 如果父节点中没有子节点，尝试添加占位符
         addDragHolder(parentNode);

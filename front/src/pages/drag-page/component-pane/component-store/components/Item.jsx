@@ -1,6 +1,6 @@
 import React from 'react';
 import {cloneDeep} from 'lodash';
-import {setNodeId} from 'src/pages/drag-page-old/node-util';
+import {setNodeId} from 'src/pages/drag-page/util/node-util';
 import NodeRender from 'src/pages/drag-page/node-render';
 import s from './style.less';
 

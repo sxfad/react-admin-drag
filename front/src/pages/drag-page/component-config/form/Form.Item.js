@@ -35,13 +35,13 @@ export default {
     },
     hooks: {
         afterAdd: (options) => {
-            const {config, dragPageState: {pageConfig}} = options;
-            if (config.props.name) {
-                config.props.name = getFormItemName(config, pageConfig);
+            const {node, dragPageState: {pageConfig}} = options;
+            if (node.props.name) {
+                node.props.name = getFormItemName(node, pageConfig);
             }
         },
         beforeAddChildren: (options) => {
-            const {node, targetNode} = options;
+            const {node, childNode} = options;
 
             if (!node) return;
 
@@ -53,7 +53,7 @@ export default {
                 node.children[0].toDelete = true;
             }
 
-            if (targetNode?.componentName === 'Switch') {
+            if (childNode?.componentName === 'Switch') {
                 if (!node.props) node.props = {};
 
                 node.props.valuePropName = 'checked';

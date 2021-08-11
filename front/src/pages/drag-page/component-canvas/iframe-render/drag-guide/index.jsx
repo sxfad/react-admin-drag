@@ -1,7 +1,7 @@
-import React, { useEffect, useCallback } from 'react';
-import { getComponentDisplayName } from 'src/pages/drag-page-old/component-config';
+import React, {useEffect, useCallback} from 'react';
+import {getComponentDisplayName} from 'src/pages/drag-page/component-config';
 import s from './style.less';
-import { getElementInfo } from 'src/pages/drag-page/util';
+import {getElementInfo} from 'src/pages/drag-page/util';
 
 // 改变背景颜色，不同投放类型，对应不同的样色
 const DEFAULT_OPACITY = 0.3;
@@ -24,19 +24,34 @@ export default React.memo(function DragGuide(props) {
         draggingNode,
     } = props;
 
-    const showGuideBg = useCallback((targetElement, targetNode, targetElementSize) => {
+    const showGuideBg = useCallback((targetNode) => {
         if (!canvasDocument) return;
+
         const guideBgEle = canvasDocument.getElementById('drop-guide-bg');
         const guideNameEle = canvasDocument.getElementById('drop-guide-name');
+
+        const targetElement = canvasDocument.querySelector(`.id_${targetNode?.id}`);
         if (!targetElement) {
             guideBgEle.classList.remove(s.guideBgActive);
             return;
         }
+
+        const targetElementSize = getElementInfo(targetElement, {
+            documentElement: canvasDocument.documentElement,
+            viewSize: true,
+        });
+
+        if (!targetElementSize) {
+            guideBgEle.classList.remove(s.guideBgActive);
+            return;
+        }
+
         const componentDisplayName = getComponentDisplayName(targetNode);
         guideNameEle.setAttribute('data-component-display-name', componentDisplayName);
         guideBgEle.classList.add(s.guideBgActive);
 
-        const { top, left, width, height } = targetElementSize;
+        const {top, left, width, height} = targetElementSize;
+
         guideBgEle.style.top = `${top + 1}px`;
         guideBgEle.style.left = `${left + 1}px`;
         guideBgEle.style.width = `${width - 2}px`;
@@ -69,7 +84,7 @@ export default React.memo(function DragGuide(props) {
             return;
         }
 
-        const { top, left, width, height } = targetElementSize;
+        const {top, left, width, height} = targetElementSize;
         guideLineEle.classList.add(s.guideLineActive);
         guideLineEle.classList.remove(s.gLeft);
         guideLineEle.classList.remove(s.gRight);
@@ -77,18 +92,22 @@ export default React.memo(function DragGuide(props) {
         if (targetHoverPosition === 'left') guideLineEle.classList.add(s.gLeft);
         if (targetHoverPosition === 'right') guideLineEle.classList.add(s.gRight);
 
+        // 设置提示文字
         let tipText = '内';
         if (['top', 'left'].includes(targetHoverPosition)) tipText = '前';
         if (['bottom', 'right'].includes(targetHoverPosition)) tipText = '后';
         guildTipEle.innerHTML = tipText;
+
+        // 设置提示线条样式
         const lineSize = 2;
         let guideLineStyle = ({
-            left: { left: left - lineSize * 2, top, width: lineSize, height },
-            right: { left: left + width + lineSize, top, width: lineSize, height },
-            top: { left, top: top - lineSize * 2, width, height: lineSize },
-            bottom: { left, top: top + height + lineSize, width, height: lineSize },
-            center: { left, top: top + height / 2, width, height: lineSize },
+            left: {left: left - lineSize * 2, top, width: lineSize, height},
+            right: {left: left + width + lineSize, top, width: lineSize, height},
+            top: {left, top: top - lineSize * 2, width, height: lineSize},
+            bottom: {left, top: top + height + lineSize, width, height: lineSize},
+            center: {left, top: top + height / 2, width, height: lineSize},
         })[targetHoverPosition];
+
         Object.entries(guideLineStyle).forEach(([key, value]) => {
             guideLineEle.style[key] = `${value}px`;
         });
@@ -105,27 +124,12 @@ export default React.memo(function DragGuide(props) {
 
     }, [draggingElement]);
 
-    // 选中节点样式
-    useEffect(() => {
-        const guideBgEle = canvasDocument.getElementById('drop-guide-bg');
-        guideBgEle.classList.remove(s.guideBgActive);
-
-        const targetElement = canvasDocument?.querySelector(`.id_${selectedNode?.id}`);
-        if (!targetElement) return;
-
-        const targetElementSize = getElementInfo(targetElement, {
-            documentElement: canvasDocument.documentElement,
-            viewSize: true,
-        });
-
-        showGuideBg(targetElement, selectedNode, targetElementSize);
-    }, [canvasDocument, selectedNode, draggingNode, showGuideBg]);
-
     // 投放目标元素样式
     useEffect(() => {
-        showGuideBg(targetElement, targetNode, targetElementSize);
+        // 拖拽过程中，通过 targetNode 显示背景，其他情况通过 selectedNode 显示背景
+        showGuideBg(targetNode || selectedNode);
         showGuideLine(targetElement, targetNode, targetElementSize, targetHoverPosition);
-    }, [showGuideBg, showGuideLine, targetElement, targetNode, targetElementSize, targetHoverPosition]);
+    }, [showGuideBg, draggingNode, showGuideLine, targetElement, targetNode, selectedNode, targetElementSize, targetHoverPosition]);
 
     return null;
 });
