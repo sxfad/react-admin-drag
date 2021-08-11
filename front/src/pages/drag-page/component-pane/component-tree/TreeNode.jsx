@@ -6,7 +6,7 @@ import {
     isDropAccept,
     setDragImage,
     getDraggingNodeInfo,
-} from 'src/pages/drag-page-old/util';
+} from 'src/pages/drag-page/util';
 import {throttle} from 'lodash';
 
 import styles from './style.less';
@@ -14,9 +14,9 @@ import styles from './style.less';
 export default config({
     connect: state => {
         return {
-            pageConfig: state.dragPageOld.pageConfig,
-            draggingNode: state.dragPageOld.draggingNode,
-            componentTreeExpendedKeys: state.dragPageOld.componentTreeExpendedKeys,
+            pageConfig: state.dragPage.pageConfig,
+            draggingNode: state.dragPage.draggingNode,
+            componentTreeExpendedKeys: state.dragPage.componentTreeExpendedKeys,
         };
     },
 })(function TreeNode(props) {
@@ -26,7 +26,7 @@ export default config({
         pageConfig,
         draggingNode,
         componentTreeExpendedKeys,
-        action: {dragPageOld: dragPageAction},
+        action: {dragPage: dragPageAction},
     } = props;
 
     let {key, name, icon, isContainer, draggable, nodeData} = node;

@@ -23,6 +23,8 @@ export default React.memo(function DragGuide(props) {
         targetNode,
         selectedNode,
         draggingNode,
+        componentPaneWidth,
+        propsPaneWidth,
     } = props;
 
     const [refresh, setRefresh] = useState({});
@@ -142,6 +144,8 @@ export default React.memo(function DragGuide(props) {
         targetElementSize,
         targetHoverPosition,
         refresh,
+        componentPaneWidth,
+        propsPaneWidth,
     ]);
 
     const {run: handleScroll} = useDebounceFn(() => setRefresh({}), {wait: 200});

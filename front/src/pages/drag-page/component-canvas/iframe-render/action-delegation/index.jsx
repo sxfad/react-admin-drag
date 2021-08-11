@@ -175,21 +175,25 @@ export default React.memo(function DragDelegation(props) {
     const handleClick = useCallback((e) => {
         const element = getDraggableNodeEle(e.target);
         if (!element) return;
+
         const componentId = getIdByElement(element);
-        const selectedNode = findNodeById(pageConfig, componentId);
-        if (!selectedNode) return;
+        let nextSelectedNode = findNodeById(pageConfig, componentId);
+        if (!nextSelectedNode) return;
 
         if (nodeSelectType === 'meta' && (e.metaKey || e.ctrlKey)) {
             e.stopPropagation && e.stopPropagation();
             e.preventDefault && e.preventDefault();
-            dragPageAction.setFields({selectedNode});
+            // 再次点击选中节点，取消选中
+            if (nextSelectedNode.id === selectedNode?.id) nextSelectedNode = null;
+            dragPageAction.setFields({selectedNode: nextSelectedNode});
         }
 
         if (nodeSelectType === 'click') {
-            dragPageAction.setFields({selectedNode});
+            if (nextSelectedNode.id === selectedNode?.id) nextSelectedNode = null;
+            dragPageAction.setFields({selectedNode: nextSelectedNode});
         }
 
-    }, [dragPageAction, nodeSelectType, pageConfig]);
+    }, [dragPageAction, selectedNode, nodeSelectType, pageConfig]);
 
     const handleKeyDown = useCallback((e) => {
         const {metaKey, ctrlKey, key} = e;

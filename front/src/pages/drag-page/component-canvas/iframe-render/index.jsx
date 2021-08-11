@@ -45,6 +45,8 @@ export default React.memo(config({
             targetHoverPosition: state.dragPage.targetHoverPosition,
             canvasDocument: state.dragPage.canvasDocument,
             componentPaneActiveKey: state.dragPage.componentPaneActiveKey,
+            componentPaneWidth: state.dragPage.componentPaneWidth,
+            propsPaneWidth: state.dragPage.propsPaneWidth,
         };
     },
 })(function IframeRender(props) {
@@ -64,6 +66,8 @@ export default React.memo(config({
         targetElement,
         targetElementSize,
         targetHoverPosition,
+        componentPaneWidth,
+        propsPaneWidth,
         action: {dragPage: dragPageAction},
     } = props;
     const iframeRef = useRef(null);
@@ -97,6 +101,8 @@ export default React.memo(config({
                     canvasDocument={canvasDocument}
                     targetElementSize={targetElementSize}
                     targetHoverPosition={targetHoverPosition}
+                    componentPaneWidth={componentPaneWidth}
+                    propsPaneWidth={propsPaneWidth}
                 />
                 <ActionDelegation
                     componentPaneActiveKey={componentPaneActiveKey}
@@ -134,6 +140,8 @@ export default React.memo(config({
         targetNode,
         targetElementSize,
         targetHoverPosition,
+        componentPaneWidth,
+        propsPaneWidth,
 
     ]);
 

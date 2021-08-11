@@ -1,6 +1,6 @@
 import {cloneDeep} from 'lodash';
-import {getComponentConfig, getComponentDisplayName} from 'src/pages/drag-page-old/component-config';
-import {deleteNodeById, findNodeFieldPaths, loopNode} from 'src/pages/drag-page-old/node-util';
+import {getComponentConfig, getComponentDisplayName} from 'src/pages/drag-page/component-config';
+import {deleteNodeById, findNodeFieldPaths, loopNode} from 'src/pages/drag-page/util/node-util';
 
 /**
  * 将节点转换为树结构数据
@@ -84,7 +84,7 @@ export function convertNodeToTreeData(node) {
 
     loop(root);
 
-    return {treeData: root, allKeys, nodeCount};
+    return {treeData: [root], allKeys, nodeCount};
 
     // wrapper isContainer true
     // props.actions isContainer true

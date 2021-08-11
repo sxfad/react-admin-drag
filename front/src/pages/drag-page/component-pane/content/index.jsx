@@ -1,10 +1,11 @@
+import React from 'react';
 import s from './style.less';
 
-export default function Container(props) {
+export default React.forwardRef(function Container(props, ref) {
     const {className, children, ...others} = props;
     return (
-        <div className={[s.root, className]} {...others}>
+        <div ref={ref} className={[s.root, className]} {...others}>
             {children}
         </div>
     );
-}
+});
