@@ -381,6 +381,8 @@ export default {
 
         return {
             pageConfig: {...pageConfig},
+            // 选中刚拖拽的节点
+            selectedNode: draggingNodeConfig,
         };
     },
     /**

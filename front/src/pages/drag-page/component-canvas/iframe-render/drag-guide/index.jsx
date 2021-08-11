@@ -1,10 +1,11 @@
-import React, {useEffect, useCallback} from 'react';
+import React, {useEffect, useCallback, useState} from 'react';
+import {useDebounceFn} from 'ahooks';
 import {getComponentDisplayName} from 'src/pages/drag-page/component-config';
-import s from './style.less';
 import {getElementInfo} from 'src/pages/drag-page/util';
+import s from './style.less';
 
 // 改变背景颜色，不同投放类型，对应不同的样色
-const DEFAULT_OPACITY = 0.3;
+const DEFAULT_OPACITY = 0.1;
 const GUIDE_COLORS = {
     'props': (opacity = DEFAULT_OPACITY) => `rgba(255, 0, 0, ${opacity})`, // 红
     'replace': (opacity = DEFAULT_OPACITY) => `rgba(128, 128, 0, ${opacity})`, // 黄
@@ -23,6 +24,8 @@ export default React.memo(function DragGuide(props) {
         selectedNode,
         draggingNode,
     } = props;
+
+    const [refresh, setRefresh] = useState({});
 
     const showGuideBg = useCallback((targetNode) => {
         if (!canvasDocument) return;
@@ -129,7 +132,27 @@ export default React.memo(function DragGuide(props) {
         // 拖拽过程中，通过 targetNode 显示背景，其他情况通过 selectedNode 显示背景
         showGuideBg(targetNode || selectedNode);
         showGuideLine(targetElement, targetNode, targetElementSize, targetHoverPosition);
-    }, [showGuideBg, draggingNode, showGuideLine, targetElement, targetNode, selectedNode, targetElementSize, targetHoverPosition]);
+    }, [
+        showGuideBg,
+        draggingNode,
+        showGuideLine,
+        targetElement,
+        targetNode,
+        selectedNode,
+        targetElementSize,
+        targetHoverPosition,
+        refresh,
+    ]);
+
+    const {run: handleScroll} = useDebounceFn(() => setRefresh({}), {wait: 200});
+
+    // 滚动时，刷新
+    useEffect(() => {
+        canvasDocument.addEventListener('scroll', handleScroll);
+        return () => {
+            canvasDocument.removeEventListener('scroll', handleScroll);
+        };
+    }, [canvasDocument, handleScroll]);
 
     return null;
 });

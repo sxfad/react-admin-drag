@@ -14,14 +14,16 @@
     }
 
     #drop-guide-name {
-        &:before{
+        &:before {
+            display: block;
             content: attr(data-component-display-name);
             letter-spacing: 0;
+            white-space: nowrap;
             font-size: 12px;
             color: #fff;
-            word-break: keep-all;
             padding: 0 4px;
         }
+
         pointer-events: none;
         position: absolute;
         width: auto;
