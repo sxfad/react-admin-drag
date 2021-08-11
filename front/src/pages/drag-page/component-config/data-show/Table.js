@@ -96,10 +96,10 @@ export default {
 };
 
 
-function setTableColumns({node: tableNode, NodeRender, renderProps, config: {props}}) {
+function setTableColumns({node: tableNode, NodeRender, renderProps}) {
     if (!tableNode) return;
 
-    let {children} = tableNode;
+    let {children, props} = tableNode;
     if (!props.columns) props.columns = [];
 
     if (!children?.length) {

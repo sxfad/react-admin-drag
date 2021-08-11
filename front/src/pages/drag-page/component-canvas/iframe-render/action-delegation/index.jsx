@@ -198,6 +198,8 @@ export default React.memo(function DragDelegation(props) {
             const {metaKey, ctrlKey, key} = e;
             const metaOrCtrl = metaKey || ctrlKey;
 
+            // TODO backspace delete 键也删除
+
             // command(ctrl) + d 删除选中节点
             if (metaOrCtrl && key === 'd') {
                 e.stopPropagation();

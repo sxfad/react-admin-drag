@@ -95,10 +95,6 @@ export const defaultConfig = {
         // beforeRender // 渲染之前触发，返回false不渲染
         // afterRender // 渲染之后触发
 
-        // 移动相关
-        // beforeMove // 返回false， 不允许移动
-        // afterMove
-
         // 加入 pageConfig相关：参数 {dragPageState, node, parentNode, childNode}
         // beforeAdd, // 返回false， 不添加
         // afterAdd,
