@@ -89,6 +89,8 @@ export function getTargetNode(
         targetElement,
         pageY,
         pageX,
+        horizontal=true,
+        simple = false,
     },
 ) {
     if (!targetElement) return null;
@@ -116,7 +118,8 @@ export function getTargetNode(
         documentElement,
         viewSize: true,
         hoverPosition: true,
-        horizontal: true,
+        horizontal,
+        simple,
         pageY,
         pageX,
     });
@@ -397,7 +400,7 @@ export function getElementInfo(element, options) {
     let hoverPosition;
 
     if (options?.hoverPosition) {
-        let {documentElement, pageY, pageX, horizontal} = options;
+        let {documentElement, pageY, pageX, horizontal, simple} = options;
         const {scrollTop, scrollLeft} = documentElement;
 
         pageY = pageY - scrollTop;
@@ -419,13 +422,17 @@ export function getElementInfo(element, options) {
             if (horizontal) {
                 if (isLeft) return 'left';
                 if (isRight) return 'right';
-                if (isTop) return 'top';
-                if (isBottom) return 'bottom';
+                if(!simple) {
+                    if (isTop) return 'top';
+                    if (isBottom) return 'bottom';
+                }
             }
             if (isTop) return 'top';
             if (isBottom) return 'bottom';
-            if (isLeft) return 'left';
-            if (isRight) return 'right';
+            if(!simple) {
+                if (isLeft) return 'left';
+                if (isRight) return 'right';
+            }
 
             return 'center';
         })();

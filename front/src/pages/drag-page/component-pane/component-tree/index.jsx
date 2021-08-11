@@ -9,6 +9,7 @@ import {convertNodeToTreeData} from './util';
 import s from './style.less';
 import {findNodeById, findParentNodes} from 'src/pages/drag-page/util/node-util';
 import {scrollElement} from 'src/pages/drag-page/util';
+import TreeNode from './TreeNode';
 
 export default React.memo(config({
     connect: state => {
@@ -36,10 +37,15 @@ export default React.memo(config({
     }, [pageConfig]);
 
     const renderNode = useCallback((node) => {
-        // TODO 渲染节点
-        return <div id={`treeNode_${node.id}`}>{node.name}</div>;
-        // return <TreeNode selectedKey={selectedNodeId} node={nodeData}/>
-    }, []);
+        return (
+            <TreeNode
+                selectedKey={selectedNode?.id}
+                node={node}
+                expandedKeys={expandedKeys}
+                onExpand={expandedKeys => setExpandedKeys(expandedKeys)}
+            />
+        )
+    }, [selectedNode, expandedKeys]);
 
     const handleSelected = useCallback(([key]) => {
         if (!key) {

@@ -49,12 +49,12 @@ export default React.memo(function DragDelegation(props) {
 
         dragPageAction.setFields({
             draggingElement,
-            draggingNode: {
-                id: config.id,
-                type: 'move',
-                config,
-            },
         });
+        dragPageAction.setDraggingNode({
+            id: config.id,
+            type: 'move',
+            config,
+        })
     }, [pageConfig, dragPageAction, componentPaneActiveKey]);
 
     const handleDragEnd = useCallback((e) => {
@@ -122,7 +122,7 @@ export default React.memo(function DragDelegation(props) {
     }, [draggingNode]);
 
     const {run: handleDragOver} = useThrottleFn((e) => {
-        let {pageY, pageX} = e;
+        const {pageY, pageX} = e;
         const mousePosition = `${pageY},${pageX}`;
 
         // 如果鼠标位置没有改变，直接返回

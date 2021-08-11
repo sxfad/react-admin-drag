@@ -1,22 +1,15 @@
-import React, {useState, useRef} from 'react';
+import React, { useState, useRef, useCallback } from 'react';
+import { useThrottleFn } from 'ahooks';
 import config from 'src/commons/config-hoc';
-import {
-    handleNodeDrop,
-    getDropGuidePosition,
-    isDropAccept,
-    setDragImage,
-    getDraggingNodeInfo,
-} from 'src/pages/drag-page/util';
-import {throttle} from 'lodash';
-
-import styles from './style.less';
+import { getTargetNode } from 'src/pages/drag-page/util';
+import s from './style.less';
 
 export default config({
     connect: state => {
         return {
             pageConfig: state.dragPage.pageConfig,
             draggingNode: state.dragPage.draggingNode,
-            componentTreeExpendedKeys: state.dragPage.componentTreeExpendedKeys,
+            canvasDocument: state.dragPage.canvasDocument,
         };
     },
 })(function TreeNode(props) {
@@ -25,21 +18,24 @@ export default config({
         selectedKey,
         pageConfig,
         draggingNode,
-        componentTreeExpendedKeys,
-        action: {dragPage: dragPageAction},
+        expandedKeys,
+        onExpand,
+        canvasDocument,
+
+        action: { dragPage: dragPageAction },
     } = props;
 
-    let {key, name, icon, isContainer, draggable, nodeData} = node;
+    let { key, name, icon, isContainer, draggable, nodeData } = node;
 
-    name = <span className={styles.nodeTitle}>{icon}{name}</span>;
+    name = <span className={s.nodeTitle}>{icon}{name}</span>;
 
     const hoverRef = useRef(0);
     const nodeRef = useRef(null);
     const [dragIn, setDragIn] = useState(false);
     const [accept, setAccept] = useState(true);
-    const [dropPosition, setDropPosition] = useState('');
+    const [dropPosition, /*setDropPosition*/] = useState('');
 
-    function handleDragStart(e) {
+    const handleDragStart = useCallback((e) => {
         e.stopPropagation();
 
         if (!draggable) {
@@ -49,126 +45,112 @@ export default config({
 
         dragPageAction.setDraggingNode({
             id: nodeData.id,
-            nodeData,
+            config: nodeData,
+            type: 'move',
         });
+    }, [dragPageAction, draggable, nodeData]);
 
-        setDragImage(e, nodeData);
-    }
-
-    function handleDragEnter(e) {
+    const handleDragEnter = useCallback(() => {
         if (!draggable) return;
 
+        // 进入自身
         if (draggingNode?.id === key) return;
+
         setDragIn(true);
         setAccept(true);
-    }
+    }, [draggable, draggingNode, key]);
+
 
     const THROTTLE_TIME = 100;
-    const throttleOver = throttle(e => {
-        const targetElement = e.target;
+    const { run: throttleOver } = useThrottleFn(e => {
+        const element = e.target;
 
-        if (!targetElement) return;
+        if (!element) return;
 
+        const { pageY, pageX } = e;
+        const { documentElement } = canvasDocument;
+        const {
+            targetNode,
+            // targetElement,
+            // targetElementSize,
+            targetHoverPosition,
+        } = getTargetNode({
+            documentElement,
+            draggingNode,
+            pageConfig,
+            targetElement: element,
+            pageY,
+            pageX,
+            horizontal: false,
+            simple: true,
+        }) || { targetNode: null, targetElement: null };
+
+
+        // 自身上，直接返回
         if (draggingNode?.id === key) return;
 
         // 1s 后展开节点
         if (!hoverRef.current) {
             hoverRef.current = setTimeout(() => {
-                if (!componentTreeExpendedKeys.some(k => k === key)) {
-                    dragPageAction.setComponentTreeExpendedKeys([...componentTreeExpendedKeys, key]);
+                if (!expandedKeys.some(k => k === key)) {
+                    onExpand([...expandedKeys, key]);
                 }
             }, 300);
         }
-        const {pageX, pageY, clientX, clientY} = e;
 
-        const {position} = getDropGuidePosition({
-            pageX,
-            pageY,
-            clientX,
-            clientY,
-            targetElement,
-            frameDocument: window.document,
+        console.log(targetHoverPosition);
+        dragPageAction.setFields({
+            targetNode,
+            // targetElement,
+            // targetElementSize,
+            targetHoverPosition,
         });
-        const {isTop, isBottom, isCenter} = position;
+    }, { wait: THROTTLE_TIME, trailing: false });
 
-        const accept = isDropAccept({
-            e,
-            draggingNode,
-            pageConfig,
-            targetComponentId: key,
-            isBefore: isTop,
-            isAfter: isBottom,
-            isChildren: isCenter,
-        });
-
-        // 如果父级是 wrapper_ ??
-
-        setDropPosition('');
-        setDragIn(true);
-        setAccept(accept);
-
-        if (!accept) {
-            draggingNode.accept = accept;
-            dragPageAction.setDragOverInfo(null);
-            return;
-        }
-
-        dragPageAction.setDragOverInfo({
-            e,
-            targetElementId: key,
-            isTree: true,
-            isTop,
-            isBottom,
-            isCenter,
-            accept,
-        });
-
-        if (isTop) setDropPosition('top');
-        if (isBottom) setDropPosition('bottom');
-        if (accept && isCenter) setDropPosition('center');
-
-        const {toSelectTarget} = getDraggingNodeInfo({e, draggingNode});
-
-        if (toSelectTarget) {
-            setDropPosition(false);
-        }
-    }, THROTTLE_TIME, {trailing: false});
-
-    function handleDragOver(e) {
+    const handleDragOver = useCallback((e) => {
         e.preventDefault();
         e.stopPropagation();
 
+        if (!draggingNode || !draggable) return;
+        const { dropType, type } = draggingNode;
+
         let cursor = 'move';
 
-        const isCopy = draggingNode?.isNewAdd;
-        if (isCopy) cursor = 'copy';
+        if (type === 'new') cursor = 'copy';
 
-        const isToSetProps = draggingNode?.toSetProps;
-        if (isToSetProps) cursor = 'link';
+        if (['props', 'replace', 'wrapper'].includes(dropType)) cursor = 'link';
 
         e.dataTransfer.dropEffect = cursor;
 
-        if (!isToSetProps && !draggable) return;
-
         throttleOver(e);
-    }
+    }, [draggingNode, throttleOver, draggable]);
 
-    function handleDragLeave(e) {
+    const handleDragLeave = useCallback((e) => {
         setDragIn(false);
         setAccept(true);
 
         if (!draggable) return;
 
-        dragPageAction.setDragOverInfo(null);
+        if (hoverRef.current) {
+            clearTimeout(hoverRef.current);
+            hoverRef.current = 0;
+        }
+    }, [draggable]);
+
+
+    const handleDragEnd = useCallback(() => {
+        setAccept(true);
+        if (!draggable) return;
 
         if (hoverRef.current) {
             clearTimeout(hoverRef.current);
             hoverRef.current = 0;
         }
-    }
 
+        dragPageAction.setDraggingNode(null);
+    }, [dragPageAction, draggable]);
 
-    function handleDrop(e) {
+    const handleDrop = useCallback((e) => {
         const end = () => {
             handleDragLeave(e);
             handleDragEnd();
@@ -179,33 +161,12 @@ export default config({
         e.preventDefault();
         e.stopPropagation();
 
-        const iframeDocument = window.document;
+        // TODO 投放
 
-        handleNodeDrop({
-            e,
-            iframeDocument,
-            end,
-            pageConfig,
-            draggingNode,
-            dragPageAction,
-            isTree: true,
-        });
-    }
-
-    function handleDragEnd() {
-        setAccept(true);
-        if (!draggable) return;
-        if (hoverRef.current) {
-            clearTimeout(hoverRef.current);
-            hoverRef.current = 0;
-        }
-        dragPageAction.setDraggingNode(null);
-        dragPageAction.setDragOverInfo(null);
-    }
+    }, [draggable, handleDragEnd, handleDragLeave]);
 
     const isSelected = selectedKey === key;
     const isDragging = draggingNode?.id === key;
-
 
     const positionMap = {
         top: '前',
@@ -218,15 +179,16 @@ export default config({
             key={key}
             id={`treeNode_${key}`}
             className={[
-                styles[dropPosition],
+                `id_${key}`,
+                s[dropPosition],
                 {
-                    [styles.treeNode]: true,
-                    [styles.selected]: isSelected,
-                    [styles.dragging]: isDragging,
-                    [styles.dragIn]: dragIn && draggingNode,
-                    [styles.unDraggable]: !draggable,
-                    [styles.hasDraggingNode]: !!draggingNode,
-                    [styles.unAccept]: !accept,
+                    [s.treeNode]: true,
+                    [s.selected]: isSelected,
+                    [s.dragging]: isDragging,
+                    [s.dragIn]: dragIn && draggingNode,
+                    [s.unDraggable]: !draggable,
+                    [s.hasDraggingNode]: !!draggingNode,
+                    [s.unAccept]: !accept,
                 },
             ]}
             draggable
@@ -241,7 +203,7 @@ export default config({
         >
             {name}
             {dropPosition ? (
-                <div className={styles.dragGuide} style={{display: dragIn && draggingNode ? 'flex' : 'none'}}>
+                <div className={s.dragGuide} style={{ display: dragIn && draggingNode ? 'flex' : 'none' }}>
                     <span>{positionMap[dropPosition]}</span>
                 </div>
             ) : null}
