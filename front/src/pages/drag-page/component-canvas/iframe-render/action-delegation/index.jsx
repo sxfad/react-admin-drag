@@ -20,6 +20,8 @@ export default React.memo(function DragDelegation(props) {
         canvasDocument,
         nodeSelectType,
         selectedNode,
+        targetNode,
+        targetHoverPosition,
     } = props;
 
     const prevComponentPaneActiveKeyRef = useRef(null);
@@ -158,12 +160,16 @@ export default React.memo(function DragDelegation(props) {
         e.stopPropagation();
 
         // 执行insertNode之后，会导致 handleDragEnd 不触发
-        dragPageAction.insertNode();
+        dragPageAction.insertNode({
+            draggingNode,
+            targetNode,
+            targetHoverPosition,
+        });
 
         // 手动调用一次dragEnd方法
         handleDragEnd();
 
-    }, [dragPageAction, handleDragEnd]);
+    }, [dragPageAction, draggingNode, targetNode, targetHoverPosition, handleDragEnd]);
 
     // 鼠标点击事件 选中节点
     const handleClick = useCallback((e) => {
@@ -196,7 +202,7 @@ export default React.memo(function DragDelegation(props) {
             if (metaOrCtrl && key === 'd') {
                 e.stopPropagation();
                 e.preventDefault();
-                dragPageAction.deleteSelectedNode();
+                dragPageAction.deleteNodeById(selectedNode?.id);
             }
 
             // command(ctrl) + c 复制当前选中节点
@@ -227,17 +233,18 @@ export default React.memo(function DragDelegation(props) {
                 if (!isNode(cloneNode)) return;
                 setNodeId(cloneNode, true);
 
-                dragPageAction.setFields({
-                    targetNode: selectedNode,
+                dragPageAction.insertNode({
                     draggingNode: {
                         id: cloneNode.id,
                         type: 'copy',
                         config: cloneNode,
                     },
+                    targetNode: selectedNode,
                     targetHoverPosition: 'right',
                 });
+
+                // 等待插入结束之后，清空相关数据
                 setTimeout(() => {
-                    dragPageAction.insertNode();
                     dragPageAction.setFields({
                         draggingNode: null,
                         targetHoverPosition: null,
@@ -246,7 +253,6 @@ export default React.memo(function DragDelegation(props) {
             } catch (e) {
                 console.error(e);
             }
-
         };
 
         canvasDocument.body.addEventListener('keydown', handleKeyDown);

@@ -106,6 +106,8 @@ export default React.memo(config({
                     canvasDocument={canvasDocument}
                     nodeSelectType={nodeSelectType}
                     selectedNode={selectedNode}
+                    targetNode={targetNode}
+                    targetHoverPosition={targetHoverPosition}
                 >
                     <NodeRender
                         config={pageConfig}

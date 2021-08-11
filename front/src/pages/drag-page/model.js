@@ -1,6 +1,6 @@
 import {v4 as uuid} from 'uuid';
 import {
-    deleteNodeById,
+    deleteNodeById, findNodeById,
     findParentNodeById,
     insertAfter,
     insertBefore,
@@ -273,11 +273,6 @@ export default {
 
     setFields: fields => ({...fields}),
 
-    // 根据节点id，删除节点
-    deleteNodeById(node, state) {
-        // TODO
-    },
-
     // 组件另存为
     saveComponentAs(selectedNode) {
         // TODO
@@ -303,8 +298,8 @@ export default {
      * @param state
      * @returns {{pageConfig}}
      */
-    insertNode(_, state) {
-        const {pageConfig, draggingNode, targetNode, targetHoverPosition} = state;
+    insertNode({draggingNode, targetNode, targetHoverPosition}, state) {
+        const {pageConfig} = state;
         const {config: draggingNodeConfig, dropType} = draggingNode;
 
         const parentNode = findParentNodeById(pageConfig, targetNode?.id);
@@ -389,10 +384,11 @@ export default {
         };
     },
     /**
-     * 删除选中节点
+     * 根据id删除节点
      */
-    deleteSelectedNode(_, state) {
-        const {pageConfig, selectedNode} = state;
+    deleteNodeById(id, state) {
+        const {pageConfig} = state;
+        const selectedNode = findNodeById(pageConfig, id);
         if (!selectedNode) return;
 
         const nodeConfig = getComponentConfig(selectedNode?.componentName);

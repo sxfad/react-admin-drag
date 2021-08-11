@@ -36,7 +36,7 @@ export default {
     hooks: {
         afterAdd: (options) => {
             const {node, dragPageState: {pageConfig}} = options;
-            if (node.props.name) {
+            if (node?.props?.name) {
                 node.props.name = getFormItemName(node, pageConfig);
             }
         },
