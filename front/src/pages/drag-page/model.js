@@ -275,7 +275,7 @@ export default {
     deleteNodeById(id, state) {
         const { pageConfig } = state;
         const selectedNode = findNodeById(pageConfig, id);
-        if (!selectedNode) return;
+        if (!selectedNode) return null;
 
         const nodeConfig = getComponentConfig(selectedNode?.componentName);
         const parentNode = findParentNodeById(pageConfig, selectedNode?.id);
@@ -291,10 +291,10 @@ export default {
         } = parentNodeConfig?.hooks || {};
 
         const deleteResult = beforeDelete({ dragPageState: state, node: selectedNode, parentNode: parentNode });
-        if (deleteResult === false) return;
+        if (deleteResult === false) return null;
 
         const deleteChildrenResult = beforeDeleteChildren({ dragPageState: state, node: parentNode, childNode: selectedNode });
-        if (deleteChildrenResult === false) return;
+        if (deleteChildrenResult === false) return null;
 
 
         // 删除的是跟节点

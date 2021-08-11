@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useThrottleFn } from 'ahooks';
 import config from 'src/commons/config-hoc';
 import { getTargetNode } from 'src/pages/drag-page/util';
@@ -33,10 +33,26 @@ export default config({
 
     name = <span className={s.nodeTitle}>{icon}{name}</span>;
 
+    const hoverPosition = useMemo(() => {
+        if (targetHoverPosition === 'left') return 'top';
+        if (targetHoverPosition === 'right') return 'bottom';
+
+        return targetHoverPosition;
+
+    }, [targetHoverPosition]);
+
     const hoverRef = useRef(0);
     const nodeRef = useRef(null);
     const [dragIn, setDragIn] = useState(false);
-    const [accept, setAccept] = useState(true);
+
+    useEffect(() => {
+        if (targetNode?.id === key) {
+            setDragIn(true);
+            return () => {
+                setDragIn(false);
+            }
+        }
+    }, [targetNode, key]);
 
     const handleDragStart = useCallback((e) => {
         e.stopPropagation();
@@ -52,17 +68,6 @@ export default config({
             type: 'move',
         });
     }, [dragPageAction, draggable, nodeData]);
-
-    const handleDragEnter = useCallback(() => {
-        if (!draggable) return;
-
-        // 进入自身
-        if (draggingNode?.id === key) return;
-
-        setDragIn(true);
-        setAccept(true);
-    }, [draggable, draggingNode, key]);
-
 
     const THROTTLE_TIME = 100;
     const { run: throttleOver } = useThrottleFn(e => {
@@ -123,9 +128,6 @@ export default config({
     }, [draggingNode, throttleOver, draggable]);
 
     const handleDragLeave = useCallback((e) => {
-        setDragIn(false);
-        setAccept(true);
-
         if (!draggable) return;
 
         if (hoverRef.current) {
@@ -136,7 +138,6 @@ export default config({
 
 
     const handleDragEnd = useCallback(() => {
-        setAccept(true);
         if (!draggable) return;
 
         if (hoverRef.current) {
@@ -183,7 +184,7 @@ export default config({
             id={`treeNode_${key}`}
             className={[
                 `id_${key}`,
-                s[targetHoverPosition],
+                s[hoverPosition],
                 {
                     [s.treeNode]: true,
                     [s.selected]: isSelected,
@@ -191,23 +192,21 @@ export default config({
                     [s.dragIn]: dragIn && draggingNode,
                     [s.unDraggable]: !draggable,
                     [s.hasDraggingNode]: !!draggingNode,
-                    [s.unAccept]: !accept,
                 },
             ]}
             draggable
             data-component-id={key}
             data-is-container={isContainer}
             onDragStart={handleDragStart}
-            onDragEnter={handleDragEnter}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onDragEnd={handleDragEnd}
         >
             {name}
-            {targetHoverPosition ? (
+            {hoverPosition ? (
                 <div className={s.dragGuide} style={{ display: dragIn && draggingNode ? 'flex' : 'none' }}>
-                    <span>{positionMap[targetHoverPosition]}</span>
+                    <span>{positionMap[hoverPosition]}</span>
                 </div>
             ) : null}
         </div>

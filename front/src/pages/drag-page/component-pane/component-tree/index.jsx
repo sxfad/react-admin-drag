@@ -1,14 +1,14 @@
-import React, {useCallback, useRef, useMemo, useState, useEffect} from 'react';
-import {Tooltip, Tree} from 'antd';
-import {ArrowsAltOutlined, ShrinkOutlined} from '@ant-design/icons';
+import React, { useCallback, useRef, useMemo, useState, useEffect } from 'react';
+import { Tooltip, Tree } from 'antd';
+import { ArrowsAltOutlined, ShrinkOutlined } from '@ant-design/icons';
 import Container from '../container';
 import Header from '../header';
 import Content from '../content';
 import config from 'src/commons/config-hoc';
-import {convertNodeToTreeData} from './util';
+import { convertNodeToTreeData } from './util';
 import s from './style.less';
-import {findNodeById, findParentNodes} from 'src/pages/drag-page/util/node-util';
-import {scrollElement} from 'src/pages/drag-page/util';
+import { findNodeById, findParentNodes } from 'src/pages/drag-page/util/node-util';
+import { scrollElement } from 'src/pages/drag-page/util';
 import TreeNode from './TreeNode';
 
 export default React.memo(config({
@@ -16,6 +16,7 @@ export default React.memo(config({
         return {
             pageConfig: state.dragPage.pageConfig,
             selectedNode: state.dragPage.selectedNode,
+            targetNode: state.dragPage.targetNode,
         };
     },
 })(function ComponentTree(props) {
@@ -24,13 +25,14 @@ export default React.memo(config({
         title,
         pageConfig,
         selectedNode,
-        action: {dragPage: dragPageAction},
+        targetNode,
+        action: { dragPage: dragPageAction },
     } = props;
     const [expandedKeys, setExpandedKeys] = useState([]);
     const [isAllExpanded, setIsAllExpanded] = useState(false);
     const contentRef = useRef(null);
 
-    const {treeData = [], nodeCount = 0, allKeys = []} = useMemo(() => {
+    const { treeData = [], nodeCount = 0, allKeys = [] } = useMemo(() => {
         if (!pageConfig) return {};
 
         return convertNodeToTreeData(pageConfig);
@@ -44,17 +46,17 @@ export default React.memo(config({
                 expandedKeys={expandedKeys}
                 onExpand={expandedKeys => setExpandedKeys(expandedKeys)}
             />
-        )
+        );
     }, [selectedNode, expandedKeys]);
 
     const handleSelected = useCallback(([key]) => {
         if (!key) {
-            dragPageAction.setFields({selectedNode: null});
+            dragPageAction.setFields({ selectedNode: null });
             return;
         }
         const selectedNode = findNodeById(pageConfig, key);
 
-        dragPageAction.setFields({selectedNode});
+        dragPageAction.setFields({ selectedNode });
     }, [dragPageAction, pageConfig]);
 
     // 当有节点选中，展开对应父节点
@@ -77,7 +79,7 @@ export default React.memo(config({
         const containerEle = contentRef.current;
         if (!containerEle) return;
 
-        const selectedNodeId = selectedNode?.id;
+        const selectedNodeId = selectedNode?.id || targetNode?.id;
         const element = containerEle.querySelector(`#treeNode_${selectedNodeId}`);
 
         if (element) return scrollElement(containerEle, element);
@@ -89,8 +91,7 @@ export default React.memo(config({
             scrollElement(containerEle, element);
         }, 200);
 
-    }, [selectedNode]);
-
+    }, [selectedNode, targetNode]);
 
     return (
         <Container>
@@ -106,7 +107,7 @@ export default React.memo(config({
                                 setIsAllExpanded(!isAllExpanded);
                             }}
                         >
-                            {isAllExpanded ? <ShrinkOutlined/> : <ArrowsAltOutlined/>}
+                            {isAllExpanded ? <ShrinkOutlined /> : <ArrowsAltOutlined />}
                         </div>
                     </Tooltip>
                 </div>
