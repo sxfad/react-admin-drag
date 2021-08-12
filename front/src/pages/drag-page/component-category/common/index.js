@@ -125,6 +125,7 @@ export default [
         children: [
             {
                 title: '间距',
+                previewZoom: .7,
                 config: {
                     componentName: 'Space',
                     children: [

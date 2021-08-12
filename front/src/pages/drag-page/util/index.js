@@ -416,19 +416,21 @@ export function getElementInfo(element, options = {}) {
             if (height + top > clientHeight) {
                 height = clientHeight - top;
             }
+            top += scrollTop;
         }
 
         if (left < 0) {
             if (width + left > clientWidth) {
                 width = clientWidth;
             } else {
-                width = clientWidth + left;
+                width = width + left;
             }
             left = scrollLeft;
         } else {
             if (width + left > clientWidth) {
                 width = clientWidth - left;
             }
+            left += scrollLeft;
         }
     }
 

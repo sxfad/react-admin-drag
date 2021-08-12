@@ -50,7 +50,9 @@ export default React.memo(config({
             targetHoverPosition: state.dragPage.targetHoverPosition,
             canvasDocument: state.dragPage.canvasDocument,
             componentPaneActiveKey: state.dragPage.componentPaneActiveKey,
+            componentPaneExpended: state.dragPage.componentPaneExpended,
             componentPaneWidth: state.dragPage.componentPaneWidth,
+            propsPaneExpended: state.dragPage.propsPaneExpended,
             propsPaneWidth: state.dragPage.propsPaneWidth,
         };
     },
@@ -75,6 +77,8 @@ export default React.memo(config({
         targetHoverPosition,
         componentPaneWidth,
         propsPaneWidth,
+        componentPaneExpended,
+        propsPaneExpended,
         action: {dragPage: dragPageAction},
     } = props;
     const iframeRef = useRef(null);
@@ -84,17 +88,45 @@ export default React.memo(config({
     const handleIframeLoad = useCallback(() => {
         const canvasDocument = iframeRef.current.contentDocument;
         const canvasRenderRoot = canvasDocument.getElementById('dnd-container');
+
+        dragPageAction.setFields({canvasDocument, canvasRenderRoot});
+    }, [dragPageAction]);
+
+    useEffect(() => {
+        if (!canvasRenderRoot) return;
+
         const canvas = canvasDocument.getElementById('page-canvas');
+
         const getStyleValue = (value) => typeof value === 'string' ? value : `${value}px`;
 
         canvas.style.minWidth = getStyleValue(canvasWidth);
         canvas.style.minHeight = getStyleValue(canvasHeight);
 
-        canvasRenderRoot.style.width = getStyleValue(pageWidth);
+        let pWidth = getStyleValue(pageWidth);
+        if (pageWidth === 'auto') {
+            let otherWidth = 76;
+            if (componentPaneExpended) otherWidth += componentPaneWidth;
+            if (propsPaneExpended) otherWidth += propsPaneWidth;
+            if (!propsPaneExpended) otherWidth += 43;
+
+            pWidth = `${window.top.document.documentElement.clientWidth - otherWidth}px`;
+        }
+
+        canvasRenderRoot.style.width = pWidth;
         canvasRenderRoot.style.height = getStyleValue(pageHeight);
 
-        dragPageAction.setFields({canvasDocument, canvasRenderRoot});
-    }, [dragPageAction, canvasWidth, canvasHeight, pageWidth, pageHeight]);
+    }, [
+        canvasRenderRoot,
+        canvasDocument,
+        canvasWidth,
+        canvasHeight,
+        pageWidth,
+        pageHeight,
+        componentPaneWidth,
+        propsPaneWidth,
+        componentPaneExpended,
+        propsPaneExpended,
+    ]);
 
     // 根据pageConfig渲染页面
     useEffect(() => {
@@ -118,6 +150,7 @@ export default React.memo(config({
                     componentPaneWidth={componentPaneWidth}
                     propsPaneWidth={propsPaneWidth}
                     canvasScale={canvasScale}
+                    pageConfig={pageConfig}
                 />
                 <ActionDelegation
                     componentPaneActiveKey={componentPaneActiveKey}

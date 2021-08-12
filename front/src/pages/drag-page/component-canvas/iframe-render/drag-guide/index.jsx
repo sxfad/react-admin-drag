@@ -24,6 +24,7 @@ export default React.memo(function DragGuide(props) {
         componentPaneWidth,
         propsPaneWidth,
         canvasScale,
+        pageConfig,
     } = props;
 
     const [refresh, setRefresh] = useState({});
@@ -171,7 +172,7 @@ export default React.memo(function DragGuide(props) {
     useEffect(() => {
         const t = setTimeout(() => setRefresh({}), 400);
         return () => clearTimeout(t);
-    }, [canvasScale]);
+    }, [canvasScale, pageConfig]);
 
     return null;
 });

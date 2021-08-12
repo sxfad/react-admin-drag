@@ -65,7 +65,7 @@ export default {
         categoryScrollType: 'byClick',
 
         // 页面尺寸
-        pageWidth: document.documentElement.clientWidth - 120,
+        pageWidth: 'auto',
         pageHeight: '100%',
         // 画布尺寸，指的是iframe尺寸
         canvasWidth: 2200,

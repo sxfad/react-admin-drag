@@ -70,19 +70,19 @@ export default React.memo(function ComponentItem(props) {
                 draggable
                 data-config={JSON.stringify(data.config)}
             >
-                {title}
+                <div className={s.title}>{title}</div>
                 {data.renderPreview ? (
-                    <div className={s.preview}>
-                        {image ? (
+                    image ? (
+                        <div className={s.preview}>
                             <div
                                 draggable={false}
                                 className={s.img}
                                 style={{backgroundImage: `url(${image})`}}
                             />
-                        ) : (
-                            renderPreview(data)
-                        )}
-                    </div>
+                        </div>
+                    ) : (
+                        renderPreview(data)
+                    )
                 ) : null}
             </div>
         </div>

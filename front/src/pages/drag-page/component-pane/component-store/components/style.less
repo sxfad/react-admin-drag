@@ -34,13 +34,14 @@
 
 .item {
     border: 1px dotted #d8d8d8;
-    padding: 8px;
+    padding: 8px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     cursor: move;
     overflow: hidden;
     height: 100%;
+    background: #fff;
 
     &:hover {
         border: 1px dotted @primary-color;
@@ -49,14 +50,15 @@
     .preview {
         flex: 1;
         position: relative;
-        background: #fff;
+
         padding: 8px;
         width: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 4px;
+        margin-top: 6px;
         pointer-events: none;
+        border-top: 1px dotted #d8d8d8;
 
         :global {
             .ant-form-item {
