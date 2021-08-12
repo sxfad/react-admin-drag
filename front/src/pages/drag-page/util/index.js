@@ -286,7 +286,7 @@ export function setDragImage(e, dropType) {
     const src = dragImages[dropType] || dragImages.new;
 
     const img = new Image();
-    img.src = src;
+    img.src = '123' || src; // TODO
     img.style.width = '40px';
 
     e.dataTransfer.setDragImage(img, 0, 16);

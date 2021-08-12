@@ -190,9 +190,17 @@ export default React.memo(function DragDelegation(props) {
 
     }, [dragPageAction, selectedNode, nodeSelectType, pageConfig]);
 
-    const handleKeyDown = useCallback((e) => {
+    // 操作SelectedNode相关的快捷键
+    const handleSelectedNodeKeyDown = useCallback((e) => {
         const {metaKey, ctrlKey, key} = e;
         const metaOrCtrl = metaKey || ctrlKey;
+
+        // Escape 取消选中节点
+        if (key === 'Escape' && selectedNode) {
+            dragPageAction.setFields({
+                selectedNode: null,
+            });
+        }
 
         // Backspace Delete 键也删除 要区分是否有输入框获取焦点
         if (['Delete', 'Backspace'].includes(key)) {
@@ -293,16 +301,16 @@ export default React.memo(function DragDelegation(props) {
 
     // 键盘事件
     useEffect(() => {
-        canvasDocument.addEventListener('keydown', handleKeyDown);
+        canvasDocument.addEventListener('keydown', handleSelectedNodeKeyDown);
         canvasDocument.addEventListener('paste', handlePaste);
         return () => {
-            canvasDocument.removeEventListener('keydown', handleKeyDown);
+            canvasDocument.removeEventListener('keydown', handleSelectedNodeKeyDown);
             canvasDocument.removeEventListener('paste', handlePaste);
         };
-    }, [canvasDocument, handleKeyDown, handlePaste]);
+    }, [canvasDocument, handleSelectedNodeKeyDown, handlePaste]);
 
-    // 组价搜索输入框获取焦点，并选中输入框中所有内容
-    const handleSearch = useCallback((e) => {
+    // 快捷键使组价搜索输入框获取焦点，并选中输入框中所有内容
+    const handleSearchKeyDown = useCallback((e) => {
         const {metaKey, ctrlKey, key} = e;
         const metaOrCtrl = metaKey || ctrlKey;
 
@@ -324,13 +332,13 @@ export default React.memo(function DragDelegation(props) {
 
     // 在组件库中查找组件
     useEffect(() => {
-        window.addEventListener('keydown', handleSearch);
-        canvasDocument.addEventListener('keydown', handleSearch);
+        window.addEventListener('keydown', handleSearchKeyDown);
+        canvasDocument.addEventListener('keydown', handleSearchKeyDown);
         return () => {
-            canvasDocument.removeEventListener('keydown', handleSearch);
-            window.removeEventListener('keydown', handleSearch);
+            canvasDocument.removeEventListener('keydown', handleSearchKeyDown);
+            window.removeEventListener('keydown', handleSearchKeyDown);
         };
-    }, [canvasDocument, handleSearch]);
+    }, [canvasDocument, handleSearchKeyDown]);
 
     return (
         <div
