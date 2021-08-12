@@ -7,6 +7,7 @@ import zhCN from 'antd/lib/locale-provider/zh_CN';
 import NodeRender from 'src/pages/drag-page/node-render';
 import ActionDelegation from './action-delegation';
 import DragGuide from './drag-guide';
+import Scale from './scale';
 
 // 构建iframe内容
 const headHtml = document.head.innerHTML;
@@ -15,8 +16,10 @@ const iframeSrcDoc = `
         <heade>
             ${headHtml}
         </heade>
-        <body style="padding:0; margin: 0; scroll-behavior: smooth; overflow: auto">
-            <div id="dnd-container"></div>
+        <body style="padding:0; margin: 0; scroll-behavior: smooth; overflow: auto" class="${s.canvasBody}">
+            <div id="page-canvas">
+                <div id="dnd-container" class="${s.pageRoot}"></div>
+            </div>
             <div id="drop-guide-line" style="display: none">
                 <span>前</span>
             </div>
@@ -30,8 +33,11 @@ const iframeSrcDoc = `
 export default React.memo(config({
     connect: state => {
         return {
+            pageWidth: state.dragPage.pageWidth,
+            pageHeight: state.dragPage.pageHeight,
             canvasWidth: state.dragPage.canvasWidth,
             canvasHeight: state.dragPage.canvasHeight,
+            canvasScale: state.dragPage.canvasScale,
             pageConfig: state.dragPage.pageConfig,
             viewMode: state.dragPage.viewMode,
             canvasRenderRoot: state.dragPage.canvasRenderRoot,
@@ -52,6 +58,9 @@ export default React.memo(config({
     const {
         canvasWidth,
         canvasHeight,
+        canvasScale,
+        pageWidth,
+        pageHeight,
         viewMode,
         pageConfig,
         canvasDocument,
@@ -75,9 +84,17 @@ export default React.memo(config({
     const handleIframeLoad = useCallback(() => {
         const canvasDocument = iframeRef.current.contentDocument;
         const canvasRenderRoot = canvasDocument.getElementById('dnd-container');
+        const canvas = canvasDocument.getElementById('page-canvas');
+        const getStyleValue = (value) => typeof value === 'string' ? value : `${value}px`;
+
+        canvas.style.minWidth = getStyleValue(canvasWidth);
+        canvas.style.minHeight = getStyleValue(canvasHeight);
+
+        canvasRenderRoot.style.width = getStyleValue(pageWidth);
+        canvasRenderRoot.style.height = getStyleValue(pageHeight);
 
         dragPageAction.setFields({canvasDocument, canvasRenderRoot});
-    }, [dragPageAction]);
+    }, [dragPageAction, canvasWidth, canvasHeight, pageWidth, pageHeight]);
 
     // 根据pageConfig渲染页面
     useEffect(() => {
@@ -100,6 +117,7 @@ export default React.memo(config({
                     targetHoverPosition={targetHoverPosition}
                     componentPaneWidth={componentPaneWidth}
                     propsPaneWidth={propsPaneWidth}
+                    canvasScale={canvasScale}
                 />
                 <ActionDelegation
                     componentPaneActiveKey={componentPaneActiveKey}
@@ -138,21 +156,20 @@ export default React.memo(config({
         targetHoverPosition,
         componentPaneWidth,
         propsPaneWidth,
-
+        canvasScale,
     ]);
 
     return (
-        <iframe
-            className={s.root}
-            id="dnd-iframe"
-            title="页面设计"
-            ref={iframeRef}
-            srcDoc={iframeSrcDoc}
-            onLoad={handleIframeLoad}
-            style={{
-                width: canvasWidth || '100%',
-                height: canvasHeight || '100%',
-            }}
-        />
+        <>
+            <iframe
+                className={s.root}
+                id="dnd-iframe"
+                title="页面设计"
+                ref={iframeRef}
+                srcDoc={iframeSrcDoc}
+                onLoad={handleIframeLoad}
+            />
+            <Scale/>
+        </>
     );
 }));

@@ -28,21 +28,19 @@ export default {
         // 是否显示页面整体配置
         pageConfigVisible: false,
 
-        // 是否显示组件配置
-        componentConfigVisible: false,
+        // 组件面板是否展开
+        componentPaneExpended: true,
         // 组件面板宽度
         componentPaneWidth: 300,
         // 组件面板激活key
         componentPaneActiveKey: 'componentStore',
-        // 组件面板是否展开
-        componentPaneExpended: true,
 
-        // 属性面板激活key
-        propsPaneActiveKey: 'props',
-        // 属性面板宽度
-        propsPaneWidth: 400,
         // 属性面板是否展开
         propsPaneExpended: true,
+        // 属性面板宽度
+        propsPaneWidth: 400,
+        // 属性面板激活key
+        propsPaneActiveKey: 'props',
 
         // 当前选中节点
         selectedNode: null,
@@ -66,9 +64,12 @@ export default {
         // 分类滚动方式，无论是否可见都强制滚动
         categoryScrollType: 'byClick',
 
+        // 页面尺寸
+        pageWidth: document.documentElement.clientWidth - 120,
+        pageHeight: '100%',
         // 画布尺寸，指的是iframe尺寸
-        canvasWidth: '100%',
-        canvasHeight: '100%',
+        canvasWidth: 2200,
+        canvasHeight: 2000,
         canvasScale: 100,
         // 画布document节点
         canvasDocument: null,

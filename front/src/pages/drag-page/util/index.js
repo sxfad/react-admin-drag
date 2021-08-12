@@ -23,7 +23,7 @@ export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
 export const TRIGGER_SIZE = 20;
 
 export function deleteNodeByKeyDown(e, id, activeElement, dragPageAction) {
-    if(!id) return;
+    if (!id) return;
     const {metaKey, ctrlKey, key} = e;
     const metaOrCtrl = metaKey || ctrlKey;
 
@@ -395,25 +395,41 @@ export function getFieldOption(node, field) {
  * @param options
  * @returns {{top: number, left: number, bottom: number, width: number, right: number, scrollTop, height: number}}
  */
-export function getElementInfo(element, options) {
+export function getElementInfo(element, options = {}) {
     let {top, left, bottom, right, width, height} = element.getBoundingClientRect();
-    const scrollTop = element.scrollTop;
+    const {scrollTop} = element;
+    const {scale = 100} = options;
 
     if (options?.viewSize) {
         const {documentElement} = options;
-        const {clientHeight, clientWidth} = documentElement;
+        const {scrollTop, scrollLeft, clientHeight, clientWidth} = documentElement;
 
         if (top < 0) {
-            height = height + top;
-            top = 0;
+            if (height + top > clientHeight) {
+                height = clientHeight;
+            } else {
+                height = height + top;
+            }
+
+            top = scrollTop;
+        } else {
+            if (height + top > clientHeight) {
+                height = clientHeight - top;
+            }
         }
-        if (height + top > clientHeight) height = clientHeight - top;
 
         if (left < 0) {
-            width = width + left;
-            left = 0;
+            if (width + left > clientWidth) {
+                width = clientWidth;
+            } else {
+                width = clientWidth + left;
+            }
+            left = scrollLeft;
+        } else {
+            if (width + left > clientWidth) {
+                width = clientWidth - left;
+            }
         }
-        if (width + left > clientWidth) width = clientWidth - left;
     }
 
 
@@ -459,12 +475,12 @@ export function getElementInfo(element, options) {
     }
 
     return {
-        width,
-        height,
-        top,
-        right,
-        bottom,
-        left,
+        width: width / (scale / 100),
+        height: height / (scale / 100),
+        top: top / (scale / 100),
+        right: right / (scale / 100),
+        bottom: bottom / (scale / 100),
+        left: left / (scale / 100),
         scrollTop,
         hoverPosition,
     };

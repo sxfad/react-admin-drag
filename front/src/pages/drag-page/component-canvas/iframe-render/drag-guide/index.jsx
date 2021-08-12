@@ -1,7 +1,7 @@
-import React, { useEffect, useCallback, useState } from 'react';
-import { useDebounceFn } from 'ahooks';
-import { getComponentDisplayName } from 'src/pages/drag-page/component-config';
-import { getElementInfo } from 'src/pages/drag-page/util';
+import React, {useEffect, useCallback, useState} from 'react';
+import {useDebounceFn} from 'ahooks';
+import {getComponentDisplayName} from 'src/pages/drag-page/component-config';
+import {getElementInfo} from 'src/pages/drag-page/util';
 import s from './style.less';
 
 // 改变背景颜色，不同投放类型，对应不同的样色
@@ -23,6 +23,7 @@ export default React.memo(function DragGuide(props) {
         draggingNode,
         componentPaneWidth,
         propsPaneWidth,
+        canvasScale,
     } = props;
 
     const [refresh, setRefresh] = useState({});
@@ -42,6 +43,7 @@ export default React.memo(function DragGuide(props) {
         const targetElementSize = getElementInfo(targetElement, {
             documentElement: canvasDocument.documentElement,
             viewSize: true,
+            scale: canvasScale,
         });
 
         if (!targetElementSize || targetElementSize.height < 0 || targetElementSize.width < 0) {
@@ -53,7 +55,7 @@ export default React.memo(function DragGuide(props) {
         guideNameEle.setAttribute('data-component-display-name', componentDisplayName);
         guideBgEle.classList.add(s.guideBgActive);
 
-        const { top, left, width, height } = targetElementSize;
+        const {top, left, width, height} = targetElementSize;
 
         guideBgEle.style.top = `${top + 1}px`;
         guideBgEle.style.left = `${left + 1}px`;
@@ -68,7 +70,7 @@ export default React.memo(function DragGuide(props) {
         guideBgEle.style.color = color(1);
         guideNameEle.style.backgroundColor = color(1);
 
-    }, [canvasDocument, draggingNode]);
+    }, [canvasDocument, draggingNode, canvasScale]);
 
     const showGuideLine = useCallback((targetNode, targetHoverPosition) => {
         if (!canvasDocument) return;
@@ -93,10 +95,11 @@ export default React.memo(function DragGuide(props) {
         const targetElementSize = getElementInfo(targetElement, {
             documentElement: canvasDocument.documentElement,
             viewSize: true,
+            scale: canvasScale,
         });
 
 
-        const { top, left, width, height } = targetElementSize;
+        const {top, left, width, height} = targetElementSize;
         guideLineEle.classList.add(s.guideLineActive);
         guideLineEle.classList.remove(s.gLeft);
         guideLineEle.classList.remove(s.gRight);
@@ -113,17 +116,17 @@ export default React.memo(function DragGuide(props) {
         // 设置提示线条样式
         const lineSize = 2;
         let guideLineStyle = ({
-            left: { left: left - lineSize * 2, top, width: lineSize, height },
-            right: { left: left + width + lineSize, top, width: lineSize, height },
-            top: { left, top: top - lineSize * 2, width, height: lineSize },
-            bottom: { left, top: top + height + lineSize, width, height: lineSize },
-            center: { left, top: top + height / 2, width, height: lineSize },
+            left: {left: left - lineSize * 2, top, width: lineSize, height},
+            right: {left: left + width + lineSize, top, width: lineSize, height},
+            top: {left, top: top - lineSize * 2, width, height: lineSize},
+            bottom: {left, top: top + height + lineSize, width, height: lineSize},
+            center: {left, top: top + height / 2, width, height: lineSize},
         })[targetHoverPosition];
 
         Object.entries(guideLineStyle).forEach(([key, value]) => {
             guideLineEle.style[key] = `${value}px`;
         });
-    }, [canvasDocument, draggingNode]);
+    }, [canvasDocument, draggingNode, canvasScale]);
 
     // 正在拖拽中的节点添加毛玻璃样式
     useEffect(() => {
@@ -151,9 +154,10 @@ export default React.memo(function DragGuide(props) {
         refresh,
         componentPaneWidth,
         propsPaneWidth,
+        canvasScale,
     ]);
 
-    const { run: handleScroll } = useDebounceFn(() => setRefresh({}), { wait: 200 });
+    const {run: handleScroll} = useDebounceFn(() => setRefresh({}), {wait: 200});
 
     // 滚动时，刷新
     useEffect(() => {
@@ -162,6 +166,12 @@ export default React.memo(function DragGuide(props) {
             canvasDocument.removeEventListener('scroll', handleScroll);
         };
     }, [canvasDocument, handleScroll]);
+
+    // scale 改变时，有动画，等待动画结束之后再结算
+    useEffect(() => {
+        const t = setTimeout(() => setRefresh({}), 400);
+        return () => clearTimeout(t);
+    }, [canvasScale]);
 
     return null;
 });
