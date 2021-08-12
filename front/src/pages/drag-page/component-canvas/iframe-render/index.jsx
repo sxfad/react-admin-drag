@@ -151,6 +151,8 @@ export default React.memo(config({
                     propsPaneWidth={propsPaneWidth}
                     canvasScale={canvasScale}
                     pageConfig={pageConfig}
+                    componentPaneExpended={componentPaneExpended}
+                    propsPaneExpended={propsPaneExpended}
                 />
                 <ActionDelegation
                     componentPaneActiveKey={componentPaneActiveKey}
@@ -189,6 +191,8 @@ export default React.memo(config({
         targetHoverPosition,
         componentPaneWidth,
         propsPaneWidth,
+        componentPaneExpended,
+        propsPaneExpended,
         canvasScale,
     ]);
 

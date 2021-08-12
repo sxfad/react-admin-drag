@@ -5,7 +5,7 @@ import {
     getIdByElement,
     getDraggableNodeEle,
     getTargetNode,
-    copyTextToClipboard,
+    copyTextToClipboard, getImageUrlByClipboard,
 } from 'src/pages/drag-page/util';
 import {findNodeById, isNode, setNodeId} from 'src/pages/drag-page/util/node-util';
 
@@ -54,7 +54,7 @@ export default React.memo(function DragDelegation(props) {
             id: config.id,
             type: 'move',
             config,
-        })
+        });
     }, [pageConfig, dragPageAction, componentPaneActiveKey]);
 
     const handleDragEnd = useCallback((e) => {
@@ -227,39 +227,69 @@ export default React.memo(function DragDelegation(props) {
 
     }, [dragPageAction, selectedNode, canvasDocument]);
 
-    const handlePaste = useCallback((e) => {
-        if (!selectedNode) return;
+    // 获取剪切板中的图片
+    const getNodeByImage = useCallback(async e => {
+        try {
+            const src = await getImageUrlByClipboard(e);
+            return {
+                componentName: 'img',
+                props: {
+                    src,
+                    width: '100%',
+                },
+            };
+        } catch (e) {
+            console.error(e);
+            return null;
+        }
+
+    }, []);
+
+    const getNodeByText = useCallback(e => {
         try {
             const clipboardData = e.clipboardData || window.clipboardData;
             const text = clipboardData.getData('text/plain');
             // 不是对象字符串
             if (!text || !text.startsWith('{')) return;
             const cloneNode = JSON.parse(text);
+
             // 不是节点
             if (!isNode(cloneNode)) return;
-            setNodeId(cloneNode, true);
 
-            dragPageAction.insertNode({
-                draggingNode: {
-                    id: cloneNode.id,
-                    type: 'copy',
-                    config: cloneNode,
-                },
-                targetNode: selectedNode,
-                targetHoverPosition: 'right',
-            });
-
-            // 等待插入结束之后，清空相关数据
-            setTimeout(() => {
-                dragPageAction.setFields({
-                    draggingNode: null,
-                    targetHoverPosition: null,
-                });
-            });
+            return cloneNode;
         } catch (e) {
             console.error(e);
         }
-    }, [dragPageAction, selectedNode]);
+    }, []);
+
+    const handlePaste = useCallback(async (e) => {
+        if (!selectedNode) return;
+
+        const node = await getNodeByText(e) || await getNodeByImage(e);
+
+        if (!node) return;
+
+        setNodeId(node, true);
+
+        // 插入
+        dragPageAction.insertNode({
+            draggingNode: {
+                id: node.id,
+                type: 'copy',
+                config: node,
+            },
+            targetNode: selectedNode,
+            targetHoverPosition: 'right',
+        });
+
+        // 等待插入结束之后，清空相关数据
+        setTimeout(() => {
+            dragPageAction.setFields({
+                draggingNode: null,
+                targetHoverPosition: null,
+            });
+        });
+    }, [dragPageAction, selectedNode, getNodeByText, getNodeByImage]);
 
     // 键盘事件
     useEffect(() => {

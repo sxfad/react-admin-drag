@@ -22,6 +22,33 @@ const dragImages = {
 export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
 export const TRIGGER_SIZE = 20;
 
+export async function getImageUrlByClipboard(e) {
+    return new Promise((resolve, reject) => {
+        const items = e.clipboardData && e.clipboardData.items;
+        let file = null;
+        if (items && items.length) {
+            // 检索剪切板items
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    file = items[i].getAsFile();
+                    break;
+                }
+            }
+        }
+
+        if (!file) return reject(new Error('clipboardData is not an image!'));
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            resolve(event.target.result);
+        };
+        reader.onerror = function(err) {
+            reject(err);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
 export function deleteNodeByKeyDown(e, id, activeElement, dragPageAction) {
     if (!id) return;
     const {metaKey, ctrlKey, key} = e;

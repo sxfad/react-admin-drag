@@ -23,6 +23,8 @@ export default React.memo(function DragGuide(props) {
         draggingNode,
         componentPaneWidth,
         propsPaneWidth,
+        componentPaneExpended,
+        propsPaneExpended,
         canvasScale,
         pageConfig,
     } = props;
@@ -155,6 +157,8 @@ export default React.memo(function DragGuide(props) {
         refresh,
         componentPaneWidth,
         propsPaneWidth,
+        componentPaneExpended,
+        propsPaneExpended,
         canvasScale,
     ]);
 
