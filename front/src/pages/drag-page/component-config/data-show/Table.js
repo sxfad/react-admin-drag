@@ -108,7 +108,7 @@ function setTableColumns({node: tableNode, NodeRender, renderProps}) {
     }
 
     const loop = (node, columns) => {
-        const {id, props, children} = node;
+        const {id, props = {}, children} = node;
         const {render, ...otherProps} = props;
         const col = {...otherProps, className: `id_${id}`};
         if (render) col.render = () => <NodeRender {...renderProps} config={render}/>;

@@ -22,6 +22,27 @@ const dragImages = {
 export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
 export const TRIGGER_SIZE = 20;
 
+export function deleteNodeByKeyDown(e, id, activeElement, dragPageAction) {
+    if(!id) return;
+    const {metaKey, ctrlKey, key} = e;
+    const metaOrCtrl = metaKey || ctrlKey;
+
+    // Backspace Delete 键也删除 要区分是否有输入框获取焦点
+    if (['Delete', 'Backspace'].includes(key)) {
+
+        if (activeElement && ['INPUT', 'TEXTAREA'].includes(activeElement.tagName)) {
+            return;
+        }
+        dragPageAction.deleteNodeById(id);
+    }
+
+    // command(ctrl) + d 删除选中节点
+    if (metaOrCtrl && key === 'd') {
+        e.stopPropagation();
+        e.preventDefault();
+        dragPageAction.deleteNodeById(id);
+    }
+}
 
 // 复制兼容函数
 function fallbackCopyTextToClipboard(text) {
@@ -89,13 +110,16 @@ export function getTargetNode(
         targetElement,
         pageY,
         pageX,
-        horizontal=true,
+        horizontal = true,
         simple = false,
     },
 ) {
     if (!targetElement) return null;
 
     const componentId = getIdByElement(targetElement);
+
+    if (!componentId) return null;
+
     const loopParent = () => getTargetNode({
         draggingNode,
         pageConfig,
@@ -153,8 +177,15 @@ export function getTargetNode(
     return loopParent();
 }
 
+/**
+ * 判断 draggingNode 是否可以放入 targetNode
+ * @param draggingNode
+ * @param targetNode
+ * @param pageConfig
+ * @returns {boolean}
+ */
 function isAccept({draggingNode, targetNode, pageConfig}) {
-    let {dropInTo} = draggingNode;
+    let {dropInTo} = getComponentConfig(draggingNode?.config?.componentName) || {};
 
     const args = {
         draggingNode,
@@ -172,7 +203,7 @@ function isAccept({draggingNode, targetNode, pageConfig}) {
         if (!dropInTo.includes(targetNode.componentName)) return false;
     }
 
-    let {dropAccept} = targetNode;
+    let {dropAccept} = getComponentConfig(targetNode?.componentName) || {};
 
     if (typeof dropAccept === 'function') {
         if (!dropAccept(args)) return false;
@@ -411,14 +442,14 @@ export function getElementInfo(element, options) {
             if (horizontal) {
                 if (isLeft) return 'left';
                 if (isRight) return 'right';
-                if(!simple) {
+                if (!simple) {
                     if (isTop) return 'top';
                     if (isBottom) return 'bottom';
                 }
             }
             if (isTop) return 'top';
             if (isBottom) return 'bottom';
-            if(!simple) {
+            if (!simple) {
                 if (isLeft) return 'left';
                 if (isRight) return 'right';
             }

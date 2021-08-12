@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useThrottleFn } from 'ahooks';
+import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
+import {useThrottleFn} from 'ahooks';
 import config from 'src/commons/config-hoc';
-import { getTargetNode } from 'src/pages/drag-page/util';
+import {getTargetNode} from 'src/pages/drag-page/util';
 import s from './style.less';
 
 export default config({
@@ -9,7 +9,6 @@ export default config({
         return {
             pageConfig: state.dragPage.pageConfig,
             draggingNode: state.dragPage.draggingNode,
-            canvasDocument: state.dragPage.canvasDocument,
             targetNode: state.dragPage.targetNode,
             targetHoverPosition: state.dragPage.targetHoverPosition,
         };
@@ -22,14 +21,14 @@ export default config({
         draggingNode,
         expandedKeys,
         onExpand,
-        canvasDocument,
         targetNode,
         targetHoverPosition,
 
-        action: { dragPage: dragPageAction },
+        action: {dragPage: dragPageAction},
     } = props;
 
-    let { key, name, icon, isContainer, draggable, nodeData } = node;
+    let {key, name, icon, draggable, nodeData} = node;
+    const [unAccept, setUnAccept] = useState(false);
 
     name = <span className={s.nodeTitle}>{icon}{name}</span>;
 
@@ -42,17 +41,26 @@ export default config({
     }, [targetHoverPosition]);
 
     const hoverRef = useRef(0);
-    const nodeRef = useRef(null);
     const [dragIn, setDragIn] = useState(false);
 
     useEffect(() => {
+        if (!targetNode && dragIn) {
+            setUnAccept(true);
+            return () => {
+                setUnAccept(false);
+            };
+        }
+
         if (targetNode?.id === key) {
             setDragIn(true);
+            setUnAccept(false);
+
             return () => {
                 setDragIn(false);
-            }
+                setUnAccept(true);
+            };
         }
-    }, [targetNode, key]);
+    }, [targetNode, dragIn, key]);
 
     const handleDragStart = useCallback((e) => {
         e.stopPropagation();
@@ -70,13 +78,14 @@ export default config({
     }, [dragPageAction, draggable, nodeData]);
 
     const THROTTLE_TIME = 100;
-    const { run: throttleOver } = useThrottleFn(e => {
+    const {run: throttleOver} = useThrottleFn(e => {
+        setDragIn(true);
         const element = e.target;
 
         if (!element) return;
 
-        const { pageY, pageX } = e;
-        const { documentElement } = canvasDocument;
+        const {pageY, pageX} = e;
+        const {documentElement} = document;
         const {
             targetNode,
             targetHoverPosition,
@@ -89,10 +98,25 @@ export default config({
             pageX,
             horizontal: false,
             simple: true,
-        }) || { targetNode: null, targetElement: null };
+        }) || {targetNode: null, targetElement: null};
 
-        // 自身上，直接返回
-        if (draggingNode?.id === key) return;
+        // 自身上，不允许投放
+        if (draggingNode?.id === key) {
+            dragPageAction.setFields({
+                targetNode: null,
+                targetHoverPosition: null,
+            });
+            return;
+        }
+
+        // 目标节点并不是当前hover节点，不允许投放
+        if (targetNode?.id !== key) {
+            dragPageAction.setFields({
+                targetNode: null,
+                targetHoverPosition: null,
+            });
+            return;
+        }
 
         // 1s 后展开节点
         if (!hoverRef.current) {
@@ -107,14 +131,15 @@ export default config({
             targetNode,
             targetHoverPosition,
         });
-    }, { wait: THROTTLE_TIME, trailing: false });
+
+    }, {wait: THROTTLE_TIME, trailing: false});
 
     const handleDragOver = useCallback((e) => {
         e.preventDefault();
         e.stopPropagation();
 
         if (!draggingNode || !draggable) return;
-        const { dropType, type } = draggingNode;
+        const {dropType, type} = draggingNode;
 
         let cursor = 'move';
 
@@ -128,6 +153,7 @@ export default config({
     }, [draggingNode, throttleOver, draggable]);
 
     const handleDragLeave = useCallback((e) => {
+        setDragIn(false);
         if (!draggable) return;
 
         if (hoverRef.current) {
@@ -138,6 +164,7 @@ export default config({
 
 
     const handleDragEnd = useCallback(() => {
+        setDragIn(false);
         if (!draggable) return;
 
         if (hoverRef.current) {
@@ -146,6 +173,7 @@ export default config({
         }
 
         dragPageAction.setDraggingNode(null);
+        dragPageAction.setFields({targetNode: null, targetHoverPosition: null});
     }, [dragPageAction, draggable]);
 
     const handleDrop = useCallback((e) => {
@@ -158,6 +186,7 @@ export default config({
 
         e.preventDefault();
         e.stopPropagation();
+
 
         dragPageAction.insertNode({
             draggingNode,
@@ -177,26 +206,25 @@ export default config({
         bottom: '后',
         center: '内',
     };
+    const className = [
+        `id_${key}`,
+        s[hoverPosition],
+        {
+            [s.treeNode]: true,
+            [s.selected]: isSelected,
+            [s.dragging]: isDragging,
+            [s.dragIn]: dragIn && draggingNode,
+            [s.unDraggable]: !draggable,
+            [s.hasDraggingNode]: !!draggingNode,
+            [s.unAccept]: unAccept,
+        },
+    ];
     return (
         <div
-            ref={nodeRef}
             key={key}
             id={`treeNode_${key}`}
-            className={[
-                `id_${key}`,
-                s[hoverPosition],
-                {
-                    [s.treeNode]: true,
-                    [s.selected]: isSelected,
-                    [s.dragging]: isDragging,
-                    [s.dragIn]: dragIn && draggingNode,
-                    [s.unDraggable]: !draggable,
-                    [s.hasDraggingNode]: !!draggingNode,
-                },
-            ]}
+            className={className}
             draggable
-            data-component-id={key}
-            data-is-container={isContainer}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -205,7 +233,7 @@ export default config({
         >
             {name}
             {hoverPosition ? (
-                <div className={s.dragGuide} style={{ display: dragIn && draggingNode ? 'flex' : 'none' }}>
+                <div className={s.dragGuide} style={{display: dragIn && draggingNode ? 'flex' : 'none'}}>
                     <span>{positionMap[hoverPosition]}</span>
                 </div>
             ) : null}

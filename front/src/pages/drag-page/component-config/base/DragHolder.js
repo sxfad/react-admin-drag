@@ -1,4 +1,4 @@
 export default {
-    draggable: true,
+    draggable: false,
     isContainer: false,
 };
