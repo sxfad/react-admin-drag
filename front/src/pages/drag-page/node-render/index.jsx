@@ -179,4 +179,4 @@ function NodeRender(props) {
 NodeRender.__ANT_BREADCRUMB_SEPARATOR = true;
 NodeRender.__ANT_BREADCRUMB_ITEM = true;
 
-export default NodeRender;
+export default React.memo(NodeRender);

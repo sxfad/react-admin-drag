@@ -11,8 +11,6 @@ import {findNodeById, isNode, setNodeId} from 'src/pages/drag-page/util/node-uti
 
 export default React.memo(function DragDelegation(props) {
     const {
-        className,
-        children,
         dragPageAction,
         pageConfig,
         componentPaneActiveKey,
@@ -301,6 +299,8 @@ export default React.memo(function DragDelegation(props) {
 
     // 键盘事件
     useEffect(() => {
+        if(!canvasDocument) return;
+
         canvasDocument.addEventListener('keydown', handleSelectedNodeKeyDown);
         canvasDocument.addEventListener('paste', handlePaste);
         return () => {
@@ -332,6 +332,8 @@ export default React.memo(function DragDelegation(props) {
 
     // 在组件库中查找组件
     useEffect(() => {
+        if(!canvasDocument) return;
+
         window.addEventListener('keydown', handleSearchKeyDown);
         canvasDocument.addEventListener('keydown', handleSearchKeyDown);
         return () => {
@@ -340,23 +342,42 @@ export default React.memo(function DragDelegation(props) {
         };
     }, [canvasDocument, handleSearchKeyDown]);
 
-    return (
-        <div
-            className={className}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            onDragOver={e => {
-                // 阻止默认事件，否则drop 不触发
-                e.preventDefault();
-                e.stopPropagation();
-                handleDropEffect(e);
-                handleChangeDropType(e);
-                handleDragOver(e);
-            }}
-            onDrop={handleDrop}
-            onClick={handleClick}
-        >
-            {children}
-        </div>
-    );
+    // 拖拽相关事件
+    useEffect(() => {
+        if(!canvasDocument) return;
+
+        const onOver = e => {
+            // 阻止默认事件，否则drop 不触发
+            e.preventDefault();
+            e.stopPropagation();
+            handleDropEffect(e);
+            handleChangeDropType(e);
+            handleDragOver(e);
+        }
+        canvasDocument.addEventListener('dragstart', handleDragStart);
+        canvasDocument.addEventListener('dragend', handleDragEnd);
+        canvasDocument.addEventListener('dragover', onOver);
+        canvasDocument.addEventListener('drop', handleDrop);
+        canvasDocument.addEventListener('click', handleClick);
+
+        return () => {
+          canvasDocument.removeEventListener('dragstart', handleDragStart);
+          canvasDocument.removeEventListener('dragend', handleDragEnd);
+          canvasDocument.removeEventListener('dragover', onOver);
+          canvasDocument.removeEventListener('drop', handleDrop);
+          canvasDocument.removeEventListener('click', handleClick);
+        }
+
+    }, [
+      canvasDocument,
+      handleDropEffect,
+      handleChangeDropType,
+      handleDragOver,
+      handleDragStart,
+      handleDragEnd,
+      handleDrop,
+      handleClick,
+    ]);
+
+    return null;
 });

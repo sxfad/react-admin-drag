@@ -139,73 +139,19 @@ export default React.memo(config({
                 getTargetContainer={() => canvasRenderRoot}
                 getContainer={() => canvasRenderRoot}
             >
-                {viewMode === 'layout' ? (
-                    <>
-                        <DragGuide
-                            draggingNode={draggingNode}
-                            draggingElement={draggingElement}
-                            targetNode={targetNode}
-                            selectedNode={selectedNode}
-                            canvasDocument={canvasDocument}
-                            targetElementSize={targetElementSize}
-                            targetHoverPosition={targetHoverPosition}
-                            componentPaneWidth={componentPaneWidth}
-                            propsPaneWidth={propsPaneWidth}
-                            canvasScale={canvasScale}
-                            pageConfig={pageConfig}
-                            componentPaneExpended={componentPaneExpended}
-                            propsPaneExpended={propsPaneExpended}
-                        />
-                        <ActionDelegation
-                            componentPaneActiveKey={componentPaneActiveKey}
-                            pageConfig={pageConfig}
-                            dragPageAction={dragPageAction}
-                            draggingNode={draggingNode}
-                            canvasDocument={canvasDocument}
-                            nodeSelectType={nodeSelectType}
-                            selectedNode={selectedNode}
-                            targetNode={targetNode}
-                            targetHoverPosition={targetHoverPosition}
-                        >
-                            <NodeRender
-                                config={pageConfig}
-                                isPreview={isPreview}
-                                canvasRenderRoot={canvasRenderRoot}
-                                state={state}
-                            />
-                        </ActionDelegation>
-                    </>
-                ) : (
-                    <NodeRender
-                        config={pageConfig}
-                        isPreview={isPreview}
-                        canvasRenderRoot={canvasRenderRoot}
-                        state={state}
-                    />
-                )}
+                <NodeRender
+                    config={pageConfig}
+                    isPreview={isPreview}
+                    canvasRenderRoot={canvasRenderRoot}
+                    state={state}
+                />
             </ConfigProvider>,
             canvasRenderRoot,
         );
     }, [
-        viewMode,
-        pageConfig,
-        canvasDocument,
         canvasRenderRoot,
         isPreview,
-        dragPageAction,
-        componentPaneActiveKey,
-        selectedNode,
-        nodeSelectType,
-        draggingElement,
-        draggingNode,
-        targetNode,
-        targetElementSize,
-        targetHoverPosition,
-        componentPaneWidth,
-        propsPaneWidth,
-        componentPaneExpended,
-        propsPaneExpended,
-        canvasScale,
+        pageConfig
     ]);
 
     return (
@@ -217,6 +163,32 @@ export default React.memo(config({
                 ref={iframeRef}
                 srcDoc={iframeSrcDoc}
                 onLoad={handleIframeLoad}
+            />
+            <DragGuide
+                draggingNode={draggingNode}
+                draggingElement={draggingElement}
+                targetNode={targetNode}
+                selectedNode={selectedNode}
+                canvasDocument={canvasDocument}
+                targetElementSize={targetElementSize}
+                targetHoverPosition={targetHoverPosition}
+                componentPaneWidth={componentPaneWidth}
+                propsPaneWidth={propsPaneWidth}
+                canvasScale={canvasScale}
+                pageConfig={pageConfig}
+                componentPaneExpended={componentPaneExpended}
+                propsPaneExpended={propsPaneExpended}
+            />
+            <ActionDelegation
+                componentPaneActiveKey={componentPaneActiveKey}
+                pageConfig={pageConfig}
+                dragPageAction={dragPageAction}
+                draggingNode={draggingNode}
+                canvasDocument={canvasDocument}
+                nodeSelectType={nodeSelectType}
+                selectedNode={selectedNode}
+                targetNode={targetNode}
+                targetHoverPosition={targetHoverPosition}
             />
             <Scale/>
         </>
