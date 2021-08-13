@@ -8,7 +8,7 @@ import config from 'src/commons/config-hoc';
 import {convertNodeToTreeData} from './util';
 import s from './style.less';
 import {findNodeById, findParentNodes} from 'src/pages/drag-page/util/node-util';
-import {deleteNodeByKeyDown, scrollElement} from 'src/pages/drag-page/util';
+import {deleteNodeByKeyDown, scrollElement, useNextPageConfig} from 'src/pages/drag-page/util';
 import TreeNode from './TreeNode';
 
 export default React.memo(config({
@@ -22,13 +22,15 @@ export default React.memo(config({
     const {
         icon,
         title,
-        pageConfig,
         selectedNode,
         action: {dragPage: dragPageAction},
     } = props;
+
     const [expandedKeys, setExpandedKeys] = useState([]);
     const [isAllExpanded, setIsAllExpanded] = useState(false);
     const contentRef = useRef(null);
+
+    const pageConfig = useNextPageConfig(props.pageConfig);
 
     const {treeData = [], nodeCount = 0, allKeys = []} = useMemo(() => {
         if (!pageConfig) return {};
@@ -39,13 +41,14 @@ export default React.memo(config({
     const renderNode = useCallback((node) => {
         return (
             <TreeNode
+                pageConfig={pageConfig}
                 selectedKey={selectedNode?.id}
                 node={node}
                 expandedKeys={expandedKeys}
                 onExpand={expandedKeys => setExpandedKeys(expandedKeys)}
             />
         );
-    }, [selectedNode, expandedKeys]);
+    }, [selectedNode, expandedKeys, pageConfig]);
 
     const handleSelected = useCallback(([key]) => {
         if (!key) {

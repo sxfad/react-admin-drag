@@ -1,5 +1,5 @@
 import {getComponentConfig} from 'src/pages/drag-page/component-config';
-import {findNodesByName, findParentNodeByName, findNodeById, findParentNodeById} from 'src/pages/drag-page/util/node-util';
+import {findNodesByName, findParentNodeByName, findNodeById, findParentNodeById, isNode} from 'src/pages/drag-page/util/node-util';
 import * as raLibComponent from '@ra-lib/admin';
 import * as components from 'src/pages/drag-page/components';
 import * as antdComponent from 'antd/es';
@@ -10,6 +10,45 @@ import propsImage from './drap-images/props.svg';
 import wrapperImage from './drap-images/wrapper.svg';
 import moveImage from './drap-images/move.svg';
 import {v4 as uuid} from 'uuid';
+import PubSub from 'PubSub';
+import {useEffect, useMemo, useState} from 'react';
+
+const pubsub = new PubSub();
+
+export function emitUpdateNodes(data) {
+    pubsub.publish('update-node', data);
+}
+
+export function useOnUpdateNodes(callback) {
+    useEffect(() => {
+        const onUpdateNode = pubsub.subscribe('update-node', callback);
+        return () => {
+            pubsub.unsubscribe(onUpdateNode);
+        };
+    }, [callback]);
+}
+
+/**
+ * 节点有更新时，返回新的pageConfig实例
+ * @param pageConfig
+ * @returns {*}
+ */
+export function useNextPageConfig(pageConfig) {
+    const [refresh, setRefresh] = useState({});
+
+    const nextPageConfig = useMemo(() => {
+        return {...pageConfig, ...refresh};
+    }, [pageConfig, refresh]);
+
+    useEffect(() => {
+        const onUpdateNode = pubsub.subscribe('update-node', () => setRefresh({}));
+        return () => {
+            pubsub.unsubscribe(onUpdateNode);
+        };
+    }, []);
+
+    return nextPageConfig;
+}
 
 const dragImages = {
     replace: replaceImage,
@@ -111,9 +150,10 @@ export function getTextFromClipboard() {
 
 // 添加占位符
 export function addDragHolder(node) {
-    if (!node) return;
+    if (!isNode(node)) return;
 
     const {componentName, children} = node;
+
     const nodeConfig = getComponentConfig(componentName);
     const {isContainer, withHolder, holderProps} = nodeConfig;
 

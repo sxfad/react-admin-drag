@@ -1,5 +1,5 @@
-import React, {createElement} from 'react';
-import {getComponent} from 'src/pages/drag-page/util';
+import React, {createElement, useCallback, useState} from 'react';
+import {getComponent, useOnUpdateNodes} from 'src/pages/drag-page/util';
 import {isNode} from 'src/pages/drag-page/util/node-util';
 import {getComponentConfig} from 'src/pages/drag-page/component-config';
 import {store, actions} from 'src/models';
@@ -25,7 +25,8 @@ const loop = (obj, cb) => {
         });
 };
 
-function NodeRender(props) {
+const NodeRender = React.memo(function(props) {
+    console.log('NodeRender');
     let {
         config,
         isPreview = true,
@@ -33,6 +34,19 @@ function NodeRender(props) {
         className,
         ...others
     } = props;
+
+    const [, setUpdate] = useState({});
+
+    const callback = useCallback((data) => {
+        const node = data.find(item => item.id === config?.id);
+        if (node) {
+            const {type} = node;
+            setUpdate({type});
+        }
+    }, [config]);
+
+    useOnUpdateNodes(callback);
+
 
     // 配置并不是组件节点，直接返回配置内容
     if (!isNode(config)) return config;
@@ -173,10 +187,10 @@ function NodeRender(props) {
         className: cls,
         children: childrenEle,
     });
-}
+});
 
 // 可以去掉antd的子元素类型检查提醒
 NodeRender.__ANT_BREADCRUMB_SEPARATOR = true;
 NodeRender.__ANT_BREADCRUMB_ITEM = true;
 
-export default React.memo(NodeRender);
+export default NodeRender;

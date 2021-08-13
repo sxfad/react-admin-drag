@@ -8,6 +8,7 @@ import NodeRender from 'src/pages/drag-page/node-render';
 import ActionDelegation from './action-delegation';
 import DragGuide from './drag-guide';
 import Scale from './scale';
+import {useNextPageConfig} from 'src/pages/drag-page/util';
 
 // 构建iframe内容
 const headHtml = document.head.innerHTML;
@@ -81,6 +82,9 @@ export default React.memo(config({
         propsPaneExpended,
         action: {dragPage: dragPageAction},
     } = props;
+
+    const nextPageConfig = useNextPageConfig(pageConfig);
+
     const iframeRef = useRef(null);
     const isPreview = viewMode === 'preview';
 
@@ -151,7 +155,7 @@ export default React.memo(config({
     }, [
         canvasRenderRoot,
         isPreview,
-        pageConfig
+        pageConfig,
     ]);
 
     return (
@@ -175,13 +179,13 @@ export default React.memo(config({
                 componentPaneWidth={componentPaneWidth}
                 propsPaneWidth={propsPaneWidth}
                 canvasScale={canvasScale}
-                pageConfig={pageConfig}
+                pageConfig={nextPageConfig}
                 componentPaneExpended={componentPaneExpended}
                 propsPaneExpended={propsPaneExpended}
             />
             <ActionDelegation
                 componentPaneActiveKey={componentPaneActiveKey}
-                pageConfig={pageConfig}
+                pageConfig={nextPageConfig}
                 dragPageAction={dragPageAction}
                 draggingNode={draggingNode}
                 canvasDocument={canvasDocument}

@@ -7,7 +7,6 @@ import s from './style.less';
 export default config({
     connect: state => {
         return {
-            pageConfig: state.dragPage.pageConfig,
             draggingNode: state.dragPage.draggingNode,
             targetNode: state.dragPage.targetNode,
             targetHoverPosition: state.dragPage.targetHoverPosition,
