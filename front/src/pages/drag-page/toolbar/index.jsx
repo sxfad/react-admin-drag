@@ -1,4 +1,4 @@
-import React, {useMemo, useEffect} from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import {
     EyeOutlined,
     FormOutlined,
@@ -7,11 +7,13 @@ import {
     CloudServerOutlined,
     SwapLeftOutlined,
     SwapRightOutlined,
+    QuestionCircleOutlined,
 } from '@ant-design/icons';
-import {Tooltip} from 'antd';
-import {Icon} from 'src/components';
+import { Tooltip } from 'antd';
+import { Icon } from 'src/components';
 import config from 'src/commons/config-hoc';
-import {isMac} from 'src/pages/drag-page/util';
+import { isMac } from 'src/pages/drag-page/util';
+import Help from '../help';
 import s from './style.less';
 
 export default React.memo(config({
@@ -25,9 +27,10 @@ export default React.memo(config({
     const {
         viewMode,
         selectedNode,
-        action: {dragPage: dragPageAction},
+        action: { dragPage: dragPageAction },
     } = props;
 
+    const [visible, setVisible] = useState(false);
 
     useEffect(() => {
         if (viewMode === 'preview') {
@@ -49,27 +52,27 @@ export default React.memo(config({
         return [
             {
                 key: 'layout',
-                icon: <FormOutlined/>,
+                icon: <FormOutlined />,
                 label: '布局模式',
-                onClick: () => dragPageAction.setFields({viewMode: 'layout'}),
+                onClick: () => dragPageAction.setFields({ viewMode: 'layout' }),
             },
             {
                 key: 'preview',
-                icon: <EyeOutlined/>,
+                icon: <EyeOutlined />,
                 label: '预览模式',
-                onClick: () => dragPageAction.setFields({viewMode: 'preview'}),
+                onClick: () => dragPageAction.setFields({ viewMode: 'preview' }),
             },
             {
                 key: 'divider',
             },
             {
                 key: 'undo',
-                icon: <SwapLeftOutlined/>,
+                icon: <SwapLeftOutlined />,
                 label: '上一步',
             },
             {
                 key: 'redo',
-                icon: <SwapRightOutlined/>,
+                icon: <SwapRightOutlined />,
                 label: '下一步',
             },
             {
@@ -77,29 +80,38 @@ export default React.memo(config({
             },
             {
                 key: 'code',
-                icon: <Icon type="icon-code"/>,
+                icon: <Icon type="icon-code" />,
                 label: '代码',
-                onClick: () => dragPageAction.setFields({pageCodeVisible: true}),
+                onClick: () => dragPageAction.setFields({ pageCodeVisible: true }),
             },
             {
                 key: 'save',
-                icon: <SaveOutlined/>,
+                icon: <SaveOutlined />,
                 label: `保存(${isMac ? '⌘' : 'ctrl'}+s)`,
                 onClick: () => dragPageAction.savePageConfig(),
             },
             {
                 key: 'delete',
-                icon: <DeleteOutlined/>,
+                icon: <DeleteOutlined />,
                 label: `删除(${isMac ? '⌘' : 'ctrl'}+d)`,
                 disabled: !selectedNode,
                 onClick: () => dragPageAction.deleteNodeById(selectedNode?.id),
             },
             {
                 key: 'saveAs',
-                icon: <CloudServerOutlined/>,
+                icon: <CloudServerOutlined />,
                 label: '另存为',
                 disabled: !selectedNode,
                 onClick: () => dragPageAction.saveComponentAs(selectedNode),
+            },
+            {
+                key: 'divider',
+            },
+            {
+                key: 'help',
+                icon: <QuestionCircleOutlined />,
+                label: '帮助',
+                onClick: () => setVisible(true),
             },
         ];
     }, [dragPageAction, selectedNode]);
@@ -110,10 +122,10 @@ export default React.memo(config({
             </div>
             <div className={s.center}>
                 {tools.map((item, index) => {
-                    let {key, icon, label, onClick, disabled} = item;
+                    let { key, icon, label, onClick, disabled } = item;
 
                     if (key === 'divider') {
-                        return <div key={index} className={s.divider}/>;
+                        return <div key={index} className={s.divider} />;
                     }
 
                     const isActive = key === viewMode;
@@ -144,7 +156,11 @@ export default React.memo(config({
                     );
                 })}
             </div>
-            <div className={s.right}/>
+            <div className={s.right} />
+            <Help
+                visible={visible}
+                onCancel={() => setVisible(false)}
+            />
         </div>
     );
 }));
