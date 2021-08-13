@@ -1,0 +1,33 @@
+.root {
+    height: 24px;
+    display: flex;
+    align-items: center;
+    padding-top: 4px;
+
+    & > div {
+        display: inline-block;
+    }
+
+    & > div:last-child {
+        :global {
+            .anticon {
+                display: none;
+            }
+        }
+    }
+
+    .tag {
+        font-size: 12px;
+        cursor: pointer;
+
+        &:hover {
+            opacity: .7;
+        }
+    }
+
+    :global {
+        .anticon {
+            margin: 2px;
+        }
+    }
+}

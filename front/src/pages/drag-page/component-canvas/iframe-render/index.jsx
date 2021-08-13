@@ -7,7 +7,6 @@ import zhCN from 'antd/lib/locale-provider/zh_CN';
 import NodeRender from 'src/pages/drag-page/node-render';
 import ActionDelegation from './action-delegation';
 import DragGuide from './drag-guide';
-import Scale from './scale';
 import {useNextPageConfig} from 'src/pages/drag-page/util';
 
 export default React.memo(config({
@@ -194,7 +193,6 @@ export default React.memo(config({
                 targetNode={targetNode}
                 targetHoverPosition={targetHoverPosition}
             />
-            <Scale/>
         </>
     );
 }));
