@@ -100,12 +100,11 @@ export default {
     setDraggingNode: draggingNode => {
         if (!draggingNode) return {draggingNode: null};
 
-        const {config} = draggingNode;
+        let {config, type, dropType} = draggingNode;
 
         const nodeConfig = getComponentConfig(config.componentName);
         const {propsToSet, isWrapper} = nodeConfig;
 
-        let dropType;
         let dropTypeChangeable = true;
         if (propsToSet) dropType = 'props';
         if (isWrapper) {
@@ -116,7 +115,7 @@ export default {
         return {
             draggingNode: {
                 id: config.id,
-                type: 'new',
+                type,
                 config,
                 propsToSet: cloneDeep(propsToSet),
                 dropTypeChangeable,
@@ -133,6 +132,19 @@ export default {
     // 保存页面配置到服务端
     savePageConfig() {
         // TODO
+    },
+
+    /**
+     * 发布订阅方式更新具体节点
+     * @param node
+     */
+    updateNode(node) {
+        emitUpdateNodes([
+            {
+                id: node?.id,
+                type: 'update',
+            },
+        ]);
     },
 
     /**
