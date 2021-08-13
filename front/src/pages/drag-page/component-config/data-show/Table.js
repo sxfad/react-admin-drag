@@ -125,6 +125,7 @@ function setTableColumns({node: tableNode, NodeRender, renderProps}) {
     props.columns = columns;
     if (!tableNode.props) tableNode.props = {};
     tableNode.props.columns = columns;
+    console.log(tableNode);
 }
 
 

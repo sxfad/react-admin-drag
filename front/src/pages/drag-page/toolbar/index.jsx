@@ -12,7 +12,7 @@ import {Tooltip} from 'antd';
 import {Icon} from 'src/components';
 import config from 'src/commons/config-hoc';
 import {isMac} from 'src/pages/drag-page/util';
-import styles from './style.less';
+import s from './style.less';
 
 export default React.memo(config({
     connect: state => {
@@ -44,7 +44,7 @@ export default React.memo(config({
         }
     }, [viewMode, dragPageAction]);
 
-    const showLabel = true;
+    const showLabel = false;
     const tools = useMemo(() => {
         return [
             {
@@ -104,16 +104,16 @@ export default React.memo(config({
         ];
     }, [dragPageAction, selectedNode]);
     return (
-        <div className={styles.root}>
-            <div className={styles.left}>
+        <div className={s.root}>
+            <div className={s.left}>
                 {/*<Button onClick={() => props.history.goBack()}>返回</Button>*/}
             </div>
-            <div className={styles.center}>
+            <div className={s.center}>
                 {tools.map((item, index) => {
                     let {key, icon, label, onClick, disabled} = item;
 
                     if (key === 'divider') {
-                        return <div key={index} className={styles.divider}/>;
+                        return <div key={index} className={s.divider}/>;
                     }
 
                     const isActive = key === viewMode;
@@ -124,15 +124,15 @@ export default React.memo(config({
                         <div
                             key={key}
                             className={{
-                                [styles.toolItem]: true,
-                                [styles.active]: isActive,
-                                [styles.disabled]: disabled,
-                                [styles.showLabel]: showLabel,
+                                [s.toolItem]: true,
+                                [s.active]: isActive,
+                                [s.disabled]: disabled,
+                                [s.showLabel]: showLabel,
                             }}
                             onClick={onClick}
                         >
-                            <span className={styles.icon}>{icon}</span>
-                            {showLabel ? <span className={styles.label}>{label}</span> : null}
+                            <span className={s.icon}>{icon}</span>
+                            {showLabel ? <span className={s.label}>{label}</span> : null}
                         </div>
                     );
 
@@ -144,7 +144,7 @@ export default React.memo(config({
                     );
                 })}
             </div>
-            <div className={styles.right}/>
+            <div className={s.right}/>
         </div>
     );
 }));

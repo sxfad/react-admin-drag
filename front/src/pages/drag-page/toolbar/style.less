@@ -3,6 +3,8 @@
 .root {
     display: flex;
     align-items: center;
+    background: #eaedf0;
+    border-bottom: 1px solid @border-color-base;
 }
 
 .left {
@@ -22,7 +24,7 @@
 }
 
 .divider {
-    border-left: 1px solid #d8d8d8;
+    border-left: 1px solid @border-color-base;
     height: 40px;
     margin: 0 16px;
 }
@@ -33,22 +35,23 @@
     align-content: center;
     justify-content: center;
     width: 50px;
-    padding: 4px 0;
+    padding: 0;
     cursor: pointer;
     user-select: none;
 
     &.showLabel {
         width: 80px;
+        padding: 4px 0;
     }
 
     .icon {
         font-size: 18px;
-        margin-bottom: 2px;
         text-align: center;
     }
 
     .label {
         text-align: center;
+        margin-top: 2px;
     }
 
     &:hover {

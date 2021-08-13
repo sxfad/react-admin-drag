@@ -1,4 +1,4 @@
-import React, {useRef, useCallback, useEffect} from 'react';
+import React, {useRef, useCallback, useEffect, useMemo} from 'react';
 import ReactDOM from 'react-dom';
 import config from 'src/commons/config-hoc';
 import s from './style.less';
@@ -9,27 +9,6 @@ import ActionDelegation from './action-delegation';
 import DragGuide from './drag-guide';
 import Scale from './scale';
 import {useNextPageConfig} from 'src/pages/drag-page/util';
-
-// 构建iframe内容
-const headHtml = document.head.innerHTML;
-const iframeSrcDoc = `
-    <html lang="en">
-        <heade>
-            ${headHtml}
-        </heade>
-        <body style="padding:0; margin: 0; scroll-behavior: smooth; overflow: auto" class="${s.canvasBody}">
-            <div id="page-canvas">
-                <div id="dnd-container" class="${s.pageRoot}"></div>
-            </div>
-            <div id="drop-guide-line" style="display: none">
-                <span>前</span>
-            </div>
-            <div id="drop-guide-bg" style="display: none;">
-                <div id="drop-guide-name"/>
-            </div>
-        </body>
-    </html>
-`;
 
 export default React.memo(config({
     connect: state => {
@@ -83,6 +62,27 @@ export default React.memo(config({
         action: {dragPage: dragPageAction},
     } = props;
 
+    // 构建iframe内容
+    const iframeSrcDoc = useMemo(() => {
+        return `
+        <html lang="en">
+            <heade>
+                ${document.head.innerHTML}
+            </heade>
+            <body style="padding:0; margin: 0; scroll-behavior: smooth; overflow: auto" class="${s.canvasBody}">
+                <div id="page-canvas">
+                    <div id="dnd-container" class="${s.pageRoot}"></div>
+                </div>
+                <div id="drop-guide-line" style="display: none">
+                    <span>前</span>
+                </div>
+                <div id="drop-guide-bg" style="display: none;">
+                    <div id="drop-guide-name"/>
+                </div>
+            </body>
+        </html>
+    `;
+    }, []);
     const nextPageConfig = useNextPageConfig(pageConfig);
 
     const iframeRef = useRef(null);

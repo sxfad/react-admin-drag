@@ -61,8 +61,6 @@ const NodeRender = React.memo(function(props) {
         children,
     } = config;
 
-    const componentProps = cloneDeep(config.props || {});
-
     const componentConfig = getComponentConfig(componentName);
 
     let {
@@ -116,6 +114,8 @@ const NodeRender = React.memo(function(props) {
             });
         }
     });
+
+    const componentProps = cloneDeep(config.props || {});
 
     // 存在 wrapper，进行wrapper转换为父元素
     if (wrapper?.length) {
