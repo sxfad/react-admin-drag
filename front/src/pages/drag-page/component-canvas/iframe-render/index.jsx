@@ -188,6 +188,7 @@ export default React.memo(config({
                 dragPageAction={dragPageAction}
                 draggingNode={draggingNode}
                 canvasDocument={canvasDocument}
+                canvasRenderRoot={canvasRenderRoot}
                 nodeSelectType={nodeSelectType}
                 selectedNode={selectedNode}
                 targetNode={targetNode}

@@ -1,5 +1,6 @@
 import config from 'src/commons/config-hoc';
 import {useMemo} from 'react';
+import {GUIDE_COLORS} from 'src/pages/drag-page/component-canvas/iframe-render/drag-guide';
 
 export default config({
     connect: state => {
@@ -27,16 +28,19 @@ export default config({
             right: '后',
         }[targetHoverPosition];
 
+
         const {componentName: name} = targetNode;
 
         const {type, dropType} = draggingNode;
 
-        if (dropType === 'props') return `设置 ${name}属性`;
-        if (dropType === 'replace') return `替换 ${name}`;
-        if (dropType === 'wrapper') return `包裹 ${name}`;
+        const color = (GUIDE_COLORS[dropType] || GUIDE_COLORS.default)(1);
 
-        if (type === 'new') return `在 ${name} ${position} 新建节点`;
-        if (type === 'move') return `移动到 ${name} ${position}`;
+        if (dropType === 'props') return <span style={{color}}>设置 {name} 属性</span>;
+        if (dropType === 'replace') return <span style={{color}}>替换 {name} </span>;
+        if (dropType === 'wrapper') return <span style={{color}}>包裹 {name} </span>;
+
+        if (type === 'new') return <span style={{color}}>在 {name} {position} 新建节点</span>;
+        if (type === 'move') return <span style={{color}}>移动到 {name} {position}</span>;
 
     }, [
         draggingNode,

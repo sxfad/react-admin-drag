@@ -6,7 +6,7 @@ import s from './style.less';
 
 // 改变背景颜色，不同投放类型，对应不同的样色
 const DEFAULT_OPACITY = 0.1;
-const GUIDE_COLORS = {
+export const GUIDE_COLORS = {
     'props': (opacity = DEFAULT_OPACITY) => `rgba(255, 0, 0, ${opacity})`, // 红
     'replace': (opacity = DEFAULT_OPACITY) => `rgba(128, 128, 0, ${opacity})`, // 黄
     'wrapper': (opacity = DEFAULT_OPACITY) => `rgba(0, 0, 255, ${opacity})`, // 蓝色

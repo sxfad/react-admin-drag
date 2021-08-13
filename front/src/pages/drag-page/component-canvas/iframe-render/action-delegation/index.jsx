@@ -16,6 +16,7 @@ export default React.memo(function DragDelegation(props) {
         componentPaneActiveKey,
         draggingNode,
         canvasDocument,
+        canvasRenderRoot,
         nodeSelectType,
         selectedNode,
         targetNode,
@@ -299,7 +300,7 @@ export default React.memo(function DragDelegation(props) {
 
     // 键盘事件
     useEffect(() => {
-        if(!canvasDocument) return;
+        if (!canvasDocument) return;
 
         canvasDocument.addEventListener('keydown', handleSelectedNodeKeyDown);
         canvasDocument.addEventListener('paste', handlePaste);
@@ -332,7 +333,7 @@ export default React.memo(function DragDelegation(props) {
 
     // 在组件库中查找组件
     useEffect(() => {
-        if(!canvasDocument) return;
+        if (!canvasDocument) return;
 
         window.addEventListener('keydown', handleSearchKeyDown);
         canvasDocument.addEventListener('keydown', handleSearchKeyDown);
@@ -344,7 +345,7 @@ export default React.memo(function DragDelegation(props) {
 
     // 拖拽相关事件
     useEffect(() => {
-        if(!canvasDocument) return;
+        if (!canvasRenderRoot) return;
 
         const onOver = e => {
             // 阻止默认事件，否则drop 不触发
@@ -353,30 +354,30 @@ export default React.memo(function DragDelegation(props) {
             handleDropEffect(e);
             handleChangeDropType(e);
             handleDragOver(e);
-        }
-        canvasDocument.addEventListener('dragstart', handleDragStart);
-        canvasDocument.addEventListener('dragend', handleDragEnd);
-        canvasDocument.addEventListener('dragover', onOver);
-        canvasDocument.addEventListener('drop', handleDrop);
-        canvasDocument.addEventListener('click', handleClick);
+        };
+        canvasRenderRoot.addEventListener('dragstart', handleDragStart);
+        canvasRenderRoot.addEventListener('dragend', handleDragEnd);
+        canvasRenderRoot.addEventListener('dragover', onOver);
+        canvasRenderRoot.addEventListener('drop', handleDrop);
+        canvasRenderRoot.addEventListener('click', handleClick);
 
         return () => {
-          canvasDocument.removeEventListener('dragstart', handleDragStart);
-          canvasDocument.removeEventListener('dragend', handleDragEnd);
-          canvasDocument.removeEventListener('dragover', onOver);
-          canvasDocument.removeEventListener('drop', handleDrop);
-          canvasDocument.removeEventListener('click', handleClick);
-        }
+            canvasRenderRoot.removeEventListener('dragstart', handleDragStart);
+            canvasRenderRoot.removeEventListener('dragend', handleDragEnd);
+            canvasRenderRoot.removeEventListener('dragover', onOver);
+            canvasRenderRoot.removeEventListener('drop', handleDrop);
+            canvasRenderRoot.removeEventListener('click', handleClick);
+        };
 
     }, [
-      canvasDocument,
-      handleDropEffect,
-      handleChangeDropType,
-      handleDragOver,
-      handleDragStart,
-      handleDragEnd,
-      handleDrop,
-      handleClick,
+        canvasRenderRoot,
+        handleDropEffect,
+        handleChangeDropType,
+        handleDragOver,
+        handleDragStart,
+        handleDragEnd,
+        handleDrop,
+        handleClick,
     ]);
 
     return null;
