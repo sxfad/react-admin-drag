@@ -69,7 +69,7 @@ export default React.memo(config({
                 ${document.head.innerHTML}
             </heade>
             <body style="padding:0; margin: 0; scroll-behavior: smooth; overflow: auto" class="${s.canvasBody}">
-                <div id="page-canvas">
+                <div id="page-canvas" class="${s.pageCanvas}">
                     <div id="dnd-container" class="${s.pageRoot}"></div>
                 </div>
                 <div id="drop-guide-line" style="display: none">

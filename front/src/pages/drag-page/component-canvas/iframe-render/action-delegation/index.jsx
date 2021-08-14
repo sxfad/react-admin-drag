@@ -272,6 +272,11 @@ export default React.memo(function DragDelegation(props) {
     const handlePaste = useCallback(async (e) => {
         if (!selectedNode) return;
 
+        const {activeElement} = canvasDocument;
+        if (activeElement && ['INPUT', 'TEXTAREA'].includes(activeElement.tagName)) {
+            return;
+        }
+
         const node = await getNodeByText(e) || await getNodeByImage(e);
 
         if (!node) return;
@@ -296,7 +301,106 @@ export default React.memo(function DragDelegation(props) {
                 targetHoverPosition: null,
             });
         });
-    }, [dragPageAction, selectedNode, getNodeByText, getNodeByImage]);
+    }, [canvasDocument, dragPageAction, selectedNode, getNodeByText, getNodeByImage]);
+
+
+    // 空格 + 鼠标拖拽 移动画布
+    useEffect(() => {
+        if (!canvasDocument) return;
+
+        const info = {
+            spaceKeyPress: false,
+            mouseDown: false,
+            startY: 0,
+            startX:0,
+            startScrollTop: 0,
+            startScrollLeft: 0
+        }
+
+        let coverELe = canvasDocument.createElement('div');
+
+        function handleSpaceDown(e){
+            const {activeElement} = canvasDocument;
+            if (activeElement && ['INPUT', 'TEXTAREA'].includes(activeElement.tagName)) {
+                return;
+            }
+
+            const {key} = e;
+            if(key !==' ') return;
+            e.preventDefault();
+            e.stopPropagation();
+
+            if(info.spaceKeyPress) return;
+
+            info.spaceKeyPress = true;
+
+            coverELe.style.position = 'absolute';
+            coverELe.style.zIndex = 99999;
+            coverELe.style.left = 0;
+            coverELe.style.top = 0;
+            coverELe.style.right = 0;
+            coverELe.style.bottom = 0;
+            coverELe.style.background = 'rgba(255, 0, 0, .1)';
+            coverELe.style.cursor = 'grab';
+            canvasDocument.getElementById('page-canvas').appendChild(coverELe);
+        }
+        function handleSpaceUp(e) {
+            const {key} = e;
+            if(key === ' ') {
+                info.spaceKeyPress = false;
+                info.mouseDown = false;
+                coverELe.remove();
+            }
+        }
+
+        function handleMouseDown(e) {
+            if(!info.spaceKeyPress) return;
+            info.mouseDown = true;
+            coverELe.style.cursor = 'grabbing';
+            const {clientY, clientX} = e;
+            info.startY = clientY;
+            info.startX = clientX;
+            info.startScrollTop = canvasDocument.documentElement.scrollTop;
+            info.startScrollLeft = canvasDocument.documentElement.scrollLeft;
+        }
+        function handleMouseMove(e) {
+          // console.log(spaceKeyPress);
+            if(!info.spaceKeyPress) return;
+            if(!info.mouseDown) return;
+
+            coverELe.style.cursor = 'grabbing';
+
+            const {clientY, clientX} = e;
+            const y = clientY - info.startY;
+            const x = clientX - info.startX;
+
+            const top = info.startScrollTop - y;
+            const left = info.startScrollLeft - x;
+
+            canvasDocument.documentElement.scrollTop = top;
+            canvasDocument.documentElement.scrollLeft = left;
+        }
+        function handleMouseUp(){
+            if(!info.spaceKeyPress) return;
+            info.mouseDown = false;
+            coverELe.style.cursor = 'grab';
+        }
+
+        canvasDocument.addEventListener('keydown', handleSpaceDown);
+        canvasDocument.addEventListener('keyup', handleSpaceUp);
+        coverELe && coverELe.addEventListener('mousedown', handleMouseDown);
+        coverELe && coverELe.addEventListener('mousemove', handleMouseMove);
+        coverELe && coverELe.addEventListener('mouseup', handleMouseUp);
+        return () => {
+            coverELe && coverELe.remove();
+            canvasDocument.removeEventListener('keydown', handleSpaceDown);
+            canvasDocument.removeEventListener('keyup', handleSpaceUp);
+            coverELe && coverELe.removeEventListener('mousedown', handleMouseDown);
+            coverELe && coverELe.removeEventListener('mousemove', handleMouseMove);
+            coverELe && coverELe.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [canvasDocument]);
+
 
     // 键盘事件
     useEffect(() => {
