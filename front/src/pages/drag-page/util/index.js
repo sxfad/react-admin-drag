@@ -1,5 +1,11 @@
 import {getComponentConfig} from 'src/pages/drag-page/component-config';
-import {findNodesByName, findParentNodeByName, findNodeById, findParentNodeById, isNode} from 'src/pages/drag-page/util/node-util';
+import {
+    findNodesByName,
+    findParentNodeByName,
+    findNodeById,
+    findParentNodeById,
+    isNode
+} from 'src/pages/drag-page/util/node-util';
 import * as raLibComponent from '@ra-lib/admin';
 import * as components from 'src/pages/drag-page/components';
 import * as antdComponent from 'antd/es';
@@ -11,7 +17,70 @@ import wrapperImage from './drap-images/wrapper.svg';
 import moveImage from './drap-images/move.svg';
 import {v4 as uuid} from 'uuid';
 import PubSub from 'PubSub';
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect, useMemo, useState, createElement} from 'react';
+import ReactDOM from 'react-dom';
+import inflection from 'inflection';
+
+export const OTHER_HEIGHT = 0;
+
+
+// css 样式字符串 转 js 样式对象
+export function cssToObject(css) {
+    if (!css) return {};
+
+    css = css.replace(/"/g, '');
+
+    const ele = document.createElement('div');
+    ele.innerHTML = `<div style="${css}"></div>`;
+
+    const style = ele.childNodes[0].style || {};
+
+    const cssKeys = css.split(';').map(item => {
+        const cssKey = item.split(':')[0].replace(/-/g, '_');
+        const key = inflection.camelize(cssKey, true);
+
+        return key.trim();
+    }).filter(item => !!item);
+
+    return cssKeys.reduce((prev, key) => {
+        const value = style[key];
+        if (
+            value === ''
+            || value === 'initial'
+            || key.startsWith('webkit')
+            || !window.isNaN(key) // key 是数字
+        ) return prev;
+
+        prev[key] = value;
+        return prev;
+    }, {});
+}
+
+// js 样式对象 转 css 字符串
+export async function objectToCss(style) {
+    return new Promise((resolve, reject) => {
+
+        if (!style) return resolve('');
+
+        const ele = document.createElement('div');
+        ele.style.position = 'fixed';
+        ele.style.zIndex = -999;
+        ele.style.top = '-1000px';
+
+        document.body.append(ele);
+
+        ReactDOM.render(createElement('div', {style}), ele);
+
+        setTimeout(() => {
+            const css = ele.childNodes[0].style.cssText;
+
+            ele.remove();
+
+            resolve(css);
+        });
+    });
+}
+
 
 const pubsub = new PubSub();
 

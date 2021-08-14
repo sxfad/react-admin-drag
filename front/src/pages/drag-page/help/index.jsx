@@ -11,6 +11,7 @@ const markdown = `
 
 1. 「ctrl + f」 组件库中查找组件
 1. 「ctrl + click」 选中节点，再次取消选中
+1. 「space + 拖拽」 移动画布
 
 1. 选中节点：
     1. 「ctrl + d」 删除选中节点
