@@ -80,6 +80,7 @@ const ComponentStore = config({
                     allowClear
                     placeholder="请输入关键词搜索组件"
                     onChange={handleSearchChange}
+                    autoComplete="off"
                 />
                 <Select
                     style={{ width: '100%', marginTop: 4 }}

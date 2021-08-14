@@ -254,63 +254,66 @@ export default {
             ]);
         }
 
-        const targetNodeId = targetNode.id;
+        if(!dropType) {
 
-        const isBefore = ['top', 'left'].includes(targetHoverPosition);
-        const isAfter = ['right', 'bottom'].includes(targetHoverPosition);
-        const isChildren = ['center'].includes(targetHoverPosition);
+            const targetNodeId = targetNode.id;
 
-        if (isBefore || isAfter) {
-            const args = {node: parentNode, childNode: draggingNodeConfig, dragPageState: state};
-            const result = parentBeforeAddChildren(args);
+            const isBefore = ['top', 'left'].includes(targetHoverPosition);
+            const isAfter = ['right', 'bottom'].includes(targetHoverPosition);
+            const isChildren = ['center'].includes(targetHoverPosition);
 
-            if (result === false) return null;
+            if (isBefore || isAfter) {
+                const args = {node: parentNode, childNode: draggingNodeConfig, dragPageState: state};
+                const result = parentBeforeAddChildren(args);
 
-            // 方法内部会做： 如果存在，先删除，相当于移动位置
-            isBefore && insertBefore(pageConfig, draggingNodeConfig, targetNodeId);
-            isAfter && insertAfter(pageConfig, draggingNodeConfig, targetNodeId);
+                if (result === false) return null;
 
-            nextSelectedNode = draggingNodeConfig;
+                // 方法内部会做： 如果存在，先删除，相当于移动位置
+                isBefore && insertBefore(pageConfig, draggingNodeConfig, targetNodeId);
+                isAfter && insertAfter(pageConfig, draggingNodeConfig, targetNodeId);
 
-            // 发布订阅方式更新具体节点
-            emitUpdateNodes([
-                {
-                    id: parentNode?.id,
-                    type: 'update',
-                },
-            ]);
+                nextSelectedNode = draggingNodeConfig;
 
-            parentAfterAddChildren(args);
+                // 发布订阅方式更新具体节点
+                emitUpdateNodes([
+                    {
+                        id: parentNode?.id,
+                        type: 'update',
+                    },
+                ]);
 
-        }
+                parentAfterAddChildren(args);
 
-        if (isChildren) {
-            // 清除占位符
-            if (targetNode?.children?.length === 1
-                && targetNode.children[0].componentName === 'DragHolder'
-            ) {
-                // 需要保持保持children引用
-                targetNode.children.pop();
             }
 
-            const args = {node: targetNode, childNode: draggingNodeConfig, dragPageState: state};
-            const result = beforeAddChildren(args);
+            if (isChildren) {
+                // 清除占位符
+                if (targetNode?.children?.length === 1
+                    && targetNode.children[0].componentName === 'DragHolder'
+                ) {
+                    // 需要保持保持children引用
+                    targetNode.children.pop();
+                }
 
-            if (result === false) return null;
+                const args = {node: targetNode, childNode: draggingNodeConfig, dragPageState: state};
+                const result = beforeAddChildren(args);
 
-            insertChildren(pageConfig, draggingNodeConfig, targetNode);
+                if (result === false) return null;
 
-            nextSelectedNode = draggingNodeConfig;
+                insertChildren(pageConfig, draggingNodeConfig, targetNode);
 
-            // 发布订阅方式更新具体节点
-            emitUpdateNodes([
-                {
-                    id: targetNode?.id,
-                    type: 'update',
-                },
-            ]);
+                nextSelectedNode = draggingNodeConfig;
 
-            afterAddChildren(args);
+                // 发布订阅方式更新具体节点
+                emitUpdateNodes([
+                    {
+                        id: targetNode?.id,
+                        type: 'update',
+                    },
+                ]);
+
+                afterAddChildren(args);
+            }
         }
 
         // 节点被拖拽出去之后，尝试给父级添加DragHolder
