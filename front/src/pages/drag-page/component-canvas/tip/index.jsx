@@ -29,18 +29,20 @@ export default config({
         }[targetHoverPosition];
 
 
-        const {componentName: name} = targetNode;
+        const {componentName: targetName} = targetNode;
+        const draggingName = draggingNode?.config?.componentName || '目标';
 
-        const {type, dropType} = draggingNode;
+        const {type, dropType, propsToSet} = draggingNode;
+        console.log(propsToSet);
 
         const color = (GUIDE_COLORS[dropType] || GUIDE_COLORS.default)(1);
 
-        if (dropType === 'props') return <span style={{color}}>设置 {name} 属性</span>;
-        if (dropType === 'replace') return <span style={{color}}>替换 {name} </span>;
-        if (dropType === 'wrapper') return <span style={{color}}>包裹 {name} </span>;
+        if (dropType === 'props') return <span style={{color}}>将 {draggingName} 设置为 {targetName} 的 {Object.keys(propsToSet)} 属性</span>;
+        if (dropType === 'replace') return <span style={{color}}>{draggingName} 替换 {targetName} </span>;
+        if (dropType === 'wrapper') return <span style={{color}}>{draggingName} 包裹 {targetName} </span>;
 
-        if (type === 'new') return <span style={{color}}>在 {name} {position} 新建节点</span>;
-        if (type === 'move') return <span style={{color}}>移动到 {name} {position}</span>;
+        if (type === 'new') return <span style={{color}}>在 {targetName} {position} 新建 {draggingName}</span>;
+        if (type === 'move') return <span style={{color}}>移动 {draggingName} 到 {targetName} {position}</span>;
 
     }, [
         draggingNode,
