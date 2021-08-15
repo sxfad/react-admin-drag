@@ -149,20 +149,28 @@ function CodeEditor(props) {
         setCode(value);
     }, [value, language]);
 
-    // 保存、关闭 快捷键
+    // 保存、关闭或退出全屏、格式化等快捷键
     useEffect(() => {
         const monaco = monacoRef.current;
 
-        // ctrl(⌘) + s
-        editorRef.current.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function() {
-            handleSave(code);
-        });
-        
-        // esc
-        editorRef.current.addCommand(monaco.KeyCode.Escape, function() {
-            handleClose();
-        });
-    }, [code, handleSave, handleClose]);
+        // 保存 ctrl(⌘) + s
+        editorRef.current.addCommand(
+            monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
+            () => handleSave(code),
+        );
+
+        // 关闭或退出全屏 esc
+        editorRef.current.addCommand(
+            monaco.KeyCode.Escape,
+            () => handleClose(),
+        );
+
+        // 格式化 ctrl(⌘) + shift + f
+        editorRef.current.addCommand(
+            monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F,
+            () => handleFormat(),
+        );
+    }, [code, handleSave, handleClose, handleFormat]);
 
     // 检测错误
     useEffect(() => {
@@ -230,7 +238,7 @@ function CodeEditor(props) {
                         style={{marginRight: 8}}
                         onClick={handleFormat}
                     >
-                        格式化
+                        格式化({isMac ? '⌘' : 'ctrl'}+shift+f)
                     </Button>
                     {onSave ? (
                         errors?.length ? (
@@ -277,7 +285,7 @@ CodeEditor.propTypes = {
 CodeEditor.defaultProps = {
     language: 'javascript',
     editorWidth: '100%',
-    onChange: (code, errors) => undefined,
+    onChange: () => undefined,
     onClose: () => undefined,
 };
 
