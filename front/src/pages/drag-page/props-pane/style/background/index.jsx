@@ -6,10 +6,7 @@ import {
     Col,
 } from 'antd';
 import {PicCenterOutlined} from '@ant-design/icons';
-import RadioGroup from 'src/pages/drag-page/props-pane/components/radio-group';
-import UnitInput from 'src/pages/drag-page/props-pane/components/unit-input';
-import QuickPosition from 'src/pages/drag-page/props-pane/components/quick-position';
-import ColorInput from 'src/pages/drag-page/props-pane/components/color-input';
+import {RadioGroup, UnitInput, QuickPosition, ColorInput} from 'src/pages/drag-page/components';
 
 
 import styles from './style.less';

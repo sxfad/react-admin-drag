@@ -3,7 +3,7 @@ import {findParentNodeByName} from 'src/pages/drag-page/util/node-util';
 import {getComponentConfig} from 'src/pages/drag-page/component-config';
 import {colFields, getOnKeyDown} from '../common/Col';
 import {formElementTypes} from '@ra-lib/admin';
-import {options as ruleOptions} from 'src/pages/drag-page/props-pane/components/item-rules';
+import {options as ruleOptions} from 'src/pages/drag-page/components/item-rules';
 
 export default {
     editableContents: [

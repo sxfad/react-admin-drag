@@ -1,15 +1,11 @@
-import modalMethod from './modal';
-
-export const ModalConfirm = modalMethod('confirm');
-export const ModalSuccess = modalMethod('success');
-export const ModalInfo = modalMethod('info');
-export const ModalError = modalMethod('error');
-export const ModalWarning = modalMethod('warning');
-
-export DragHolder from './drag-holder';
-export Text from './text';
-export RootDragHolder from './root-drag-holder';
-export Notification from './notification';
-export Message from './message';
-export DynamicFormItem from './dynamic-form-item';
-
+export DragBar from './drag-bar';
+export Help from './help';
+export ColorInput from './color-input';
+export ItemRules from './item-rules';
+export QuickPosition from './quick-position';
+export RadioGroup from './radio-group';
+export RectInputsWrapper from './rect-inputs-wrapper';
+export SelectedNode from './selected-node';
+export SliderInput from './slider-input';
+export StyleEditor from './style-editor';
+export UnitInput from './unit-input';

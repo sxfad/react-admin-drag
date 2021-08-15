@@ -4,9 +4,7 @@ import {
     InputNumber,
 } from 'antd';
 import {Icon} from 'src/components';
-import RadioGroup from 'src/pages/drag-page/props-pane/components/radio-group';
-import UnitInput from 'src/pages/drag-page/props-pane/components/unit-input';
-import RectInputsWrapper from 'src/pages/drag-page/props-pane/components/rect-inputs-wrapper';
+import {RadioGroup, UnitInput, RectInputsWrapper} from 'src/pages/drag-page/components'
 import {handleSyncFields} from '../util';
 import styles from './style.less';
 

@@ -4,10 +4,11 @@ import {
     findParentNodeByName,
     findNodeById,
     findParentNodeById,
-    isNode
+    isNode,
+    loopNode,
 } from 'src/pages/drag-page/util/node-util';
 import * as raLibComponent from '@ra-lib/admin';
-import * as components from 'src/pages/drag-page/components';
+import * as components from 'src/pages/drag-page/customer-components';
 import * as antdComponent from 'antd/es';
 import * as antdIcon from '@ant-design/icons';
 import newImage from './drap-images/new.svg';
@@ -23,6 +24,140 @@ import inflection from 'inflection';
 
 export const OTHER_HEIGHT = 0;
 
+// 获取元素中间位置
+export function getEleCenterInWindow(element) {
+    if (!element) return null;
+
+    const {x, y, width, height} = element.getBoundingClientRect();
+
+    return {
+        x: x + width / 2,
+        y: y + height / 2,
+    };
+}
+
+// 删除所有非关联id
+export function deleteUnLinkedIds(nodeConfig, keepIds = []) {
+    let linkedIds = findLinkSourceComponentIds(nodeConfig);
+
+    linkedIds = linkedIds.concat(keepIds);
+
+    loopNode(nodeConfig, node => {
+        if (!linkedIds.includes(node.id)) Reflect.deleteProperty(node, 'id');
+    });
+}
+
+// 获取含有关联元素的ids
+export function findLinkSourceComponentIds(pageConfig) {
+    const ids = [];
+    loopNode(pageConfig, node => {
+        const propsToSet = node.propsToSet;
+        const componentId = node.id;
+
+        if (propsToSet) {
+            const targetIds = Object.entries(propsToSet)
+                .filter(([, value]) => (typeof value === 'string'))
+                .map(([key, value]) => {
+                    return findLinkTargetComponentIds({
+                        key,
+                        value,
+                        pageConfig,
+                    });
+                }).flat();
+
+            // 存在target
+            if (targetIds?.length) {
+                ids.push(componentId);
+            }
+        }
+    });
+
+    return ids;
+}
+
+// 获取所有关联目标组件id
+function findLinkTargetComponentIds(options) {
+    const {
+        key,
+        value,
+        pageConfig,
+    } = options;
+
+    const result = [];
+
+    loopNode(pageConfig, node => {
+        let {props} = node;
+        if (!props) props = {};
+
+        if (props[key] === value) {
+            const targetComponentId = node?.id;
+            result.push(targetComponentId);
+        }
+    });
+
+    return result;
+}
+
+
+// 获取关联元素位置
+export function findLinkTargetsPosition(options) {
+    const {pageConfig, selectedNode, canvasDocument} = options;
+
+    if (!canvasDocument) return [];
+
+    if (!selectedNode) return [];
+
+    const {id: componentId, propsToSet} = selectedNode;
+
+    if (!propsToSet) return [];
+
+    return Object.entries(propsToSet)
+        .map(([key, value]) => {
+            return findElementPosition({
+                pageConfig,
+                key,
+                value,
+                componentId,
+                canvasDocument,
+            }) || [];
+        }).flat();
+}
+
+// 获取位置
+function findElementPosition(options) {
+    const {
+        key,
+        value,
+        componentId: sourceComponentId,
+        canvasDocument,
+        pageConfig,
+    } = options;
+
+    const targetIds = findLinkTargetComponentIds({
+        key,
+        value,
+        pageConfig,
+    });
+
+    return targetIds.map(targetComponentId => {
+        let ele = canvasDocument.querySelector(`[data-component-id="${targetComponentId}"]`);
+        if (!ele) {
+            ele = document.getElementById(`sourceLinkPoint_${sourceComponentId}`);
+        }
+        if (!ele) return false;
+
+        const {x, y, width, height} = ele.getBoundingClientRect();
+        return {
+            key: `${value}__${targetComponentId}`,
+            propsKey: key,
+            propsValue: value,
+            endX: x + width / 2,
+            endY: y + height / 2,
+            targetComponentId,
+            sourceComponentId,
+        };
+    }).filter(item => !!item);
+}
 
 // css 样式字符串 转 js 样式对象
 export function cssToObject(css) {
@@ -85,12 +220,12 @@ export async function objectToCss(style) {
 const pubsub = new PubSub();
 
 export function emitUpdateNodes(data) {
-    pubsub.publish('update-node', data);
+    pubsub.publish('update-nodes', data);
 }
 
 export function useOnUpdateNodes(callback) {
     useEffect(() => {
-        const onUpdateNode = pubsub.subscribe('update-node', callback);
+        const onUpdateNode = pubsub.subscribe('update-nodes', callback);
         return () => {
             pubsub.unsubscribe(onUpdateNode);
         };
@@ -110,7 +245,7 @@ export function useNextPageConfig(pageConfig) {
     }, [pageConfig, refresh]);
 
     useEffect(() => {
-        const onUpdateNode = pubsub.subscribe('update-node', () => setRefresh({}));
+        const onUpdateNode = pubsub.subscribe('update-nodes', () => setRefresh({}));
         return () => {
             pubsub.unsubscribe(onUpdateNode);
         };
@@ -118,6 +253,28 @@ export function useNextPageConfig(pageConfig) {
 
     return nextPageConfig;
 }
+
+
+/**
+ * 当节点改变时，刷新当前组件
+ * @param node
+ */
+export function useRefreshByNode(node) {
+    const [, setRefresh] = useState({});
+
+    useEffect(() => {
+        const onUpdateNode = pubsub.subscribe('update-nodes', (nodes) => {
+            if(nodes?.find(item => item.id === node?.id)) {
+                setRefresh({});
+            }
+        });
+        return () => {
+            pubsub.unsubscribe(onUpdateNode);
+        };
+    }, [node?.id]);
+
+}
+
 
 const dragImages = {
     replace: replaceImage,

@@ -10,7 +10,7 @@ import {
 } from '@ant-design/icons';
 import { Icon } from 'src/components';
 import config from 'src/commons/config-hoc';
-import DragBar from 'src/pages/drag-page/drag-bar';
+import {DragBar} from 'src/pages/drag-page/components';
 import ComponentStore from 'src/pages/drag-page/component-pane/component-store';
 import ComponentTree from 'src/pages/drag-page/component-pane/component-tree';
 import ComponentMenu from 'src/pages/drag-page/component-pane/component-menu';

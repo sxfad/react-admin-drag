@@ -7,11 +7,9 @@ import {
     Col,
 } from 'antd';
 import {Icon} from 'src/components';
-import RadioGroup from 'src/pages/drag-page/props-pane/components/radio-group';
-import SliderInput from 'src/pages/drag-page/props-pane/components/slider-input';
+import {RadioGroup, UnitInput, SliderInput, ColorInput} from 'src/pages/drag-page/components';
 import styles from './style.less';
-import UnitInput from 'src/pages/drag-page/props-pane/components/unit-input';
-import ColorInput from 'src/pages/drag-page/props-pane/components/color-input';
+
 
 const textAlignOptions = [
     {value: 'left', label: '左对齐', icon: <Icon type="icon-align-left"/>},

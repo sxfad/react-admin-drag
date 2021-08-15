@@ -1,20 +1,11 @@
-.header {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    .tool {
-        margin-right: 8px;
-        font-size: 16px;
-        cursor: pointer;
-    }
-}
+@import 'src/theme';
 
 .root {
     display: flex;
     width: 100%;
+    padding-left: 43px;
+    height: 100%;
+    overflow: auto;
 
     :global {
         .ant-collapse-header {
@@ -29,3 +20,26 @@
     width: 100%;
     scroll-behavior: smooth;
 }
+
+.navigator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-right: 1px solid #d8d8d8;
+
+    & > div {
+        width: 42px;
+        height: 47px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 1px solid #d8d8d8;
+        font-size: 16px;
+        cursor: pointer;
+    }
+}
+

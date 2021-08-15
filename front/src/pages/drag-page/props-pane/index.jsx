@@ -1,48 +1,50 @@
-import React, { useRef, useCallback } from 'react';
-import { Tabs, Tooltip, Empty } from 'antd';
+import React, {useRef, useCallback} from 'react';
+import {Tabs, Tooltip, Empty} from 'antd';
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
 } from '@ant-design/icons';
-import { useHeight } from '@ra-lib/admin';
+import {useHeight} from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
-import { Icon } from 'src/components';
-import { isNode } from 'src/pages/drag-page/util/node-util';
-import DragBar from '../drag-bar';
+import {Icon} from 'src/components';
+import {isNode} from 'src/pages/drag-page/util/node-util';
+import {DragBar} from 'src/pages/drag-page/components';
 import Style from './style';
 import s from './style.less';
+import {useRefreshByNode} from 'src/pages/drag-page/util';
+import {SelectedNode} from 'src/pages/drag-page/components';
 
-const { TabPane } = Tabs;
+const {TabPane} = Tabs;
 
 const panes = [
     {
         key: 'style',
         title: '样式',
-        icon: <Icon type="icon-style" />,
+        icon: <Icon type="icon-style"/>,
         component: Style,
     },
     {
         key: 'props',
         title: '属性',
-        icon: <Icon type="icon-props" />,
+        icon: <Icon type="icon-props"/>,
         component: () => '属性',
     },
     {
         key: 'action',
         title: '事件',
-        icon: <Icon type="icon-click" />,
+        icon: <Icon type="icon-click"/>,
         component: () => '事件',
     },
     {
         key: 'dataSource',
         title: '数据',
-        icon: <Icon type="icon-data" />,
+        icon: <Icon type="icon-data"/>,
         component: () => '数据',
     },
     {
         key: 'comment',
         title: '注释',
-        icon: <Icon type="icon-comment" />,
+        icon: <Icon type="icon-comment"/>,
         component: () => '注释',
     },
 ];
@@ -62,30 +64,34 @@ export default React.memo(config({
         selectedNode,
         propsPaneWidth,
         propsPaneExpended,
-        action: { dragPage: dragPageAction },
+        action: {dragPage: dragPageAction},
     } = props;
+
+    useRefreshByNode(selectedNode);
 
     const rootRef = useRef(null);
 
     const [height] = useHeight(rootRef);
 
     const handleChange = useCallback((key) => {
-        dragPageAction.setFields({ propsPaneActiveKey: key });
+        dragPageAction.setFields({propsPaneActiveKey: key});
     }, [dragPageAction]);
 
     const handleDragging = useCallback(info => {
-        const { clientX } = info;
+        const {clientX} = info;
         const windowWidth = document.documentElement.clientWidth;
-        const { x, width: rightWidth } = rootRef.current.getBoundingClientRect();
+        const {x, width: rightWidth} = rootRef.current.getBoundingClientRect();
 
         const width = windowWidth - clientX - 4 - (windowWidth - x - rightWidth);
 
-        dragPageAction.setFields({ propsPaneWidth: width });
+        dragPageAction.setFields({propsPaneWidth: width});
     }, [dragPageAction]);
 
     const handleToggleClick = useCallback(() => {
-        dragPageAction.setFields({ propsPaneExpended: !propsPaneExpended });
+        dragPageAction.setFields({propsPaneExpended: !propsPaneExpended});
     }, [dragPageAction, propsPaneExpended]);
+
+    const paneContainerHeight = height - 80;
 
     return (
         <div
@@ -94,7 +100,7 @@ export default React.memo(config({
                 [s.root]: true,
                 [s.expended]: propsPaneExpended,
             }}
-            style={{ width: propsPaneExpended ? propsPaneWidth : 45 }}
+            style={{width: propsPaneExpended ? propsPaneWidth : 45}}
         >
             <div className={s.toolBar}>
                 <Tooltip
@@ -103,12 +109,12 @@ export default React.memo(config({
                     onClick={handleToggleClick}
                 >
                     <div className={s.tool}>
-                        <MenuFoldOutlined />
+                        <MenuFoldOutlined/>
                     </div>
                 </Tooltip>
 
                 {panes.map(item => {
-                    const { key, title, icon } = item;
+                    const {key, title, icon} = item;
                     const isActive = propsPaneActiveKey === key;
 
                     return (
@@ -123,7 +129,7 @@ export default React.memo(config({
                         >
                             <div
                                 key={key}
-                                className={{ [s.tool]: true, [s.active]: isActive }}
+                                className={{[s.tool]: true, [s.active]: isActive}}
                             >
                                 {icon}
                             </div>
@@ -132,31 +138,42 @@ export default React.memo(config({
                 })}
             </div>
             <div className={s.toolTabs}>
-                <DragBar left onDragging={handleDragging} />
+                <DragBar left onDragging={handleDragging}/>
                 <Tabs
                     tabBarExtraContent={{
                         left: (
                             <div className={s.toggle} onClick={handleToggleClick}>
-                                <MenuUnfoldOutlined />
+                                <MenuUnfoldOutlined/>
                             </div>
                         ),
                     }}
                     type="card"
-                    tabBarStyle={{ marginBottom: 0 }}
+                    tabBarStyle={{marginBottom: 0}}
                     activeKey={propsPaneActiveKey}
                     onChange={handleChange}
                 >
                     {panes.map(item => {
-                        const { key, title, icon, component: Component } = item;
+                        const {key, title, component: Component} = item;
 
                         return (
                             <TabPane tab={title} key={key}>
-                                <div className={s.paneContainer} style={{ height: height - 40 }}>
-                                    {selectedNode && isNode(selectedNode) ? (
-                                        <Component title={title} icon={icon} />
-                                    ) : (
-                                        <Empty style={{ marginTop: 100 }} description="未选中节点" />
-                                    )}
+                                <div className={s.paneRoot}>
+                                    <div className={s.paneTop}>
+                                        <SelectedNode node={selectedNode}/>
+                                    </div>
+                                    <div
+                                        className={s.paneContainer}
+                                        style={{
+                                            height: paneContainerHeight,
+                                            flexBasis: paneContainerHeight,
+                                        }}
+                                    >
+                                        {selectedNode && isNode(selectedNode) ? (
+                                            <Component height={paneContainerHeight}/>
+                                        ) : (
+                                            <Empty style={{marginTop: 100}} description="未选中节点"/>
+                                        )}
+                                    </div>
                                 </div>
                             </TabPane>
                         );

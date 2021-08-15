@@ -8,12 +8,9 @@ import {
     PicCenterOutlined,
 } from '@ant-design/icons';
 import {Icon} from 'src/components';
-import RadioGroup from 'src/pages/drag-page/props-pane/components/radio-group';
-import RectInputsWrapper from 'src/pages/drag-page/props-pane/components/rect-inputs-wrapper';
+import {RadioGroup, UnitInput, RectInputsWrapper, QuickPosition} from 'src/pages/drag-page/components'
 import styles from './style.less';
-import UnitInput from 'src/pages/drag-page/props-pane/components/unit-input';
 import {handleSyncFields} from 'src/pages/drag-page/props-pane/style/util';
-import QuickPosition from 'src/pages/drag-page/props-pane/components/quick-position';
 
 const positionOptions = [
     {value: 'static', label: '无定位', icon: <Icon type="icon-none"/>},

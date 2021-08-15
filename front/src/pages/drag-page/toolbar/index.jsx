@@ -13,7 +13,7 @@ import { Tooltip } from 'antd';
 import { Icon } from 'src/components';
 import config from 'src/commons/config-hoc';
 import { isMac } from 'src/pages/drag-page/util';
-import Help from '../help';
+import {Help} from 'src/pages/drag-page/components';
 import s from './style.less';
 
 export default React.memo(config({

@@ -5,7 +5,7 @@ import {
     RetweetOutlined,
 } from '@ant-design/icons';
 import config from 'src/commons/config-hoc';
-import UnitInput from 'src/pages/drag-page/props-pane/components/unit-input';
+import {UnitInput} from 'src/pages/drag-page/components';
 import styles from './style.less';
 
 const INIT = 100;

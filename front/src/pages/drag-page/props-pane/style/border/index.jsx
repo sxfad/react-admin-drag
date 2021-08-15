@@ -7,9 +7,7 @@ import {
     Select,
 } from 'antd';
 import {Icon} from 'src/components';
-import RadioGroup from 'src/pages/drag-page/props-pane/components/radio-group';
-import UnitInput from 'src/pages/drag-page/props-pane/components/unit-input';
-import ColorInput from 'src/pages/drag-page/props-pane/components/color-input';
+import {RadioGroup, UnitInput, ColorInput} from 'src/pages/drag-page/components';
 
 import styles from './style.less';
 
