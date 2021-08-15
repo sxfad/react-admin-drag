@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import {Radio, Tooltip} from 'antd';
+import { Radio, Tooltip } from 'antd';
 import styles from './style.less';
 
 const RadioGroup = props => {
@@ -13,7 +13,7 @@ const RadioGroup = props => {
         ...others
     } = props;
 
-    function renderOptions(options) {
+    const renderOptions = useCallback(options => {
         return options.map((item, index) => {
             const {
                 value,
@@ -44,7 +44,7 @@ const RadioGroup = props => {
             if (!pl) pl = isLast ? 'topRight' : 'top';
 
             let labelNode = (
-                <div style={{userSelect: 'none'}} onClick={handleClick}>
+                <div style={{ userSelect: 'none' }} onClick={handleClick}>
                     {la}
                 </div>
             );
@@ -66,7 +66,7 @@ const RadioGroup = props => {
                 label: labelNode,
             };
         });
-    }
+    }, [props.value, showTooltip, allowClear, placement, onChange]);
 
     return (
         <div className={styles.root}>
@@ -92,4 +92,4 @@ RadioGroup.defaultProps = {
     showTooltip: true,
 };
 
-export default RadioGroup;
+export default React.memo(RadioGroup);

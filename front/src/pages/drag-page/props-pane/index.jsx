@@ -1,17 +1,51 @@
-import React, { useRef } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { Tabs, Tooltip, Empty } from 'antd';
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
 } from '@ant-design/icons';
+import { useHeight } from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
 import { Icon } from 'src/components';
 import { isNode } from 'src/pages/drag-page/util/node-util';
 import DragBar from '../drag-bar';
 import Style from './style';
-import styles from './style.less';
+import s from './style.less';
 
 const { TabPane } = Tabs;
+
+const panes = [
+    {
+        key: 'style',
+        title: '样式',
+        icon: <Icon type="icon-style" />,
+        component: Style,
+    },
+    {
+        key: 'props',
+        title: '属性',
+        icon: <Icon type="icon-props" />,
+        component: () => '属性',
+    },
+    {
+        key: 'action',
+        title: '事件',
+        icon: <Icon type="icon-click" />,
+        component: () => '事件',
+    },
+    {
+        key: 'dataSource',
+        title: '数据',
+        icon: <Icon type="icon-data" />,
+        component: () => '数据',
+    },
+    {
+        key: 'comment',
+        title: '注释',
+        icon: <Icon type="icon-comment" />,
+        component: () => '注释',
+    },
+];
 
 export default React.memo(config({
     connect: state => {
@@ -33,75 +67,42 @@ export default React.memo(config({
 
     const rootRef = useRef(null);
 
-    function handleChange(key) {
+    const [height] = useHeight(rootRef);
+
+    const handleChange = useCallback((key) => {
         dragPageAction.setFields({ propsPaneActiveKey: key });
-    }
+    }, [dragPageAction]);
 
-    const windowWidth = document.documentElement.clientWidth;
-
-    function handleDragging(info) {
+    const handleDragging = useCallback(info => {
         const { clientX } = info;
-
+        const windowWidth = document.documentElement.clientWidth;
         const { x, width: rightWidth } = rootRef.current.getBoundingClientRect();
 
         const width = windowWidth - clientX - 4 - (windowWidth - x - rightWidth);
 
         dragPageAction.setFields({ propsPaneWidth: width });
-    }
+    }, [dragPageAction]);
 
-    function handleToggleClick() {
+    const handleToggleClick = useCallback(() => {
         dragPageAction.setFields({ propsPaneExpended: !propsPaneExpended });
-    }
-
-    const panes = [
-        {
-            key: 'style',
-            title: '样式',
-            icon: <Icon type="icon-style" />,
-            component: Style,
-        },
-        {
-            key: 'props',
-            title: '属性',
-            icon: <Icon type="icon-props" />,
-            component: Style,
-        },
-        {
-            key: 'action',
-            title: '事件',
-            icon: <Icon type="icon-click" />,
-            component: Style,
-        },
-        {
-            key: 'dataSource',
-            title: '数据',
-            icon: <Icon type="icon-data" />,
-            component: Style,
-        },
-        {
-            key: 'comment',
-            title: '注释',
-            icon: <Icon type="icon-comment" />,
-            component: Style,
-        },
-    ];
+    }, [dragPageAction, propsPaneExpended]);
 
     return (
         <div
             ref={rootRef}
             className={{
-                [styles.root]: true,
-                [styles.expended]: propsPaneExpended,
+                [s.root]: true,
+                [s.expended]: propsPaneExpended,
             }}
             style={{ width: propsPaneExpended ? propsPaneWidth : 45 }}
         >
-            <div className={styles.toolBar}>
+            <div className={s.toolBar}>
                 <Tooltip
                     placement="right"
                     title={'展开'}
                     onClick={handleToggleClick}
                 >
-                    <div className={styles.tool}>
+                    <div className={s.tool}>
                         <MenuFoldOutlined />
                     </div>
                 </Tooltip>
@@ -122,7 +123,7 @@ export default React.memo(config({
                         >
                             <div
                                 key={key}
-                                className={{ [styles.tool]: true, [styles.active]: isActive }}
+                                className={{ [s.tool]: true, [s.active]: isActive }}
                             >
                                 {icon}
                             </div>
@@ -130,12 +131,12 @@ export default React.memo(config({
                     );
                 })}
             </div>
-            <div className={styles.toolTabs}>
+            <div className={s.toolTabs}>
                 <DragBar left onDragging={handleDragging} />
                 <Tabs
                     tabBarExtraContent={{
                         left: (
-                            <div className={styles.toggle} onClick={handleToggleClick}>
+                            <div className={s.toggle} onClick={handleToggleClick}>
                                 <MenuUnfoldOutlined />
                             </div>
                         ),
@@ -150,11 +151,13 @@ export default React.memo(config({
 
                         return (
                             <TabPane tab={title} key={key}>
-                                {selectedNode && isNode(selectedNode) ? (
-                                    <Component title={title} icon={icon} />
-                                ) : (
-                                    <Empty style={{ marginTop: 100 }} description="未选中节点" />
-                                )}
+                                <div className={s.paneContainer} style={{ height: height - 40 }}>
+                                    {selectedNode && isNode(selectedNode) ? (
+                                        <Component title={title} icon={icon} />
+                                    ) : (
+                                        <Empty style={{ marginTop: 100 }} description="未选中节点" />
+                                    )}
+                                </div>
                             </TabPane>
                         );
                     })}

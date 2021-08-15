@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
     Form,
     InputNumber,
@@ -59,12 +59,12 @@ const paddingFields = [
 ];
 
 
-export default function Layout(props) {
-    const {iframeDocument, componentId, value, onChange = () => undefined} = props;
+export default React.memo(function Layout(props) {
+    const {canvasDocument, componentId, value, onChange = () => undefined} = props;
     const [form] = Form.useForm();
     const [parentIsFlexBox, setParentIsFlexBox] = useState(false);
 
-    function handleChange(changedValues, allValues) {
+    const handleChange = useCallback((changedValues, allValues) => {
         const {display} = allValues;
 
         if (display !== 'flex' && display !== 'inline-flex') {
@@ -77,25 +77,24 @@ export default function Layout(props) {
         // 同步表单数据
         form.setFieldsValue(allValues);
         onChange(allValues);
-    }
-
+    }, [form, onChange])
 
     useEffect(() => {
         // 先重置，否则会有字段不清空情况
         form.resetFields();
         form.setFieldsValue(value);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value]);
+    }, [form, value]);
 
+    // 判断父级是否是flex 布局
     useEffect(() => {
-        if (!iframeDocument || !componentId) return;
+        if (!canvasDocument || !componentId) return;
 
-        const ele = iframeDocument.querySelector(`[data-component-id="${componentId}"]`);
+        const ele = canvasDocument.querySelector(`[data-component-id="${componentId}"]`);
         if (!ele?.parentNode) return;
 
         const display = window.getComputedStyle(ele.parentNode).display;
         setParentIsFlexBox(display === 'flex' || display === 'inline-flex');
-    }, [componentId, iframeDocument]);
+    }, [componentId, canvasDocument]);
 
     return (
         <div className={styles.root}>
@@ -104,7 +103,6 @@ export default function Layout(props) {
                 onValuesChange={handleChange}
                 name="layout"
             >
-
                 <Form.Item
                     label="布局模式"
                     name="display"
@@ -162,6 +160,7 @@ export default function Layout(props) {
                             <UnitInput
                                 allowClear={false}
                                 placeholder="0"
+                                style={{userSelect: 'none'}}
                                 onClick={event => handleSyncFields({event, form, fields: marginFields, field: item, onChange: handleChange})}
                                 onKeyDown={event => handleSyncFields({enter: true, event, form, fields: marginFields, field: item, onChange: handleChange})}
                             />
@@ -178,6 +177,7 @@ export default function Layout(props) {
                                 <UnitInput
                                     allowClear={false}
                                     placeholder="0"
+                                    style={{userSelect: 'none'}}
                                     onClick={event => handleSyncFields({event, form, fields: paddingFields, field: item, onChange: handleChange})}
                                     onKeyDown={event => handleSyncFields({enter: true, event, form, fields: paddingFields, field: item, onChange: handleChange})}
                                 />
@@ -237,4 +237,4 @@ export default function Layout(props) {
             </Form>
         </div>
     );
-}
+})

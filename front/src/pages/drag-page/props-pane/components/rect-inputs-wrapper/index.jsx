@@ -14,7 +14,7 @@ const RectInputsWrapper = props => {
         }}
              {...others}
         >
-            {children.flat().map(item => (<div key={item} data-tip={tip}>{item}</div>))}
+            {children.flat().map(item => (<div key={item?.key} data-tip={tip}>{item}</div>))}
         </div>
     );
 };
