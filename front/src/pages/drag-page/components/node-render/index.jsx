@@ -30,7 +30,7 @@ const NodeRender = React.memo(function(renderNodeProps) {
     let {
         config,
         isPreview = true,
-        canvasRenderRoot,
+        pageRenderRoot,
         className,
         state,
         func,
@@ -83,7 +83,7 @@ const NodeRender = React.memo(function(renderNodeProps) {
 
     const renderProps = {
         isPreview,
-        canvasRenderRoot,
+        pageRenderRoot,
         state,
         func,
         variable,
@@ -108,7 +108,7 @@ const NodeRender = React.memo(function(renderNodeProps) {
         const dragProps = { draggable };
 
         // 部分组件draggable属性没有设置到dom节点上，这里直接手动设置
-        const ele = canvasRenderRoot?.querySelector(`.id_${id}`);
+        const ele = pageRenderRoot?.querySelector(`.id_${id}`);
         if (!ele) return;
 
         if (isPreview) {

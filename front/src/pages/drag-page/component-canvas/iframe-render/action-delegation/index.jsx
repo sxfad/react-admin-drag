@@ -16,7 +16,7 @@ export default React.memo(function DragDelegation(props) {
         componentPaneActiveKey,
         draggingNode,
         canvasDocument,
-        canvasRenderRoot,
+        pageRenderRoot,
         nodeSelectType,
         selectedNode,
         targetNode,
@@ -449,7 +449,7 @@ export default React.memo(function DragDelegation(props) {
 
     // 拖拽相关事件
     useEffect(() => {
-        if (!canvasRenderRoot) return;
+        if (!pageRenderRoot) return;
 
         const onOver = e => {
             // 阻止默认事件，否则drop 不触发
@@ -459,22 +459,22 @@ export default React.memo(function DragDelegation(props) {
             handleChangeDropType(e);
             handleDragOver(e);
         };
-        canvasRenderRoot.addEventListener('dragstart', handleDragStart);
-        canvasRenderRoot.addEventListener('dragend', handleDragEnd);
-        canvasRenderRoot.addEventListener('dragover', onOver);
-        canvasRenderRoot.addEventListener('drop', handleDrop);
-        canvasRenderRoot.addEventListener('click', handleClick);
+        pageRenderRoot.addEventListener('dragstart', handleDragStart);
+        pageRenderRoot.addEventListener('dragend', handleDragEnd);
+        pageRenderRoot.addEventListener('dragover', onOver);
+        pageRenderRoot.addEventListener('drop', handleDrop);
+        pageRenderRoot.addEventListener('click', handleClick);
 
         return () => {
-            canvasRenderRoot.removeEventListener('dragstart', handleDragStart);
-            canvasRenderRoot.removeEventListener('dragend', handleDragEnd);
-            canvasRenderRoot.removeEventListener('dragover', onOver);
-            canvasRenderRoot.removeEventListener('drop', handleDrop);
-            canvasRenderRoot.removeEventListener('click', handleClick);
+            pageRenderRoot.removeEventListener('dragstart', handleDragStart);
+            pageRenderRoot.removeEventListener('dragend', handleDragEnd);
+            pageRenderRoot.removeEventListener('dragover', onOver);
+            pageRenderRoot.removeEventListener('drop', handleDrop);
+            pageRenderRoot.removeEventListener('click', handleClick);
         };
 
     }, [
-        canvasRenderRoot,
+        pageRenderRoot,
         handleDropEffect,
         handleChangeDropType,
         handleDragOver,

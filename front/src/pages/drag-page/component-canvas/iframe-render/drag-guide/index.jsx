@@ -169,14 +169,36 @@ export default React.memo(function DragGuide(props) {
         if (!canvasDocument) return;
         const handleScroll = () => setRefresh({});
         canvasDocument.addEventListener('scroll', handleScroll);
-        return () => canvasDocument.removeEventListener('scroll', handleScroll);
+        return () => {
+            canvasDocument.removeEventListener('scroll', handleScroll);
+        };
     }, [canvasDocument]);
 
-    // scale 改变时，有动画，等待动画结束之后再结算
+    // scale 改变时，有动画，等待动画结束之后再调用
+    // pageConfig, pageState 等待渲染之后再调用
     useEffect(() => {
         const t = setTimeout(() => setRefresh({}), 400);
         return () => clearTimeout(t);
     }, [canvasScale, pageConfig, pageState]);
+
+    // 弹框有可能会出现滚动条，滚动时，刷新
+    useEffect(() => {
+        if (!canvasDocument) return;
+        const handleScroll = () => setRefresh({});
+
+        // 等待弹框渲染
+        const t = setTimeout(() => {
+            canvasDocument.querySelectorAll('.ant-modal-wrap')
+                .forEach(ele => ele.addEventListener('scroll', handleScroll));
+        });
+
+        return () => {
+            clearTimeout(t);
+
+            canvasDocument.querySelectorAll('.ant-modal-wrap')
+                .forEach(ele => ele.removeEventListener('scroll', handleScroll));
+        };
+    }, [canvasDocument, pageState]);
 
     return null;
 });

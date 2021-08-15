@@ -74,7 +74,7 @@ export default {
         // 画布document节点
         canvasDocument: null,
         // 画布上渲染组件根节点
-        canvasRenderRoot: null,
+        pageRenderRoot: null,
 
         // 渲染页面的配置
         pageConfig: rootNode(),

@@ -22,7 +22,7 @@ export default React.memo(config({
             pageFunction: state.dragPage.pageFunction,
             pageVariable: state.dragPage.pageVariable,
             viewMode: state.dragPage.viewMode,
-            canvasRenderRoot: state.dragPage.canvasRenderRoot,
+            pageRenderRoot: state.dragPage.pageRenderRoot,
             selectedNode: state.dragPage.selectedNode,
             nodeSelectType: state.dragPage.nodeSelectType,
             draggingNode: state.dragPage.draggingNode,
@@ -51,7 +51,7 @@ export default React.memo(config({
         pageFunction,
         pageVariable,
         canvasDocument,
-        canvasRenderRoot,
+        pageRenderRoot,
         componentPaneActiveKey,
         selectedNode,
         nodeSelectType,
@@ -76,7 +76,9 @@ export default React.memo(config({
             </heade>
             <body style="padding:0; margin: 0; scroll-behavior: smooth; overflow: auto" class="${s.canvasBody}">
                 <div id="page-canvas" class="${s.pageCanvas}">
-                    <div id="dnd-container" class="${s.pageRoot}"></div>
+                    <div id="page-render-container" class="${s.pageRoot}">
+                        <div id="page-render-ele"></div>
+                    </div>
                 </div>
                 <div id="drop-guide-line" style="display: none">
                     <span>前</span>
@@ -96,13 +98,13 @@ export default React.memo(config({
     // iframe加载完成后，获取document、渲染根节点等
     const handleIframeLoad = useCallback(() => {
         const canvasDocument = iframeRef.current.contentDocument;
-        const canvasRenderRoot = canvasDocument.getElementById('dnd-container');
+        const pageRenderRoot = canvasDocument.getElementById('page-render-container');
 
-        dragPageAction.setFields({canvasDocument, canvasRenderRoot});
+        dragPageAction.setFields({canvasDocument, pageRenderRoot});
     }, [dragPageAction]);
 
     useEffect(() => {
-        if (!canvasRenderRoot) return;
+        if (!pageRenderRoot) return;
 
         const canvas = canvasDocument.getElementById('page-canvas');
 
@@ -121,11 +123,11 @@ export default React.memo(config({
             pWidth = `${window.top.document.documentElement.clientWidth - otherWidth}px`;
         }
 
-        canvasRenderRoot.style.width = pWidth;
-        canvasRenderRoot.style.height = getStyleValue(pageHeight);
+        pageRenderRoot.style.width = pWidth;
+        pageRenderRoot.style.height = getStyleValue(pageHeight);
 
     }, [
-        canvasRenderRoot,
+        pageRenderRoot,
         canvasDocument,
         canvasWidth,
         canvasHeight,
@@ -139,27 +141,29 @@ export default React.memo(config({
 
     // 根据pageConfig渲染页面
     useEffect(() => {
-        if (!pageConfig || !canvasRenderRoot) return null;
+        if (!pageConfig || !pageRenderRoot) return null;
+        const pageRenderEle = pageRenderRoot.querySelector('#page-render-ele');
+
         ReactDOM.render(
             <ConfigProvider
                 locale={zhCN}
-                getPopupContainer={() => canvasRenderRoot}
-                getTargetContainer={() => canvasRenderRoot}
-                getContainer={() => canvasRenderRoot}
+                getPopupContainer={() => pageRenderEle}
+                getTargetContainer={() => pageRenderEle}
+                getContainer={() => pageRenderEle}
             >
                 <NodeRender
                     config={pageConfig}
                     isPreview={isPreview}
-                    canvasRenderRoot={canvasRenderRoot}
+                    pageRenderRoot={pageRenderEle}
                     state={pageState}
                     func={pageFunction}
                     variable={pageVariable}
                 />
             </ConfigProvider>,
-            canvasRenderRoot,
+            pageRenderEle,
         );
     }, [
-        canvasRenderRoot,
+        pageRenderRoot,
         isPreview,
         pageConfig,
         pageState,
@@ -199,7 +203,7 @@ export default React.memo(config({
                 dragPageAction={dragPageAction}
                 draggingNode={draggingNode}
                 canvasDocument={canvasDocument}
-                canvasRenderRoot={canvasRenderRoot}
+                pageRenderRoot={pageRenderRoot}
                 nodeSelectType={nodeSelectType}
                 selectedNode={selectedNode}
                 targetNode={targetNode}

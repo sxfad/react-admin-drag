@@ -87,7 +87,7 @@ export default React.memo(function Layout(props) {
     useEffect(() => {
         if (!canvasDocument || !componentId) return;
 
-        const ele = canvasDocument.querySelector(`[data-component-id="${componentId}"]`);
+        const ele = canvasDocument.querySelector(`.id_${componentId}`);
         if (!ele?.parentNode) return;
 
         const display = window.getComputedStyle(ele.parentNode).display;
