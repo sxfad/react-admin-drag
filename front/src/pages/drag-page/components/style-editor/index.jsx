@@ -1,67 +1,58 @@
-import React from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {message} from 'antd';
-import config from 'src/commons/config-hoc';
-import CodeEditor from 'src/pages/drag-page/code-editor';
+import CodeEditor from 'src/pages/drag-page/components/code-editor';
 import {objectToCss, cssToObject} from 'src/pages/drag-page/util';
-import styles from './style.less';
+import s from './style.less';
 
-export default config({
-    connect: state => {
-        return {
-            activeSideKey: state.dragPage.activeSideKey,
-            rightSideWidth: state.dragPage.rightSideWidth,
-        };
-    },
-})(function StyleEditor(props) {
+export default function StyleEditor(props) {
     const {
-        visible,
         value,
         onChange,
         onCancel,
-        rightSideWidth,
+        width,
     } = props;
 
-    function handleSave(value, errors) {
+    const [code, setCode] = useState('*{}');
+
+    const handleSave = useCallback((value, errors) => {
         if (errors?.length) return message.error('有语法错误，请修改后保存！');
 
-        if (!value) return;
+        if (!value) {
+            onChange({});
+            return;
+        }
 
         let val = value.replace('*', '').trim();
-
         val = val.substring(1, val.length - 1);
-        console.log('style editor save', val);
         const style = cssToObject(val);
-        console.log('style editor save', style);
 
-        onChange && onChange(style);
-        message.success('保存成功！');
-    }
+        onChange(style);
+        return message.success('保存成功！');
+    }, [onChange]);
 
-    if (!visible) return null;
+    useEffect(() => {
+        const obj = Object.entries(value || {})
+            .reduce((prev, curr) => {
+                const [key, val] = curr;
+                if (key.startsWith('__')) return prev;
 
+                prev[key] = val;
 
-    const obj = Object.entries(value || {}).reduce((prev, curr) => {
-        const [key, value] = curr;
-        if (key.startsWith('__')) return prev;
-
-        prev[key] = value;
-
-        return prev;
-    }, {});
-
-    // const code = `export default ${JSON5.stringify(obj, null, 4)}`;
-    const code = objectToCss(obj).then(code => `* {${code}}`);
+                return prev;
+            }, {});
+        objectToCss(obj).then(c => setCode(`* {${c}}`));
+    }, [value]);
 
     return (
-        <div className={styles.root}>
+        <div className={s.root}>
             <CodeEditor
-                editorWidth={rightSideWidth}
+                editorWidth={width}
                 language="css"
-                title="样式源码开发"
+                title="样式源码编辑"
                 value={code}
                 onClose={onCancel}
                 onSave={handleSave}
             />
         </div>
     );
-});
+}

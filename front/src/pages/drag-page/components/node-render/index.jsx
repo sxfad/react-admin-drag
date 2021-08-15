@@ -56,6 +56,7 @@ const NodeRender = React.memo(function(props) {
 
     let {
         id,
+        key,
         wrapper,
         componentName,
         children,
@@ -181,7 +182,7 @@ const NodeRender = React.memo(function(props) {
     const cls = [componentProps.className, `id_${id}`, className].filter(item => !!item).join(' ');
 
     return createElement(component, {
-        key: id,
+        key: key || id, // 如果节点设置了key，则使用key，否则使用id，key的改变会使组件卸载然后重新创建
         ...componentProps,
         ...others,
         className: cls,

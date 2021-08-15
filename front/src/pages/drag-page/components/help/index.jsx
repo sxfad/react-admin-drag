@@ -1,12 +1,10 @@
-import { ModalContent } from '@ra-lib/admin';
-import { Button } from 'antd';
+import {Button, Modal} from 'antd';
+import {QuestionCircleOutlined} from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
-import config from 'src/commons/config-hoc';
-import { isMac } from 'src/pages/drag-page/util';
+import {isMac} from 'src/pages/drag-page/util';
+import React from 'react';
 
 const markdown = `
-# 帮助文档
-
 ## 快捷键
 
 1. 「ctrl + f」 组件库中查找组件
@@ -26,19 +24,20 @@ const markdown = `
 `.replaceAll('ctrl', isMac ? '⌘' : 'ctrl');
 
 
-export default config({
-    modal: '帮助',
-})(function Help(props) {
-    const { onCancel } = props;
+export default function Help(props) {
+    const {onCancel, visible} = props;
     return (
-        <ModalContent
+        <Modal
+            visible={visible}
+            width={800}
+            style={{top: 42}}
+            title={<><QuestionCircleOutlined/> 帮助文档</>}
             onCancel={onCancel}
             footer={<Button type="primary" onClick={onCancel}>我知道了</Button>}
         >
-
             <ReactMarkdown>
                 {markdown}
             </ReactMarkdown>
-        </ModalContent>
+        </Modal>
     );
-});
+}

@@ -9,3 +9,5 @@ export SelectedNode from './selected-node';
 export SliderInput from './slider-input';
 export StyleEditor from './style-editor';
 export UnitInput from './unit-input';
+export LinkPoint from './link-point';
+export NodeRender from './node-render';

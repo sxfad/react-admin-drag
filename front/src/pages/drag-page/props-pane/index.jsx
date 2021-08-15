@@ -1,4 +1,4 @@
-import React, {useRef, useCallback} from 'react';
+import React, {useRef, useCallback, useState} from 'react';
 import {Tabs, Tooltip, Empty} from 'antd';
 import {
     MenuFoldOutlined,
@@ -8,45 +8,20 @@ import {useHeight} from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
 import {Icon} from 'src/components';
 import {isNode} from 'src/pages/drag-page/util/node-util';
-import {DragBar} from 'src/pages/drag-page/components';
+import {useRefreshByNode} from 'src/pages/drag-page/util';
+import {DragBar, SelectedNode} from 'src/pages/drag-page/components';
 import Style from './style';
 import s from './style.less';
-import {useRefreshByNode} from 'src/pages/drag-page/util';
-import {SelectedNode} from 'src/pages/drag-page/components';
 
 const {TabPane} = Tabs;
 
+// 所有可用面板配置
 const panes = [
-    {
-        key: 'style',
-        title: '样式',
-        icon: <Icon type="icon-style"/>,
-        component: Style,
-    },
-    {
-        key: 'props',
-        title: '属性',
-        icon: <Icon type="icon-props"/>,
-        component: () => '属性',
-    },
-    {
-        key: 'action',
-        title: '事件',
-        icon: <Icon type="icon-click"/>,
-        component: () => '事件',
-    },
-    {
-        key: 'dataSource',
-        title: '数据',
-        icon: <Icon type="icon-data"/>,
-        component: () => '数据',
-    },
-    {
-        key: 'comment',
-        title: '注释',
-        icon: <Icon type="icon-comment"/>,
-        component: () => '注释',
-    },
+    {key: 'style', title: '样式', icon: <Icon type="icon-style"/>, Component: Style},
+    {key: 'props', title: '属性', icon: <Icon type="icon-props"/>, Component: () => '属性'},
+    {key: 'action', title: '事件', icon: <Icon type="icon-click"/>, Component: () => '事件'},
+    {key: 'dataSource', title: '数据', icon: <Icon type="icon-data"/>, Component: () => '数据'},
+    {key: 'comment', title: '注释', icon: <Icon type="icon-comment"/>, Component: () => '注释'},
 ];
 
 export default React.memo(config({
@@ -67,41 +42,57 @@ export default React.memo(config({
         action: {dragPage: dragPageAction},
     } = props;
 
+    // selectedNode 更新触发当前组件更新
+    // selectedNode引用类型，其内部属性有可能更新
     useRefreshByNode(selectedNode);
 
     const rootRef = useRef(null);
+    const [codeVisible, setCodeVisible] = useState(panes.reduce((prev, curr) => {
+        const {key} = curr;
+        prev[key] = false;
+        return prev;
+    }, {}));
 
+    // 计算面板内容高度
     const [height] = useHeight(rootRef);
+    const paneContainerHeight = height - 85;
 
-    const handleChange = useCallback((key) => {
+    // tab切换改变事件
+    const handleTabChange = useCallback((key) => {
         dragPageAction.setFields({propsPaneActiveKey: key});
     }, [dragPageAction]);
 
+    // DragBar 拖拽改变宽度事件
     const handleDragging = useCallback(info => {
         const {clientX} = info;
         const windowWidth = document.documentElement.clientWidth;
         const {x, width: rightWidth} = rootRef.current.getBoundingClientRect();
-
         const width = windowWidth - clientX - 4 - (windowWidth - x - rightWidth);
 
         dragPageAction.setFields({propsPaneWidth: width});
     }, [dragPageAction]);
 
+    // 面板展开收起点击事件
     const handleToggleClick = useCallback(() => {
         dragPageAction.setFields({propsPaneExpended: !propsPaneExpended});
     }, [dragPageAction, propsPaneExpended]);
 
-    const paneContainerHeight = height - 80;
+    // 源码编辑器图标点击事件
+    const handleCodeIconClick = useCallback(() => {
+        Object.entries(codeVisible)
+            .forEach(([key, value]) => {
+                if (key === propsPaneActiveKey) codeVisible[key] = !value;
+            });
+        setCodeVisible({...codeVisible});
+    }, [propsPaneActiveKey, codeVisible]);
 
     return (
         <div
             ref={rootRef}
-            className={{
-                [s.root]: true,
-                [s.expended]: propsPaneExpended,
-            }}
+            className={[s.root, propsPaneExpended && s.expended]}
             style={{width: propsPaneExpended ? propsPaneWidth : 45}}
         >
+            {/* 收起时 右侧竖向工具条 */}
             <div className={s.toolBar}>
                 <Tooltip
                     placement="right"
@@ -123,22 +114,45 @@ export default React.memo(config({
                             placement="right"
                             title={title}
                             onClick={() => {
-                                handleChange(key);
+                                handleTabChange(key);
                                 handleToggleClick();
                             }}
                         >
-                            <div
-                                key={key}
-                                className={{[s.tool]: true, [s.active]: isActive}}
-                            >
+                            <div key={key} className={[s.tool, isActive && s.active]}>
                                 {icon}
                             </div>
                         </Tooltip>
                     );
                 })}
             </div>
+
+            {/* Tab 页 */}
             <div className={s.toolTabs}>
                 <DragBar left onDragging={handleDragging}/>
+                <div className={s.paneTop}>
+                    {selectedNode && isNode(selectedNode) ? (
+                        <>
+                            <SelectedNode node={selectedNode}/>
+                            <Tooltip
+                                title={() => {
+                                    const pane = panes.find(item => item.key === propsPaneActiveKey);
+                                    const {key, title} = pane;
+                                    const visible = codeVisible[key];
+                                    const tip = visible ? '关闭' : '打开';
+
+                                    return `${tip}${title}源码编辑器`;
+                                }}
+                                placement="left"
+                            >
+                                <Icon
+                                    type="icon-code"
+                                    className={s.codeIcon}
+                                    onClick={handleCodeIconClick}
+                                />
+                            </Tooltip>
+                        </>
+                    ) : '未选中节点'}
+                </div>
                 <Tabs
                     tabBarExtraContent={{
                         left: (
@@ -150,17 +164,14 @@ export default React.memo(config({
                     type="card"
                     tabBarStyle={{marginBottom: 0}}
                     activeKey={propsPaneActiveKey}
-                    onChange={handleChange}
+                    onChange={handleTabChange}
                 >
                     {panes.map(item => {
-                        const {key, title, component: Component} = item;
+                        const {key, title, Component} = item;
 
                         return (
                             <TabPane tab={title} key={key}>
                                 <div className={s.paneRoot}>
-                                    <div className={s.paneTop}>
-                                        <SelectedNode node={selectedNode}/>
-                                    </div>
                                     <div
                                         className={s.paneContainer}
                                         style={{
@@ -169,7 +180,11 @@ export default React.memo(config({
                                         }}
                                     >
                                         {selectedNode && isNode(selectedNode) ? (
-                                            <Component height={paneContainerHeight}/>
+                                            <Component
+                                                height={paneContainerHeight}
+                                                codeVisible={codeVisible[key]}
+                                                onCodeCancel={() => setCodeVisible({...codeVisible, [key]: false})}
+                                            />
                                         ) : (
                                             <Empty style={{marginTop: 100}} description="未选中节点"/>
                                         )}

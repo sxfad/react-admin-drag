@@ -6,6 +6,18 @@
     height: 100%;
     border-left: 1px solid #d8d8d8;
 
+    &.expended {
+        border-left: 0;
+
+        .toolTabs {
+            display: block;
+        }
+
+        .toolBar {
+            display: none;
+        }
+    }
+
     :global {
         .ant-form-item {
             margin-bottom: 8px;
@@ -58,29 +70,25 @@
         }
     }
 
-    &.expended {
-        border-left: 0;
+    .paneTop {
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 8px;
+        border-bottom: 1px solid @border-color-base;
+        background: #f8fafa;
+    }
 
-        .toolTabs {
-            display: block;
-        }
-
-        .toolBar {
-            display: none;
-        }
+    .codeIcon {
+        padding: 8px;
+        font-size: 16px;
+        cursor: pointer;
     }
 
     .paneRoot {
         display: flex;
         flex-direction: column;
-    }
-
-    .paneTop {
-        flex: 0 0 40px;
-        display: flex;
-        align-items: center;
-        padding: 0 8px;
-        border-bottom: 1px solid @border-color-base
     }
 
     .paneContainer {

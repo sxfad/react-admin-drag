@@ -15,10 +15,13 @@
 }
 
 .header {
+    height: 45px;
+    padding: 0 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    background: #fff;
 
     .title {
         display: flex;
@@ -33,19 +36,13 @@
 .root {
     width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
     overflow: hidden;
 
-    & > main {
-        flex: 1;
-    }
-
     & > footer {
+        background: #fff;
         display: flex;
         justify-content: flex-end;
         align-items: center;
-        flex: 0 0 auto;
         padding: 0 8px;
         height: 45px;
         border-top: 1px solid #d8d8d8;

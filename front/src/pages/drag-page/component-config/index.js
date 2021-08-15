@@ -1,6 +1,6 @@
 import React from 'react';
 import {AppstoreOutlined} from '@ant-design/icons';
-import NodeRender from 'src/pages/drag-page/node-render';
+import {NodeRender} from 'src/pages/drag-page/components';
 import {loopNode} from 'src/pages/drag-page/util/node-util';
 import Icons from './icon';
 

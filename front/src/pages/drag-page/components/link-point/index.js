@@ -1,7 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Tooltip} from 'antd';
 import {AimOutlined} from '@ant-design/icons';
-import config from 'src/commons/config-hoc';
 import {getEleCenterInWindow, findLinkTargetsPosition} from 'src/pages/drag-page/util';
 import {findNodeById} from 'src/pages/drag-page/util/node-util';
 import {cloneDeep} from 'lodash';
@@ -10,15 +9,7 @@ import {throttle} from 'lodash';
 
 import styles from './style.less';
 
-export default config({
-    connect: state => {
-        return {
-            pageConfig: state.dragPage.pageConfig,
-            selectedNode: state.dragPage.selectedNode,
-            canvasDocument: state.dragPage.canvasDocument,
-        };
-    },
-})(function LinkProps(props) {
+export default function LinkProps(props) {
     let {
         node,
         selectedNode,
@@ -203,4 +194,4 @@ export default config({
             {pointElement}
         </Tooltip>
     );
-});
+}

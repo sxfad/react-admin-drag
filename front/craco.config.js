@@ -11,6 +11,7 @@ const CracoAntDesignPlugin = req('craco-antd');
 const CracoLessPlugin = req('craco-less'); // include in craco-antd
 const MiniCssExtractPlugin = req('mini-css-extract-plugin');
 const FilterWarningsPlugin = require('webpack-filter-warnings-plugin');
+const MonacoWebpackPlugin = req('monaco-editor-webpack-plugin');
 
 const packageName = require(path.join(ROOT_PATH, 'package.json')).name;
 
@@ -109,6 +110,10 @@ module.exports = {
             * */
             new FilterWarningsPlugin({
                 exclude: /Critical dependency: the request of a dependency is an expression/,
+            }),
+            new MonacoWebpackPlugin({
+                // available options are documented at https://github.com/Microsoft/monaco-editor-webpack-plugin#options
+                languages: ['javascript', 'typescript', 'json', 'html', 'css'],
             }),
             new WebpackBar({profile: true}),
             ...(process.env.ANALYZER === 'true' ?

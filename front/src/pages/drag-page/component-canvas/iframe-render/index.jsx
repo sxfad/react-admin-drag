@@ -4,7 +4,7 @@ import config from 'src/commons/config-hoc';
 import s from './style.less';
 import {ConfigProvider} from 'antd';
 import zhCN from 'antd/lib/locale-provider/zh_CN';
-import NodeRender from 'src/pages/drag-page/node-render';
+import {NodeRender} from 'src/pages/drag-page/components';
 import ActionDelegation from './action-delegation';
 import DragGuide from './drag-guide';
 import {useNextPageConfig} from 'src/pages/drag-page/util';

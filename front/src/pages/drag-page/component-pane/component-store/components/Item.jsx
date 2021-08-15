@@ -1,7 +1,7 @@
 import React from 'react';
 import {cloneDeep} from 'lodash';
 import {setNodeId} from 'src/pages/drag-page/util/node-util';
-import NodeRender from 'src/pages/drag-page/node-render';
+import {NodeRender} from 'src/pages/drag-page/components';
 import s from './style.less';
 
 function renderPreview(data) {

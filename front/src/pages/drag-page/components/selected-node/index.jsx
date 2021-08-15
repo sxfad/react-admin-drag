@@ -1,6 +1,6 @@
 import React from 'react';
 import {getComponentDisplayName} from 'src/pages/drag-page/component-config';
-import LinkPoint from 'src/pages/drag-page/link-point';
+import {LinkPoint} from 'src/pages/drag-page/components';
 import {isNode} from 'src/pages/drag-page/util/node-util';
 
 export default function SelectedNode(props) {
