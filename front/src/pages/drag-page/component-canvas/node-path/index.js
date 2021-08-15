@@ -53,7 +53,7 @@ export default config({
             {paths.map((node, index) => {
                 const componentDisplayName = getComponentDisplayName(node);
                 if (paths.length > SHOW_COUNT && index < paths.length - SHOW_COUNT) return '.';
-                const color = getColor(componentDisplayName);
+                const color = getColor(node?.componentName);
                 return (
                     <div
                         className={s.tag}

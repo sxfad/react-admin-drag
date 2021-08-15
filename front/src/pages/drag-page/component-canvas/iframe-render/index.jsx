@@ -18,6 +18,9 @@ export default React.memo(config({
             canvasHeight: state.dragPage.canvasHeight,
             canvasScale: state.dragPage.canvasScale,
             pageConfig: state.dragPage.pageConfig,
+            pageState: state.dragPage.pageState,
+            pageFunction: state.dragPage.pageFunction,
+            pageVariable: state.dragPage.pageVariable,
             viewMode: state.dragPage.viewMode,
             canvasRenderRoot: state.dragPage.canvasRenderRoot,
             selectedNode: state.dragPage.selectedNode,
@@ -44,6 +47,9 @@ export default React.memo(config({
         pageHeight,
         viewMode,
         pageConfig,
+        pageState,
+        pageFunction,
+        pageVariable,
         canvasDocument,
         canvasRenderRoot,
         componentPaneActiveKey,
@@ -134,7 +140,6 @@ export default React.memo(config({
     // 根据pageConfig渲染页面
     useEffect(() => {
         if (!pageConfig || !canvasRenderRoot) return null;
-        const state = {};
         ReactDOM.render(
             <ConfigProvider
                 locale={zhCN}
@@ -146,7 +151,9 @@ export default React.memo(config({
                     config={pageConfig}
                     isPreview={isPreview}
                     canvasRenderRoot={canvasRenderRoot}
-                    state={state}
+                    state={pageState}
+                    func={pageFunction}
+                    variable={pageVariable}
                 />
             </ConfigProvider>,
             canvasRenderRoot,
@@ -155,6 +162,9 @@ export default React.memo(config({
         canvasRenderRoot,
         isPreview,
         pageConfig,
+        pageState,
+        pageFunction,
+        pageVariable,
     ]);
 
     return (
@@ -181,6 +191,7 @@ export default React.memo(config({
                 pageConfig={nextPageConfig}
                 componentPaneExpended={componentPaneExpended}
                 propsPaneExpended={propsPaneExpended}
+                pageState={pageState}
             />
             <ActionDelegation
                 componentPaneActiveKey={componentPaneActiveKey}

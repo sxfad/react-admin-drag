@@ -1,9 +1,9 @@
-import React, {createElement, useCallback, useState} from 'react';
-import {getComponent, useOnUpdateNodes} from 'src/pages/drag-page/util';
-import {isNode} from 'src/pages/drag-page/util/node-util';
-import {getComponentConfig} from 'src/pages/drag-page/component-config';
-import {store, actions} from 'src/models';
-import {cloneDeep} from 'lodash';
+import React, { createElement, useCallback, useState } from 'react';
+import { getComponent, useOnUpdateNodes } from 'src/pages/drag-page/util';
+import { isNode } from 'src/pages/drag-page/util/node-util';
+import { getComponentConfig } from 'src/pages/drag-page/component-config';
+import { store, actions } from 'src/models';
+import { cloneDeep } from 'lodash';
 import s from './style.less';
 
 // 遍历对象 基本类型以及节点属性
@@ -25,23 +25,28 @@ const loop = (obj, cb) => {
         });
 };
 
-const NodeRender = React.memo(function(props) {
+const NodeRender = React.memo(function(renderNodeProps) {
     console.log('NodeRender');
     let {
         config,
         isPreview = true,
         canvasRenderRoot,
         className,
+        state,
+        func,
+        variable,
         ...others
-    } = props;
+    } = renderNodeProps;
+
+    const dragPageAction = actions.dragPage;
 
     const [, setUpdate] = useState({});
 
     const callback = useCallback((data) => {
         const node = data.find(item => item.id === config?.id);
         if (node) {
-            const {type} = node;
-            setUpdate({type});
+            const { type } = node;
+            setUpdate({ type });
         }
     }, [config]);
 
@@ -79,6 +84,9 @@ const NodeRender = React.memo(function(props) {
     const renderProps = {
         isPreview,
         canvasRenderRoot,
+        state,
+        func,
+        variable,
     };
 
     // hooks 可以得到的参数
@@ -97,7 +105,7 @@ const NodeRender = React.memo(function(props) {
     setTimeout(() => {
         afterRender && afterRender(hooksArgs);
 
-        const dragProps = {draggable};
+        const dragProps = { draggable };
 
         // 部分组件draggable属性没有设置到dom节点上，这里直接手动设置
         const ele = canvasRenderRoot?.querySelector(`.id_${id}`);
@@ -116,11 +124,14 @@ const NodeRender = React.memo(function(props) {
         }
     });
 
-    const componentProps = cloneDeep(config.props || {});
+    // props setState 函数字符串中会用到
+    const props = cloneDeep(config.props || {});
+    // eslint-disable-next-line no-unused-vars
+    const setState = dragPageAction.setPageState;
 
     // 存在 wrapper，进行wrapper转换为父元素
     if (wrapper?.length) {
-        wrapper[0].children = [{...config, wrapper: null}];
+        wrapper[0].children = [{ ...config, wrapper: null }];
 
         const nextConfig = wrapper.reduce((prev, curr) => {
             curr.children = [prev];
@@ -138,7 +149,7 @@ const NodeRender = React.memo(function(props) {
     }
 
     // props 属性处理，属性有可能是 节点 深层属性也有可能是节点
-    loop(componentProps, (obj, key, value) => {
+    loop(props, (obj, key, value) => {
         // 是节点
         if (isNode(value)) {
             obj[key] = (
@@ -149,8 +160,23 @@ const NodeRender = React.memo(function(props) {
                 />
             );
         }
-        // TODO 是state
-        // TODO 是函数
+        if (typeof value === 'string') {
+            // props 是 pageState
+            if (value.startsWith('state.')) {
+                // eslint-disable-next-line no-eval
+                obj[key] = eval(value);
+            }
+            // props 是 pageFunction
+            if (value.startsWith('func.')) {
+                // eslint-disable-next-line no-eval
+                obj[key] = eval(eval(value));
+            }
+            // props 是 pageVariable
+            if (value.startsWith('variable.')) {
+                // eslint-disable-next-line no-eval
+                obj[key] = eval(value);
+            }
+        }
     });
 
     const component = getComponent(config).component;
@@ -179,11 +205,11 @@ const NodeRender = React.memo(function(props) {
     }
 
     // 组件样式，将组件id拼接到样式中，有些组件无法自定义属性，统一通过样式标记
-    const cls = [componentProps.className, `id_${id}`, className].filter(item => !!item).join(' ');
+    const cls = [props.className, `id_${id}`, className].filter(item => !!item).join(' ');
 
     return createElement(component, {
         key: key || id, // 如果节点设置了key，则使用key，否则使用id，key的改变会使组件卸载然后重新创建
-        ...componentProps,
+        ...props,
         ...others,
         className: cls,
         children: childrenEle,

@@ -26,6 +26,7 @@ export default React.memo(function DragGuide(props) {
         propsPaneExpended,
         canvasScale,
         pageConfig,
+        pageState,
     } = props;
 
     const [refresh, setRefresh] = useState({});
@@ -48,7 +49,7 @@ export default React.memo(function DragGuide(props) {
             scale: canvasScale,
         });
 
-        if (!targetElementSize || targetElementSize.height < 0 || targetElementSize.width < 0) {
+        if (!targetElementSize || targetElementSize.height <= 0 || targetElementSize.width <= 0) {
             guideBgEle.classList.remove(s.guideBgActive);
             return;
         }
@@ -175,7 +176,7 @@ export default React.memo(function DragGuide(props) {
     useEffect(() => {
         const t = setTimeout(() => setRefresh({}), 400);
         return () => clearTimeout(t);
-    }, [canvasScale, pageConfig]);
+    }, [canvasScale, pageConfig, pageState]);
 
     return null;
 });

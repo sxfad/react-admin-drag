@@ -1,4 +1,4 @@
-import {v4 as uuid} from 'uuid';
+import { v4 as uuid } from 'uuid';
 import {
     deleteNodeById, findNodeById,
     findParentNodeById,
@@ -7,15 +7,15 @@ import {
     insertChildren, replaceNode,
     setNodeId,
 } from 'src/pages/drag-page/util/node-util';
-import {addDragHolder, emitUpdateNodes} from 'src/pages/drag-page/util';
-import {getComponentConfig} from 'src/pages/drag-page/component-config';
-import {cloneDeep} from 'lodash';
+import { addDragHolder, emitUpdateNodes } from 'src/pages/drag-page/util';
+import { getComponentConfig } from 'src/pages/drag-page/component-config';
+import { cloneDeep } from 'lodash';
 
 const rootNode = () => ({
     id: uuid(),
     componentName: 'DragHolder',
     props: {
-        style: {height: '500px'},
+        style: { height: '500px' },
     },
 });
 
@@ -78,12 +78,25 @@ export default {
 
         // 渲染页面的配置
         pageConfig: rootNode(),
-
+        // 页面中state数据
+        pageState: {
+            visible: true,
+        },
+        // 页面中函数
+        pageFunction: {
+            handleCancel: '() => setState({visible: false})',
+            handleClick: '() => setState({visible: true})'
+        },
+        // 页面中变量
+        pageVariable: {},
     },
 
     // 同步localStorage
     syncLocal: [
         'pageConfig',
+        'pageState',
+        'pageFunction',
+        'pageVariable',
         'viewMode',
 
         'componentPaneWidth',
@@ -95,15 +108,15 @@ export default {
         'propsPaneExpended',
     ],
 
-    setFields: fields => ({...fields}),
+    setFields: fields => ({ ...fields }),
 
     setDraggingNode: draggingNode => {
-        if (!draggingNode) return {draggingNode: null};
+        if (!draggingNode) return { draggingNode: null };
 
-        let {config, type, dropType} = draggingNode;
+        let { config, type, dropType } = draggingNode;
 
         const nodeConfig = getComponentConfig(config.componentName);
-        const {propsToSet, isWrapper} = nodeConfig;
+        const { propsToSet, isWrapper } = nodeConfig;
 
         let dropTypeChangeable = true;
         if (propsToSet) dropType = 'props';
@@ -121,6 +134,32 @@ export default {
                 dropTypeChangeable,
                 dropType: dropType,
             },
+        };
+    },
+    // 设置页面state
+    setPageState(data, state) {
+        const { pageState } = state;
+
+        return {
+            pageState: { ...pageState, ...data },
+        };
+    },
+
+    // 设置页面函数
+    setPageFunction(data, state) {
+        const { pageFunction } = state;
+
+        return {
+            pageFunction: { ...pageFunction, ...data },
+        };
+    },
+
+    // 设置页面变量
+    setPageVariable(data, state) {
+        const { pageVariable } = state;
+
+        return {
+            pageVariable: { ...pageVariable, ...data },
         };
     },
 
@@ -161,9 +200,9 @@ export default {
      * @param _
      * @param state
      */
-    insertNode({draggingNode, targetNode, targetHoverPosition}, state) {
-        const {pageConfig} = state;
-        const {config: draggingNodeConfig, dropType, propsToSet} = draggingNode;
+    insertNode({ draggingNode, targetNode, targetHoverPosition }, state) {
+        const { pageConfig } = state;
+        const { config: draggingNodeConfig, dropType, propsToSet } = draggingNode;
         let nextSelectedNode = null;
 
         // 根节点为站位符时，直接替换
@@ -187,7 +226,7 @@ export default {
             afterAddChildren = () => undefined,
         } = (nodeConfig?.hooks || {});
 
-        const result = beforeAdd({dragPageState: state, node: draggingNode, parentNode});
+        const result = beforeAdd({ dragPageState: state, node: draggingNode, parentNode });
         if (result === false) return null;
 
         const {
@@ -254,7 +293,7 @@ export default {
             ]);
         }
 
-        if(!dropType) {
+        if (!dropType) {
 
             const targetNodeId = targetNode.id;
 
@@ -263,7 +302,7 @@ export default {
             const isChildren = ['center'].includes(targetHoverPosition);
 
             if (isBefore || isAfter) {
-                const args = {node: parentNode, childNode: draggingNodeConfig, dragPageState: state};
+                const args = { node: parentNode, childNode: draggingNodeConfig, dragPageState: state };
                 const result = parentBeforeAddChildren(args);
 
                 if (result === false) return null;
@@ -295,7 +334,7 @@ export default {
                     targetNode.children.pop();
                 }
 
-                const args = {node: targetNode, childNode: draggingNodeConfig, dragPageState: state};
+                const args = { node: targetNode, childNode: draggingNodeConfig, dragPageState: state };
                 const result = beforeAddChildren(args);
 
                 if (result === false) return null;
@@ -327,7 +366,7 @@ export default {
             },
         ]);
 
-        afterAdd({dragPageState: state, node: draggingNode, parentNode});
+        afterAdd({ dragPageState: state, node: draggingNode, parentNode });
 
         return {
             // 选中刚拖拽的节点
@@ -338,7 +377,7 @@ export default {
      * 根据id删除节点
      */
     deleteNodeById(id, state) {
-        const {pageConfig} = state;
+        const { pageConfig } = state;
         const selectedNode = findNodeById(pageConfig, id);
         if (!selectedNode) return null;
 
@@ -355,10 +394,10 @@ export default {
             afterDeleteChildren = () => undefined,
         } = parentNodeConfig?.hooks || {};
 
-        const deleteResult = beforeDelete({dragPageState: state, node: selectedNode, parentNode: parentNode});
+        const deleteResult = beforeDelete({ dragPageState: state, node: selectedNode, parentNode: parentNode });
         if (deleteResult === false) return null;
 
-        const deleteChildrenResult = beforeDeleteChildren({dragPageState: state, node: parentNode, childNode: selectedNode});
+        const deleteChildrenResult = beforeDeleteChildren({ dragPageState: state, node: parentNode, childNode: selectedNode });
         if (deleteChildrenResult === false) return null;
 
         // 删除的是跟节点
@@ -385,8 +424,8 @@ export default {
             },
         ]);
 
-        afterDelete({dragPageState: state, node: selectedNode, parentNode: parentNode});
-        afterDeleteChildren({dragPageState: state, node: parentNode, childNode: selectedNode});
+        afterDelete({ dragPageState: state, node: selectedNode, parentNode: parentNode });
+        afterDeleteChildren({ dragPageState: state, node: parentNode, childNode: selectedNode });
 
         // 没有子节点了，选中父节点
         if (!children?.length) {

@@ -23,32 +23,32 @@ const tools = [
         title: '页面菜单',
         key: 'menu',
         icon: <BarsOutlined style={{ fontSize: 20 }} />,
-        component: ComponentMenu,
+        Component: ComponentMenu,
     },
     {
         title: '组件树',
         key: 'componentTree',
         icon: <ApartmentOutlined />,
-        component: ComponentTree,
+        Component: ComponentTree,
     },
     {
         title: '组件库',
         key: 'componentStore',
         icon: <AppstoreOutlined />,
-        component: ComponentStore,
+        Component: ComponentStore,
     },
     {
         title: 'Schema 源码开发',
         key: 'schemaEditor',
         icon: <Icon type="icon-code" />,
-        component: ComponentSchema,
+        Component: ComponentSchema,
         bottom: true,
     },
     {
         title: '设置',
         key: 'setting',
         icon: <SettingOutlined />,
-        component: ComponentSetting,
+        Component: ComponentSetting,
         bottom: true,
     },
 ];
@@ -141,7 +141,9 @@ export default React.memo(config({
             </div>
             <div className={styles.right} ref={rightRef} style={{ width: rightWidth }}>
                 {tools.map(item => {
-                    const { key, title, icon, component: Component } = item;
+                    const { key, title, icon, Component } = item;
+                    const visible = key === componentPaneActiveKey;
+
                     return (
                         <div
                             key={key}
@@ -153,6 +155,7 @@ export default React.memo(config({
                             }}
                         >
                             <Component
+                                visible={visible}
                                 title={title}
                                 icon={icon}
                             />
