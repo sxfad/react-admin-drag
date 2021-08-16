@@ -23,6 +23,20 @@ import ReactDOM from 'react-dom';
 import inflection from 'inflection';
 
 export const OTHER_HEIGHT = 0;
+export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
+export const TRIGGER_SIZE = 20;
+
+// 获取label宽度
+export function getLabelWidth(label) {
+    if (!label?.length) return 0;
+
+    // 统计汉字数，不包括标点符号
+    const fontSize = 14;
+    const m = label.match(/[\u4e00-\u9fff\uf900-\ufaff]/g);
+    const chineseCount = (!m ? 0 : m.length);
+    const otherCount = label.length - chineseCount;
+    return (chineseCount + otherCount / 2) * fontSize + 30;
+}
 
 // 获取元素中间位置
 export function getEleCenterInWindow(element) {
@@ -283,9 +297,6 @@ const dragImages = {
     new: newImage,
     move: moveImage,
 };
-
-export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
-export const TRIGGER_SIZE = 20;
 
 export async function getImageUrlByClipboard(e) {
     return new Promise((resolve, reject) => {

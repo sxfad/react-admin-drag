@@ -8,6 +8,7 @@ import {isNode} from 'src/pages/drag-page/util/node-util';
 import {useRefreshByNode} from 'src/pages/drag-page/util';
 import {DragBar, SelectedNode} from 'src/pages/drag-page/components';
 import Style from './style';
+import Props from './props';
 import s from './style.less';
 
 const {TabPane} = Tabs;
@@ -22,7 +23,7 @@ const ComingSoon = () => {
 // 所有可用面板配置
 const panes = [
     {key: 'style', title: '样式', icon: <Icon type="icon-style"/>, Component: Style},
-    {key: 'props', title: '属性', icon: <Icon type="icon-props"/>, Component: ComingSoon},
+    {key: 'props', title: '属性', icon: <Icon type="icon-props"/>, Component: Props},
     {key: 'action', title: '事件', icon: <Icon type="icon-click"/>, Component: ComingSoon},
     {key: 'dataSource', title: '数据', icon: <Icon type="icon-data"/>, Component: ComingSoon},
     {key: 'comment', title: '注释', icon: <Icon type="icon-comment"/>, Component: ComingSoon},

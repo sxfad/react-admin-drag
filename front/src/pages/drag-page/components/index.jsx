@@ -7,7 +7,7 @@ export RadioGroup from './radio-group';
 export RectInputsWrapper from './rect-inputs-wrapper';
 export SelectedNode from './selected-node';
 export SliderInput from './slider-input';
-export StyleEditor from './style-editor';
+export StyleCodeEditor from './style-code-editor';
 export UnitInput from './unit-input';
 export LinkPoint from './link-point';
 export NodeRender from './node-render';

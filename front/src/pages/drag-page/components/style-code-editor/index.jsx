@@ -4,7 +4,7 @@ import CodeEditor from 'src/pages/drag-page/components/code-editor';
 import {objectToCss, cssToObject} from 'src/pages/drag-page/util';
 import s from './style.less';
 
-export default function StyleEditor(props) {
+export default function StyleCodeEditor(props) {
     const {
         value,
         onChange,

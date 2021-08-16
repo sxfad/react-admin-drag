@@ -187,6 +187,21 @@ export default {
     },
 
     /**
+     * 发布订阅方式更新具体节点
+     * @param node
+     * @param state
+     */
+    updateParentNode(node, state) {
+        const {pageConfig} = state;
+        const parentNode = findParentNodeById(pageConfig, node?.id);
+        emitUpdateNodes([
+            {
+                id: parentNode?.id,
+                type: 'update',
+            },
+        ]);
+    },
+    /**
      * 插入节点
      * draggingNode 是否能插入 targetNode 在targetNode获取函数中已经检测过，包裹各种插入类型
      * 插入类型 dropType：

@@ -1,9 +1,9 @@
-import React, { createElement, useCallback, useState } from 'react';
-import { getComponent, useOnUpdateNodes } from 'src/pages/drag-page/util';
-import { isNode } from 'src/pages/drag-page/util/node-util';
-import { getComponentConfig } from 'src/pages/drag-page/component-config';
-import { store, actions } from 'src/models';
-import { cloneDeep } from 'lodash';
+import React, {createElement, useCallback, useState} from 'react';
+import {getComponent, useOnUpdateNodes} from 'src/pages/drag-page/util';
+import {isNode} from 'src/pages/drag-page/util/node-util';
+import {getComponentConfig} from 'src/pages/drag-page/component-config';
+import {store, actions} from 'src/models';
+import {cloneDeep} from 'lodash';
 import s from './style.less';
 
 // 遍历对象 基本类型以及节点属性
@@ -45,8 +45,8 @@ const NodeRender = React.memo(function(renderNodeProps) {
     const callback = useCallback((data) => {
         const node = data.find(item => item.id === config?.id);
         if (node) {
-            const { type } = node;
-            setUpdate({ type });
+            const {type} = node;
+            setUpdate({type});
         }
     }, [config]);
 
@@ -105,7 +105,7 @@ const NodeRender = React.memo(function(renderNodeProps) {
     setTimeout(() => {
         afterRender && afterRender(hooksArgs);
 
-        const dragProps = { draggable };
+        const dragProps = {draggable};
 
         // 部分组件draggable属性没有设置到dom节点上，这里直接手动设置
         const ele = pageRenderRoot?.querySelector(`.id_${id}`);
@@ -129,9 +129,10 @@ const NodeRender = React.memo(function(renderNodeProps) {
     // eslint-disable-next-line no-unused-vars
     const setState = dragPageAction.setPageState;
 
+    console.log(config.componentName, config.id, props);
     // 存在 wrapper，进行wrapper转换为父元素
     if (wrapper?.length) {
-        wrapper[0].children = [{ ...config, wrapper: null }];
+        wrapper[0].children = [{...config, wrapper: null}];
 
         const nextConfig = wrapper.reduce((prev, curr) => {
             curr.children = [prev];

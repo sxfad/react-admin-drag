@@ -106,6 +106,9 @@ export const defaultConfig = {
         // afterDelete,
         // beforeDeleteChildren // 返回false，不允许删除
         // afterDeleteChildren
+
+        // 修改
+        // afterPropsChange {dragPageAction, node,}
     // },
     // // 组件属性配置信息
     // fields: [

@@ -4,7 +4,7 @@ import {useDebounceFn} from 'ahooks';
 import {v4 as uuid} from 'uuid';
 import {Icon} from 'src/components';
 import config from 'src/commons/config-hoc';
-import {StyleEditor} from 'src/pages/drag-page/components';
+import {StyleCodeEditor} from 'src/pages/drag-page/components';
 import {scrollElement, useRefreshByNode} from 'src/pages/drag-page/util';
 import Layout from './layout';
 import Font from './font';
@@ -92,7 +92,7 @@ export default React.memo(config({
             <div className={s.root}>
                 {codeVisible ? (
                     <div className={s.code}>
-                        <StyleEditor
+                        <StyleCodeEditor
                             width={propsPaneWidth}
                             value={style}
                             onChange={values => handleChange(values, true)}
