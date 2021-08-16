@@ -1,5 +1,5 @@
 import React, {useMemo, useState} from 'react';
-import {getElement} from 'src/pages/drag-page/props-pane/props/form-element';
+import {getElement} from '../form-element';
 import {Select} from 'antd';
 
 const MultipleElement = props => {

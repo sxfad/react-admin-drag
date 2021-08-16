@@ -1,29 +1,21 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import config from 'src/commons/config-hoc';
 import {findNodeById, deleteNodeById} from 'src/pages/drag-page/util/node-util';
 import {getComponentConfig, getComponentDisplayName} from 'src/pages/drag-page/component-config';
-import {actions} from 'src/models';
+import {actions, store} from 'src/models';
 import s from './style.less';
 
-const ReactNode = config({
-    connect: state => {
-
-        return {
-            pageConfig: state.dragPage.pageConfig,
-            draggingNode: state.dragPage.draggingNode,
-        };
-    },
-})(props => {
+const ReactNode = props => {
     const {
         node,
-        pageConfig,
         draggingNode,
         value,
         onChange,
-        action: {dragPage: dragPageAction},
     } = props;
+
+    const {pageConfig} = store.getState().dragPage;
+    const dragPageAction = actions.dragPage;
 
     const [dragIn, setDragIn] = useState(false);
 
@@ -103,7 +95,7 @@ const ReactNode = config({
             {placeholder}
         </div>
     );
-});
+};
 
 ReactNode.propTypes = {
     value: PropTypes.object,

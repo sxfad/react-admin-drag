@@ -4,27 +4,19 @@ import elementMap, {getElement} from '../form-element';
 import {showFieldByAppend} from 'src/pages/drag-page/component-config';
 import {getLabelWidth} from 'src/pages/drag-page/util';
 import {v4 as uuid} from 'uuid';
-import config from 'src/commons/config-hoc';
 import s from './style.less';
+import {actions} from 'src/models';
 
-export default config({
-    connect: state => {
-
-        return {
-            refreshProps: state.dragPage.refreshProps,
-        };
-    },
-})(function ObjectElement(props) {
+export default function ObjectElement(props) {
 
     let {
         node,
-        refreshProps,
-        action: {dragPage: dragPageAction},
-
         fields = [],
         value,
         onChange,
     } = props;
+
+    const dragPageAction = actions.dragPage;
 
     const [form] = Form.useForm();
     const rootRef = useRef(null);
@@ -66,7 +58,7 @@ export default config({
         form.setFieldsValue(fieldValues);
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value, node, refreshProps]);
+    }, [value, node]);
 
     // 基于fields 构建表单
     const element = useMemo(() => {
@@ -192,8 +184,6 @@ export default config({
                                 Reflect.deleteProperty(value, field);
 
                                 form.setFieldsValue({[field]: undefined});
-
-                                // dragPageAction.render();
                             }
 
                             return null;
@@ -235,4 +225,4 @@ export default config({
             </ConfigProvider>
         </div>
     );
-});
+}

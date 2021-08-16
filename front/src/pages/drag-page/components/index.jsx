@@ -12,3 +12,18 @@ export UnitInput from './unit-input';
 export LinkPoint from './link-point';
 export NodeRender from './node-render';
 export CodeEditor from './code-editor';
+
+export ArrayElement from './array-element';
+export ColumnFastEditor from './column-fast-editor';
+export FooterSwitch from './footer-switch';
+export FormElement from './form-element';
+export FormItemFastEditor from './form-item-fast-editor';
+export ImageElement from './image-element';
+export MultipleElement from './multiple-element';
+export ObjectElement from './object-element';
+export OffsetInput from './offset-input';
+export OptionsEditor from './options-editor';
+export Placement from './placement';
+export PropsCodeEditor from './props-code-editor';
+export PropsFormEditor from './props-form-editor';
+export ReactNode from './react-node';

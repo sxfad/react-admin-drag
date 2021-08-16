@@ -4,11 +4,9 @@ import {useDebounceFn} from 'ahooks';
 import {useHeight} from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
 import {getComponentConfig} from 'src/pages/drag-page/component-config';
-import PropsFormEditor from './props-form-editor';
-import {OTHER_HEIGHT, useNodeChange /*, scrollElement*/} from 'src/pages/drag-page/util';
+import {PropsFormEditor, PropsCodeEditor} from 'src/pages/drag-page/components';
+import {OTHER_HEIGHT, useNodeChange} from 'src/pages/drag-page/util';
 import {isNode} from 'src/pages/drag-page/util/node-util';
-import PropsCodeEditor from 'src/pages/drag-page/props-pane/props/props-code-editor';
-// import {v4 as uuid} from 'uuid';
 
 export default config({
     connect: state => {

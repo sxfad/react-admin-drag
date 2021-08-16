@@ -13,18 +13,18 @@ import {
     ColorInput,
 } from 'src/pages/drag-page/components'
 
-import OptionsEditor from 'src/pages/drag-page/props-pane/props/options-editor';
-import FooterSwitch from './FooterSwitch';
-import OffsetInput from 'src/pages/drag-page/props-pane/props/offset-input';
-import Placement from 'src/pages/drag-page/props-pane/props/placement';
-import ReactNode from 'src/pages/drag-page/props-pane/props/react-node';
-import MultipleElement from 'src/pages/drag-page/props-pane/props/multiple-element';
-import ObjectElement from 'src/pages/drag-page/props-pane/props/object-element';
-import ArrayElement from 'src/pages/drag-page/props-pane/props/array-element';
-import ImageElement from 'src/pages/drag-page/props-pane/props/image-element';
-import Rule from 'src/pages/drag-page/props-pane/props/item-rules';
-import ColumnFastEditor from 'src/pages/drag-page/props-pane/props/column-fast-editor';
-import FormItemFastEditor from 'src/pages/drag-page/props-pane/props/form-item-fast-editor';
+import OptionsEditor from '../options-editor';
+import FooterSwitch from '../footer-switch';
+import OffsetInput from '../offset-input';
+import Placement from '../placement';
+import ReactNode from '../react-node';
+import MultipleElement from '../multiple-element';
+import ObjectElement from '../object-element';
+import ArrayElement from '../array-element';
+import ImageElement from '../image-element';
+import Rule from '../item-rules';
+import ColumnFastEditor from '../column-fast-editor';
+import FormItemFastEditor from '../form-item-fast-editor';
 
 function getPlaceholder(option, props) {
     const {field, placeholder} = option;

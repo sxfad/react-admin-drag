@@ -3,7 +3,7 @@ import {Form, Button, Select, Row, Col} from 'antd';
 import {PlusOutlined, MinusCircleOutlined} from '@ant-design/icons';
 import {validateRules} from '@ra-lib/admin';
 import PropTypes from 'prop-types';
-import styles from './style.less';
+import s from './style.less';
 
 export const options = [
     {value: 'required', label: '必填', rule: {required: true, message: '必填项！'}, ruleStr: '{required: true, message: \'必填项！\'}'},
@@ -60,7 +60,7 @@ const Rule = props => {
                                                 </Col>
                                                 <Col flex={0}>
                                                     <MinusCircleOutlined
-                                                        className={styles.dynamicDeleteButton}
+                                                        className={s.dynamicDeleteButton}
                                                         onClick={() => remove(field.name)}
                                                     />
                                                 </Col>

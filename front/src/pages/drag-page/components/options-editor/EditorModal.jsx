@@ -1,20 +1,18 @@
 import React, {Component} from 'react';
 import {Button} from 'antd';
-import config from 'src/commons/config-hoc';
 import {
     Table,
     tableEditable,
     tableRowDraggable,
     Operator,
     ModalContent,
+    modal
 } from '@ra-lib/admin';
 import s from './style.less';
 
 const EditTable = tableEditable(tableRowDraggable(Table));
 
-@config({
-    modal: '选项编辑',
-})
+@modal('编辑选项')
 export default class EditorModal extends Component {
     state = {
         loading: false,     // 表格加载数据loading
