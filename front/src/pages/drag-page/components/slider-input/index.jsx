@@ -48,7 +48,7 @@ const SliderInput = props => {
 SliderInput.propTypes = {
     value: PropTypes.number,
     onChange: PropTypes.func,
-    suffix: PropTypes.func,
+    suffix: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
     percent: PropTypes.bool,
 };
 

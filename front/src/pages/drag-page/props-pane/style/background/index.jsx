@@ -1,15 +1,8 @@
-import React, {useEffect} from 'react';
-import {
-    Form,
-    Input,
-    Row,
-    Col,
-} from 'antd';
+import React, {useCallback, useEffect} from 'react';
+import {Form, Input, Row, Col} from 'antd';
 import {PicCenterOutlined} from '@ant-design/icons';
 import {RadioGroup, UnitInput, QuickPosition, ColorInput} from 'src/pages/drag-page/components';
-
-
-import styles from './style.less';
+import s from './style.less';
 
 const backgroundSizeOptions = [
     {value: 'width height', label: '宽高'},
@@ -35,14 +28,14 @@ const quickPositionFields = {
 
 };
 const layout = {
-    labelCol: {flex: '58px'},
+    labelCol: {flex: '68px'},
     wrapperCol: {flex: 1},
 };
 export default function Background(props) {
     const {value, onChange = () => undefined} = props;
     const [form] = Form.useForm();
 
-    function handleChange(changedValues, allValues) {
+    const handleChange = useCallback((changedValues, allValues) => {
         let {
             backgroundImage,
             backgroundSize,
@@ -79,7 +72,7 @@ export default function Background(props) {
 
         console.log('allValues', JSON.stringify(allValues, null, 4));
         onChange(allValues);
-    }
+    }, [form, onChange]);
 
     useEffect(() => {
         // 先重置，否则会有字段不清空情况
@@ -119,18 +112,18 @@ export default function Background(props) {
                 form.setFieldsValue({backgroundPositionX, backgroundPositionY});
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value]);
+    }, [value, form]);
 
 
     return (
-        <div className={styles.root}>
+        <div className={s.root}>
             <Form
                 form={form}
                 onValuesChange={handleChange}
                 name="background"
             >
                 <Form.Item
+                    {...layout}
                     label="填充颜色"
                     name="backgroundColor"
                     colon={false}
@@ -172,7 +165,7 @@ export default function Background(props) {
                                         if (backgroundSize !== 'width height') return null;
 
                                         return (
-                                            <Row className={styles.backgroundSize} style={{paddingLeft: layout.labelCol.flex}}>
+                                            <Row className={s.backgroundSize} style={{paddingLeft: layout.labelCol.flex}}>
                                                 <Col span={12}>
                                                     <Form.Item
                                                         labelCol={{flex: 0}}

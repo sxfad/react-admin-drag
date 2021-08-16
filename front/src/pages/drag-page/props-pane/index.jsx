@@ -1,9 +1,6 @@
 import React, {useRef, useCallback, useState} from 'react';
 import {Tabs, Tooltip, Empty} from 'antd';
-import {
-    MenuFoldOutlined,
-    MenuUnfoldOutlined,
-} from '@ant-design/icons';
+import {MenuFoldOutlined, MenuUnfoldOutlined} from '@ant-design/icons';
 import {useHeight} from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
 import {Icon} from 'src/components';
@@ -15,13 +12,20 @@ import s from './style.less';
 
 const {TabPane} = Tabs;
 
+const ComingSoon = () => {
+    return (
+        <div style={{marginTop: 100, textAlign: 'center'}}>
+            敬请期待
+        </div>
+    );
+};
 // 所有可用面板配置
 const panes = [
     {key: 'style', title: '样式', icon: <Icon type="icon-style"/>, Component: Style},
-    {key: 'props', title: '属性', icon: <Icon type="icon-props"/>, Component: () => '属性'},
-    {key: 'action', title: '事件', icon: <Icon type="icon-click"/>, Component: () => '事件'},
-    {key: 'dataSource', title: '数据', icon: <Icon type="icon-data"/>, Component: () => '数据'},
-    {key: 'comment', title: '注释', icon: <Icon type="icon-comment"/>, Component: () => '注释'},
+    {key: 'props', title: '属性', icon: <Icon type="icon-props"/>, Component: ComingSoon},
+    {key: 'action', title: '事件', icon: <Icon type="icon-click"/>, Component: ComingSoon},
+    {key: 'dataSource', title: '数据', icon: <Icon type="icon-data"/>, Component: ComingSoon},
+    {key: 'comment', title: '注释', icon: <Icon type="icon-comment"/>, Component: ComingSoon},
 ];
 
 export default React.memo(config({

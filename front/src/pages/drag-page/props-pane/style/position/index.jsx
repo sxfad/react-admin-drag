@@ -1,16 +1,15 @@
-import React, {useEffect} from 'react';
-import {
-    Form,
-    InputNumber,
-    Select,
-} from 'antd';
-import {
-    PicCenterOutlined,
-} from '@ant-design/icons';
+import React, {useCallback, useEffect} from 'react';
+import {Form, InputNumber, Select} from 'antd';
+import {PicCenterOutlined} from '@ant-design/icons';
 import {Icon} from 'src/components';
-import {RadioGroup, UnitInput, RectInputsWrapper, QuickPosition} from 'src/pages/drag-page/components'
-import styles from './style.less';
+import {
+    RadioGroup,
+    UnitInput,
+    RectInputsWrapper,
+    QuickPosition,
+} from 'src/pages/drag-page/components';
 import {handleSyncFields} from 'src/pages/drag-page/props-pane/style/util';
+import s from './style.less';
 
 const positionOptions = [
     {value: 'static', label: '无定位', icon: <Icon type="icon-none"/>},
@@ -45,11 +44,12 @@ const quickPositionFields = {
 
 };
 
-export default function Position(props) {
+export default React.memo(function Position(props) {
     const {value, onChange = () => undefined} = props;
     const [form] = Form.useForm();
 
-    function handleChange(changedValues, allValues) {
+    const handleChange = useCallback((changedValues, allValues) => {
+
         const {translateY, translateX, position} = allValues;
 
         if (position === 'static') {
@@ -92,7 +92,9 @@ export default function Position(props) {
 
         console.log('allValues', JSON.stringify(allValues, null, 4));
         onChange(allValues);
-    }
+
+    }, [onChange, form, value]);
+
 
     useEffect(() => {
         // 先重置，否则会有字段不清空情况
@@ -105,11 +107,10 @@ export default function Position(props) {
         const [, translateX] = (/translateX\(([^)]+)\)/.exec(transform) || []);
 
         form.setFieldsValue({translateY, translateX});
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value]);
+    }, [value, form]);
 
     return (
-        <div className={styles.root}>
+        <div className={s.root}>
             <Form
                 form={form}
                 onValuesChange={handleChange}
@@ -276,4 +277,4 @@ export default function Position(props) {
             </Form>
         </div>
     );
-}
+});

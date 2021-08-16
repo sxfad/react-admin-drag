@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {
     Form,
     InputNumber,
@@ -19,28 +19,27 @@ const textAlignOptions = [
 ];
 const labelCol = {flex: '38px'};
 
-export default function Font(props) {
+export default React.memo(function Font(props) {
     const {value, onChange = () => undefined} = props;
     const [form] = Form.useForm();
 
-    function handleChange(changedValues, allValues) {
-        console.log('allValues', JSON.stringify(allValues, null, 4));
+    const handleChange = useCallback((changedValues, allValues) => {
         onChange(allValues);
-    }
+    }, [onChange]);
 
     useEffect(() => {
         // 先重置，否则会有字段不清空情况
         form.resetFields();
         form.setFieldsValue(value);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value]);
+    }, [value, form]);
+
     return (
         <div className={styles.root}>
             <Form
                 form={form}
                 onValuesChange={handleChange}
                 name="font"
-                inline
+                layout="horizontal"
             >
                 <Row>
                     <Col span={14}>
@@ -50,10 +49,8 @@ export default function Font(props) {
                             labelCol={labelCol}
                             colon={false}
                         >
-
                             <Select
-                                style={{width: '100%'}}
-                                placeholder="粗细 font-weight"
+                                placeholder="粗细"
                                 options={[
                                     {value: 'normal', label: '正常'},
                                     {value: 'bolder', label: '粗体'},
@@ -117,4 +114,4 @@ export default function Font(props) {
             </Form>
         </div>
     );
-}
+});

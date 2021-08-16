@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {
     Form,
     Row,
@@ -8,8 +8,7 @@ import {
 } from 'antd';
 import {Icon} from 'src/components';
 import {RadioGroup, UnitInput, ColorInput} from 'src/pages/drag-page/components';
-
-import styles from './style.less';
+import s from './style.less';
 
 const borderStyleOptions = [
     {value: 'none', label: '无边框'},
@@ -48,14 +47,17 @@ const borderPropKeys = [
 ];
 
 const layout = {
-    labelCol: {flex: '30px'},
+    labelCol: {flex: '40px'},
     wrapperCol: {flex: 1},
 };
-export default function Background(props) {
+export default React.memo(function Background(props) {
     const {value, onChange = () => undefined} = props;
     const [form] = Form.useForm();
 
-    function handleChange(changedValues, allValues) {
+    const handleChange = useCallback((changedValues, allValues) => {
+        if ('__border' in changedValues) return;
+        if ('__borderRadius' in changedValues) return;
+
         const {__border, __borderRadius} = allValues;
 
         if (__border === 'all') {
@@ -82,7 +84,8 @@ export default function Background(props) {
 
         console.log('allValues', JSON.stringify(allValues, null, 4));
         onChange(allValues);
-    }
+
+    }, [onChange]);
 
     useEffect(() => {
         // 先重置，否则会有字段不清空情况
@@ -103,12 +106,13 @@ export default function Background(props) {
         });
 
         if (isSame(radiusValues)) {
+            // 整体合并设置
             form.setFieldsValue({
                 __borderRadius: 'all',
                 borderRadius: radiusValues[0],
             });
-
         } else {
+            // 分别设置
             form.setFieldsValue({__borderRadius: 'separate'});
         }
 
@@ -118,20 +122,17 @@ export default function Background(props) {
                 const key = `border${p}`;
                 borders[key] = borderValues[0].split(' ')[index];
             });
-
             form.setFieldsValue({
                 __border: 'all',
                 ...borders,
             });
-
         } else {
             form.setFieldsValue({__border: 'separate'});
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value]);
+    }, [value, form]);
 
     return (
-        <div className={styles.root}>
+        <div className={s.root}>
             <Form
                 form={form}
                 onValuesChange={handleChange}
@@ -147,12 +148,6 @@ export default function Background(props) {
                         placement="top"
                         allowClear={false}
                         options={radiusInputTypeOptions}
-                        onChange={() => {
-                            setTimeout(() => {
-                                const allValues = form.getFieldsValue();
-                                handleChange({}, allValues);
-                            });
-                        }}
                     />
                 </Form.Item>
                 <Form.Item shouldUpdate noStyle>
@@ -243,7 +238,6 @@ export default function Background(props) {
                     }}
                 </Form.Item>
 
-
                 <Form.Item
                     {...layout}
                     label="边框"
@@ -253,12 +247,6 @@ export default function Background(props) {
                     <RadioGroup
                         allowClear={false}
                         options={borderInputTypeOptions}
-                        onChange={() => {
-                            setTimeout(() => {
-                                const allValues = form.getFieldsValue();
-                                handleChange({}, allValues);
-                            });
-                        }}
                     />
                 </Form.Item>
 
@@ -276,7 +264,7 @@ export default function Background(props) {
                                             colon={false}
                                         >
                                             <UnitInput
-                                                placeholder="border-width"
+                                                placeholder="width"
                                                 onChange={e => {
                                                     const {value} = e.target;
                                                     const fieldsValue = {
@@ -298,7 +286,7 @@ export default function Background(props) {
                                         >
                                             <Select
                                                 style={{width: '100%'}}
-                                                placeholder="border-style"
+                                                placeholder="style"
                                                 options={borderStyleOptions}
                                                 onChange={value => {
                                                     const fieldsValue = {
@@ -319,7 +307,7 @@ export default function Background(props) {
                                             colon={false}
                                         >
                                             <ColorInput
-                                                placeholder="border-color"
+                                                placeholder="color"
                                                 onChange={value => {
                                                     const fieldsValue = {
                                                         borderTopColor: value,
@@ -352,7 +340,7 @@ export default function Background(props) {
                             );
 
                             return (
-                                <Row>
+                                <Row key={name}>
                                     <Col span={10} style={{paddingLeft: layout.labelCol.flex}}>
                                         <Form.Item
                                             label={lab}
@@ -387,8 +375,7 @@ export default function Background(props) {
                         });
                     }}
                 </Form.Item>
-
             </Form>
         </div>
     );
-}
+});
