@@ -1,15 +1,14 @@
-import {useEffect, useRef} from 'react';
-import {Modal} from 'antd';
+import { useEffect, useRef } from 'react';
+import { Modal } from 'antd';
+import { getIdByElement } from 'src/pages/drag-page/util';
+import { store } from 'src/models';
 
 export default type => function ModalMethod(props) {
-    const {children, ...others} = props;
+    const { children, ...others } = props;
     const id = children?.props?.config?.id;
-    const nodeSelectType = children?.props?.nodeSelectType;
-    const canvasDocument = children?.props?.canvasDocument;
-    const dragPageAction = children?.props?.dragPageAction;
+    const { nodeSelectType, canvasDocument } = store.getState().dragPage;
     const modalRef = useRef(null);
-
-    const modalId = others['data-component-id'];
+    const modalId = getIdByElement(others);
 
     function handleClick(e) {
         if (nodeSelectType === 'meta' && (e.metaKey || e.ctrlKey)) return;
@@ -18,9 +17,6 @@ export default type => function ModalMethod(props) {
             getContainer: () => canvasDocument?.body,
             ...others,
         });
-
-        // 不渲染，标题和内容无法编辑
-        setTimeout(() => dragPageAction.render());
     }
 
     if (modalRef.current) {

@@ -1,15 +1,15 @@
 import {useEffect} from 'react';
 import {message} from 'antd';
+import { getIdByElement } from 'src/pages/drag-page/util';
+import { store } from 'src/models';
 
 export default function Message(props) {
     let {children, type, ...others} = props;
     if (!type) type = 'success';
 
     const id = children?.props?.config?.id;
-    const nodeSelectType = children?.props?.nodeSelectType;
-    const canvasDocument = children?.props?.canvasDocument;
-    const dragPageAction = children?.props?.dragPageAction;
-    const modalId = others['data-component-id'];
+    const { nodeSelectType, canvasDocument } = store.getState().dragPage;
+    const modalId = getIdByElement(others);
 
     function handleClick(e) {
         if (nodeSelectType === 'meta' && (e.metaKey || e.ctrlKey)) return;
@@ -18,9 +18,6 @@ export default function Message(props) {
             getContainer: () => canvasDocument?.body,
             ...others,
         });
-
-        // 不渲染，标题和内容无法编辑
-        setTimeout(() => dragPageAction.render());
     }
 
     useEffect(() => {
