@@ -18,7 +18,7 @@ import wrapperImage from './drap-images/wrapper.svg';
 import moveImage from './drap-images/move.svg';
 import {v4 as uuid} from 'uuid';
 import PubSub from 'PubSub';
-import {useEffect, useMemo, useState, createElement} from 'react';
+import {useEffect, useState, createElement} from 'react';
 import ReactDOM from 'react-dom';
 import inflection from 'inflection';
 
@@ -81,7 +81,7 @@ export function codeToObject(code) {
     }
 }
 
-export async function getNodeByImage(e){
+export async function getNodeByImage(e) {
     try {
         const src = await getImageUrlByClipboard(e);
         return {
@@ -113,6 +113,7 @@ export function getNodeByText(e) {
         console.error(e);
     }
 }
+
 // 获取label宽度
 export function getLabelWidth(label) {
     if (!label?.length) return 0;
@@ -324,37 +325,6 @@ export function emitUpdateNodes(data) {
     pubsub.publish('update-nodes', data);
 }
 
-export function useOnUpdateNodes(callback) {
-    useEffect(() => {
-        const onUpdateNode = pubsub.subscribe('update-nodes', callback);
-        return () => {
-            pubsub.unsubscribe(onUpdateNode);
-        };
-    }, [callback]);
-}
-
-/**
- * 节点有更新时，返回新的pageConfig实例
- * @param pageConfig
- * @returns {*}
- */
-export function useNextPageConfig(pageConfig) {
-    const [refresh, setRefresh] = useState({});
-
-    const nextPageConfig = useMemo(() => {
-        return {...pageConfig, ...refresh};
-    }, [pageConfig, refresh]);
-
-    useEffect(() => {
-        const onUpdateNode = pubsub.subscribe('update-nodes', () => setRefresh({}));
-        return () => {
-            pubsub.unsubscribe(onUpdateNode);
-        };
-    }, []);
-
-    return nextPageConfig;
-}
-
 /**
  * 任何节点改动，认为是pageConfig改动
  * @returns {{}} 变化后的数据，需要跟pageConfig一起作为hooks依赖
@@ -380,7 +350,7 @@ export function useNodeChange(node) {
 
     useEffect(() => {
         const onUpdateNode = pubsub.subscribe('update-nodes', (nodes) => {
-            if(nodes?.find(item => item.id === node?.id)) {
+            if (nodes?.find(item => item.id === node?.id)) {
                 setRefresh({});
             }
         });
@@ -388,28 +358,6 @@ export function useNodeChange(node) {
             pubsub.unsubscribe(onUpdateNode);
         };
     }, [node?.id]);
-
-    return refresh;
-}
-
-
-/**
- * 当节点改变时，刷新当前组件
- * @param node
- */
-export function useRefreshByNode(node) {
-    const [refresh, setRefresh] = useState({});
-
-    useEffect(() => {
-        const onUpdateNode = pubsub.subscribe('update-nodes', (nodes) => {
-            if(nodes?.find(item => item.id === node?.id)) {
-                setRefresh({...node});
-            }
-        });
-        return () => {
-            pubsub.unsubscribe(onUpdateNode);
-        };
-    }, [node?.id, node]);
 
     return refresh;
 }

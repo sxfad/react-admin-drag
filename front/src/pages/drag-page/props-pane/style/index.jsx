@@ -5,7 +5,7 @@ import {v4 as uuid} from 'uuid';
 import {Icon} from 'src/components';
 import config from 'src/commons/config-hoc';
 import {StyleCodeEditor} from 'src/pages/drag-page/components';
-import {scrollElement, useNodeChange} from 'src/pages/drag-page/util';
+import {scrollElement} from 'src/pages/drag-page/util';
 import Layout from './layout';
 import Font from './font';
 import Position from './position';
@@ -43,12 +43,9 @@ export default React.memo(config({
         action: {dragPage: dragPageAction},
     } = props;
 
-    const selectedNodeRefresh = useNodeChange(selectedNode);
-
     const style = useMemo(() => {
-        console.log(selectedNodeRefresh);
         return selectedNode?.props?.style || {};
-    }, [selectedNode, selectedNodeRefresh]);
+    }, [selectedNode]);
 
     const componentId = selectedNode?.id;
     const [activeKey, setActiveKey] = useState(panes.map(item => item.key));

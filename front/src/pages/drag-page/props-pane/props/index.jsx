@@ -1,11 +1,10 @@
 import React, {useRef, useEffect, useState} from 'react';
 import {Button} from 'antd';
 import {useDebounceFn} from 'ahooks';
-import {useHeight} from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
 import {getComponentConfig} from 'src/pages/drag-page/component-config';
 import {PropsFormEditor, PropsCodeEditor} from 'src/pages/drag-page/components';
-import {OTHER_HEIGHT, useNodeChange} from 'src/pages/drag-page/util';
+import {useNodeChange} from 'src/pages/drag-page/util';
 import {isNode} from 'src/pages/drag-page/util/node-util';
 
 export default config({
@@ -17,6 +16,7 @@ export default config({
     },
 })(function ComponentProps(props) {
     const {
+        height,
         propsPaneWidth,
         selectedNode,
         codeVisible,
@@ -38,8 +38,6 @@ export default config({
 
     const rootRef = useRef(null);
     const [editNode, setEditNode] = useState(null);
-
-    const [height] = useHeight(rootRef, OTHER_HEIGHT);
 
     const {run: handleChange} = useDebounceFn((node, allValues, replace) => {
         if (!node?.componentName) return;
@@ -73,7 +71,7 @@ export default config({
 
         console.log('props', JSON.stringify(node.props, null, 4));
         dragPageAction.updateNode(node);
-    }, {wait: 300});
+    }, {wait: 300, leading: true});
 
     function handleDeleteWrapper(index) {
         selectedNode.wrapper.splice(index, 1);
