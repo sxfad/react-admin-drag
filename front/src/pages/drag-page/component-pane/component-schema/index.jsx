@@ -3,7 +3,7 @@ import {message, Switch} from 'antd';
 import JSON5 from 'json5';
 import config from 'src/commons/config-hoc';
 import {CodeEditor} from 'src/pages/drag-page/components';
-import {isFunctionString, useRefreshByNode} from 'src/pages/drag-page/util';
+import {isFunctionString} from 'src/pages/drag-page/util';
 import {
     findNodeById,
     deleteNodeId,
