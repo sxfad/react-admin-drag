@@ -49,12 +49,46 @@ export default [
         subTitle: 'Message',
         children: [
             {
-                title: '全局提示',
+                title: '成功全局提示',
                 image: MessageImage,
                 config: {
                     componentName: 'Message',
                     props: {
                         content: '操作成功',
+                        type: 'success',
+                    },
+                },
+            },
+            {
+                title: '错误全局提示',
+                image: MessageImage,
+                config: {
+                    componentName: 'Message',
+                    props: {
+                        content: '操作失败',
+                        type: 'error',
+                    },
+                },
+            },
+            {
+                title: '信息全局提示',
+                image: MessageImage,
+                config: {
+                    componentName: 'Message',
+                    props: {
+                        content: '信息提示',
+                        type: 'info',
+                    },
+                },
+            },
+            {
+                title: '警告全局提示',
+                image: MessageImage,
+                config: {
+                    componentName: 'Message',
+                    props: {
+                        content: '警告',
+                        type: 'warning',
                     },
                 },
             },
@@ -91,7 +125,7 @@ export default [
                                 {
                                     componentName: 'DragHolder',
                                     props: {
-                                        style: {height: 200},
+                                        style: { height: 200 },
                                     },
                                 },
                             ],
@@ -137,7 +171,7 @@ export default [
             {
                 title: '弹框底部',
                 renderPreview: true,
-                previewProps: {style: {width: '100%'}},
+                previewProps: { style: { width: '100%' } },
                 previewZoom: .68,
                 config: {
                     componentName: 'ModalFooter',
@@ -237,13 +271,50 @@ export default [
         subTitle: 'Notification',
         children: [
             {
-                title: '通知提醒框',
+                title: '成功通知',
                 image: NotificationImage,
                 config: {
                     componentName: 'Notification',
                     props: {
-                        message: '通知标题',
-                        description: '通知内容',
+                        message: '温馨提示',
+                        description: '操作成功',
+                        type: 'success',
+                    },
+                },
+            },
+            {
+                title: '失败通知',
+                image: NotificationImage,
+                config: {
+                    componentName: 'Notification',
+                    props: {
+                        message: '温馨提示',
+                        description: '操作失败',
+                        type: 'error',
+                    },
+                },
+            },
+            {
+                title: '消息通知',
+                image: NotificationImage,
+                config: {
+                    componentName: 'Notification',
+                    props: {
+                        message: '温馨提示',
+                        description: '消息内容',
+                        type: 'info',
+                    },
+                },
+            },
+            {
+                title: '警告通知',
+                image: NotificationImage,
+                config: {
+                    componentName: 'Notification',
+                    props: {
+                        message: '温馨提示',
+                        description: '警告内容',
+                        type: 'warning',
                     },
                 },
             },

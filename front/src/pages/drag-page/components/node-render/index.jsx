@@ -118,8 +118,6 @@ const NodeRender = React.memo(function(renderNodeProps) {
     // eslint-disable-next-line no-unused-vars
     const setState = dragPageAction.setPageState;
 
-    console.log(config.componentName, props);
-
     // 存在 wrapper，进行wrapper转换为父元素
     if (wrapper?.length) {
         wrapper[0].children = [{...config, wrapper: null}];
@@ -127,14 +125,14 @@ const NodeRender = React.memo(function(renderNodeProps) {
         const nextConfig = wrapper.reduce((prev, curr) => {
             curr.children = [prev];
 
-            return curr;
+            return {...curr};
         });
 
         return (
             <NodeRender
                 key={nextConfig.id}
                 {...renderProps}
-                config={nextConfig}
+                config={{...nextConfig}}
             />
         );
     }
@@ -198,6 +196,7 @@ const NodeRender = React.memo(function(renderNodeProps) {
     // 组件样式，将组件id拼接到样式中，有些组件无法自定义属性，统一通过样式标记
     const cls = [props.className, `id_${id}`, className].filter(item => !!item).join(' ');
 
+    console.log(config.componentName, props, others);
     return createElement(component, {
         key: key || id, // 如果节点设置了key，则使用key，否则使用id，key的改变会使组件卸载然后重新创建
         ...props,

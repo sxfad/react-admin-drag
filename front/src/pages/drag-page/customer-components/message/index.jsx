@@ -1,24 +1,15 @@
-import {useEffect} from 'react';
-import {message} from 'antd';
+import { useEffect } from 'react';
+import { message } from 'antd';
 import { getIdByElement } from 'src/pages/drag-page/util';
 import { store } from 'src/models';
 
 export default function Message(props) {
-    let {children, type, ...others} = props;
+    let { children, type, ...others } = props;
     if (!type) type = 'success';
 
     const id = children?.props?.config?.id;
     const { nodeSelectType, canvasDocument } = store.getState().dragPage;
     const modalId = getIdByElement(others);
-
-    function handleClick(e) {
-        if (nodeSelectType === 'meta' && (e.metaKey || e.ctrlKey)) return;
-
-        message[type]({
-            getContainer: () => canvasDocument?.body,
-            ...others,
-        });
-    }
 
     useEffect(() => {
         if (!canvasDocument) return;
@@ -31,26 +22,34 @@ export default function Message(props) {
 
 
     useEffect(() => {
-        if (id && canvasDocument) {
-            const elements = canvasDocument.querySelectorAll(`.id_${id}`);
-            if (elements?.length) {
-                elements.forEach(element => {
-                    if (element.getAttribute(`data-message-id-${modalId}`) !== 'true') {
-                        element.addEventListener('click', handleClick);
-                        element.setAttribute(`data-message-id-${modalId}`, true);
-                    }
-                });
+        if (!id || !canvasDocument) return;
 
-                return () => {
-                    elements.forEach(element => {
-                        element.removeEventListener('click', handleClick);
-                        element.setAttribute(`data-message-id-${modalId}`, false);
-                    });
-                };
-            }
+        function handleClick(e) {
+            if (nodeSelectType === 'meta' && (e.metaKey || e.ctrlKey)) return;
+
+            message[type]({
+                getContainer: () => canvasDocument?.body,
+                ...others,
+            });
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id, canvasDocument]);
+
+        const elements = canvasDocument.querySelectorAll(`.id_${id}`);
+        if (elements?.length) {
+            elements.forEach(element => {
+                if (element.getAttribute(`data-message-id-${modalId}`) !== 'true') {
+                    element.addEventListener('click', handleClick);
+                    element.setAttribute(`data-message-id-${modalId}`, true);
+                }
+            });
+
+            return () => {
+                elements.forEach(element => {
+                    element.removeEventListener('click', handleClick);
+                    element.setAttribute(`data-message-id-${modalId}`, false);
+                });
+            };
+        }
+    }, [id, modalId, others, type, nodeSelectType, canvasDocument]);
 
     return children;
 }
