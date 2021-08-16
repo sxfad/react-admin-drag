@@ -1,9 +1,9 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState, useRef, useCallback} from 'react';
 import {message, Switch} from 'antd';
 import JSON5 from 'json5';
 import config from 'src/commons/config-hoc';
 import {CodeEditor} from 'src/pages/drag-page/components';
-import {isFunctionString} from 'src/pages/drag-page/util';
+import {isFunctionString, codeToObject} from 'src/pages/drag-page/util';
 import {
     findNodeById,
     deleteNodeId,
@@ -31,7 +31,6 @@ export default config({
     const {
         pageConfig,
         selectedNode,
-        visible,
         componentPaneWidth,
         action: {dragPage: dragPageAction},
     } = props;
@@ -40,62 +39,7 @@ export default config({
     const [code, setCode] = useState('');
     const saveRef = useRef(false);
 
-    // 将代码转换为对象
-    function codeToObject(code) {
-        if (!code) return null;
-
-        const val = code.replace('export', '').replace('default', '');
-        try {
-            let obj;
-            // 直接通过eval执行，保留函数
-            // eslint-disable-next-line
-            eval(`obj = ${val}`);
-
-            if (typeof obj !== 'object' || Array.isArray(obj)) {
-                return Error('语法错误，请修改后保存！');
-            }
-
-            const loopComponentName = node => {
-                if (!node.componentName) return false;
-
-                if (node?.children?.length) {
-                    for (let item of node.children) {
-                        const result = loopComponentName(item);
-                        if (result === false) return result;
-                    }
-                }
-
-                return true;
-            };
-
-            if (!loopComponentName(obj)) return Error('缺少必填字段「componentName」!');
-
-            // 函数转字符串
-            const loopFunction = node => {
-                Object.entries(node)
-                    .forEach(([key, value]) => {
-                        if (typeof value === 'function') {
-                            node[key] = value.toString();
-                        }
-                        if (Array.isArray(value)) {
-                            value.forEach(item => loopFunction(item));
-                        }
-                        if (typeof value === 'object' && value && !Array.isArray(value)) {
-                            loopFunction(value);
-                        }
-                    });
-            };
-
-            loopFunction(obj);
-
-            return obj;
-        } catch (e) {
-            console.error(e);
-            return Error('语法错误，请修改后保存！');
-        }
-    }
-
-    function handleSave(value, errors) {
+    const handleSave = useCallback((value, errors) => {
         if (errors?.length) return message.error('语法错误，请修改后保存！');
 
         const nodeConfig = codeToObject(value);
@@ -127,21 +71,22 @@ export default config({
 
         saveRef.current = true;
 
-        dragPageAction.setFields({pageConfig: {...nextPageConfig}});
-        //
         const nextSelectedNode = findNodeById(nextPageConfig, selectedNode?.id);
-        console.log(nextSelectedNode);
-        // dragPageAction.setSelectedNodeId(nextSelectedNode?.id);
+        dragPageAction.setFields({
+            pageConfig: nextPageConfig,
+            selectedNode: nextSelectedNode,
+        });
+        dragPageAction.updateNode(nextSelectedNode);
 
         return message.success('保存成功！');
-    }
-
-    function handleClose() {
-        dragPageAction.setFields({componentPaneExpended: false});
-    }
+    }, [
+        dragPageAction,
+        editType,
+        pageConfig,
+        selectedNode,
+    ]);
 
     useEffect(() => {
-        if (!visible) return;
         // 由于保存触发的，不做任何处理
         if (saveRef.current) {
             saveRef.current = false;
@@ -194,9 +139,11 @@ export default config({
         nextCode = nextCode.replace(/\\n/g, '\n');
 
         setCode(nextCode);
-    }, [visible, editType, selectedNode, pageConfig]);
-
-    if (!visible) return null;
+    }, [
+        editType,
+        selectedNode,
+        pageConfig,
+    ]);
 
     return (
         <div className={s.root} id="schemaEditor">
@@ -206,6 +153,7 @@ export default config({
                     <div className={s.title}>
                         <span style={{marginRight: 8}}>Schema 源码开发</span>
                         <Switch
+                            disabled={!selectedNode}
                             checkedChildren="选中"
                             unCheckedChildren="全部"
                             checked={editType === EDIT_TYPE.CURRENT_NODE}
@@ -215,7 +163,7 @@ export default config({
                 )}
                 value={code}
                 onSave={handleSave}
-                onClose={handleClose}
+                onClose={() => dragPageAction.setFields({componentPaneExpended: false})}
             />
         </div>
     );

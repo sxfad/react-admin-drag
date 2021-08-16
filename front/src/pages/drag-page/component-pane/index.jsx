@@ -1,5 +1,5 @@
-import React, { useRef, useCallback } from 'react';
-import { Tooltip } from 'antd';
+import React, {useRef, useCallback} from 'react';
+import {Tooltip} from 'antd';
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
@@ -8,7 +8,7 @@ import {
     ApartmentOutlined,
     BarsOutlined,
 } from '@ant-design/icons';
-import { Icon } from 'src/components';
+import {Icon} from 'src/components';
 import config from 'src/commons/config-hoc';
 import {DragBar} from 'src/pages/drag-page/components';
 import ComponentStore from 'src/pages/drag-page/component-pane/component-store';
@@ -22,32 +22,32 @@ const tools = [
     {
         title: '页面菜单',
         key: 'menu',
-        icon: <BarsOutlined style={{ fontSize: 20 }} />,
+        icon: <BarsOutlined style={{fontSize: 20}}/>,
         Component: ComponentMenu,
     },
     {
         title: '组件树',
         key: 'componentTree',
-        icon: <ApartmentOutlined />,
+        icon: <ApartmentOutlined/>,
         Component: ComponentTree,
     },
     {
         title: '组件库',
         key: 'componentStore',
-        icon: <AppstoreOutlined />,
+        icon: <AppstoreOutlined/>,
         Component: ComponentStore,
     },
     {
         title: 'Schema 源码开发',
         key: 'schemaEditor',
-        icon: <Icon type="icon-code" />,
+        icon: <Icon type="icon-code"/>,
         Component: ComponentSchema,
         bottom: true,
     },
     {
         title: '设置',
         key: 'setting',
-        icon: <SettingOutlined />,
+        icon: <SettingOutlined/>,
         Component: ComponentSetting,
         bottom: true,
     },
@@ -66,20 +66,20 @@ export default React.memo(config({
         componentPaneExpended,
         componentPaneWidth,
         componentPaneActiveKey,
-        action: { dragPage: dragPageAction },
+        action: {dragPage: dragPageAction},
     } = props;
     const rightRef = useRef(null);
 
     // 工具图标点击事件
     const handleToolClick = useCallback((key) => {
-        dragPageAction.setFields({ componentPaneActiveKey: key });
+        dragPageAction.setFields({componentPaneActiveKey: key});
 
         // 当前激活面板再次点击，进行展开收起操作
         if (key === componentPaneActiveKey) {
-            dragPageAction.setFields({ componentPaneExpended: !componentPaneExpended });
+            dragPageAction.setFields({componentPaneExpended: !componentPaneExpended});
             return;
         }
-        dragPageAction.setFields({ componentPaneExpended: true });
+        dragPageAction.setFields({componentPaneExpended: true});
     }, [dragPageAction, componentPaneActiveKey, componentPaneExpended]);
 
     // 展开收起
@@ -88,22 +88,22 @@ export default React.memo(config({
 
         // 展开时，默认显示组件库
         if (!nextComponentPaneExpended && !componentPaneActiveKey) {
-            dragPageAction.setFields({ componentPaneActiveKey: 'componentStore' });
+            dragPageAction.setFields({componentPaneActiveKey: 'componentStore'});
         }
 
-        dragPageAction.setFields({ componentPaneExpended: nextComponentPaneExpended });
+        dragPageAction.setFields({componentPaneExpended: nextComponentPaneExpended});
     }, [dragPageAction, componentPaneActiveKey, componentPaneExpended]);
 
     const handleDragging = useCallback((info) => {
-        const { clientX } = info;
+        const {clientX} = info;
 
-        const { x } = rightRef.current.getBoundingClientRect();
-        dragPageAction.setFields({ componentPaneWidth: clientX - x - 4 });
+        const {x} = rightRef.current.getBoundingClientRect();
+        dragPageAction.setFields({componentPaneWidth: clientX - x - 4});
     }, [dragPageAction]);
 
     const renderTools = useCallback((tools, bottom) => {
         return tools.filter(item => item.bottom === bottom).map(item => {
-            const { title, key, icon } = item;
+            const {title, key, icon} = item;
             const active = key === componentPaneActiveKey;
 
             return (
@@ -111,7 +111,7 @@ export default React.memo(config({
                     <div
                         className={[
                             styles.toolItem,
-                            { [styles.active]: active },
+                            {[styles.active]: active},
                         ]}
                         onClick={() => handleToolClick(key)}
                     >
@@ -125,12 +125,12 @@ export default React.memo(config({
     const rightWidth = componentPaneExpended ? componentPaneWidth : 0;
     return (
         <div className={styles.root}>
-            {componentPaneExpended ? <DragBar onDragging={handleDragging} /> : null}
+            {componentPaneExpended ? <DragBar onDragging={handleDragging}/> : null}
             <div className={styles.left}>
                 <div className={styles.leftTop}>
                     <Tooltip placement="right" title={componentPaneExpended ? '收起' : '展开'}>
                         <div className={[styles.toggle, styles.toolItem]} onClick={() => handleToggleCollapse()}>
-                            {componentPaneExpended ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
+                            {componentPaneExpended ? <MenuFoldOutlined/> : <MenuUnfoldOutlined/>}
                         </div>
                     </Tooltip>
                     {renderTools(tools)}
@@ -139,10 +139,11 @@ export default React.memo(config({
                     {renderTools(tools, true)}
                 </div>
             </div>
-            <div className={styles.right} ref={rightRef} style={{ width: rightWidth }}>
+            <div className={styles.right} ref={rightRef} style={{width: rightWidth}}>
                 {tools.map(item => {
-                    const { key, title, icon, Component } = item;
+                    const {key, title, icon, Component} = item;
                     const visible = key === componentPaneActiveKey;
+                    if (key === 'schemaEditor' && !visible) return null;
 
                     return (
                         <div
@@ -155,7 +156,6 @@ export default React.memo(config({
                             }}
                         >
                             <Component
-                                visible={visible}
                                 title={title}
                                 icon={icon}
                             />

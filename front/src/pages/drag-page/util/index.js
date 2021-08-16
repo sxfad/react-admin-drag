@@ -26,6 +26,61 @@ export const OTHER_HEIGHT = 0;
 export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
 export const TRIGGER_SIZE = 20;
 
+export function codeToObject(code) {
+
+    if (!code) return null;
+
+    const val = code.replace('export', '').replace('default', '');
+    try {
+        let obj = {};
+        // 直接通过eval执行，保留函数
+        // eslint-disable-next-line
+        eval(`obj = ${val}`);
+
+        if (typeof obj !== 'object' || Array.isArray(obj)) {
+            return Error('语法错误，请修改后保存！');
+        }
+
+        const loopComponentName = node => {
+            if (!node.componentName) return false;
+
+            if (node?.children?.length) {
+                for (let item of node.children) {
+                    const result = loopComponentName(item);
+                    if (result === false) return result;
+                }
+            }
+
+            return true;
+        };
+
+        if (!loopComponentName(obj)) return Error('缺少必填字段「componentName」!');
+
+        // 函数转字符串
+        const loopFunction = node => {
+            Object.entries(node)
+                .forEach(([key, value]) => {
+                    if (typeof value === 'function') {
+                        node[key] = value.toString();
+                    }
+                    if (Array.isArray(value)) {
+                        value.forEach(item => loopFunction(item));
+                    }
+                    if (typeof value === 'object' && value && !Array.isArray(value)) {
+                        loopFunction(value);
+                    }
+                });
+        };
+
+        loopFunction(obj);
+
+        return obj;
+    } catch (e) {
+        console.error(e);
+        return Error('语法错误，请修改后保存！');
+    }
+}
+
 export async function getNodeByImage(e){
     try {
         const src = await getImageUrlByClipboard(e);
