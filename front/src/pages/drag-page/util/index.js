@@ -274,19 +274,20 @@ export function useNextPageConfig(pageConfig) {
  * @param node
  */
 export function useRefreshByNode(node) {
-    const [, setRefresh] = useState({});
+    const [refresh, setRefresh] = useState({});
 
     useEffect(() => {
         const onUpdateNode = pubsub.subscribe('update-nodes', (nodes) => {
             if(nodes?.find(item => item.id === node?.id)) {
-                setRefresh({});
+                setRefresh({...node});
             }
         });
         return () => {
             pubsub.unsubscribe(onUpdateNode);
         };
-    }, [node?.id]);
+    }, [node?.id, node]);
 
+    return refresh;
 }
 
 

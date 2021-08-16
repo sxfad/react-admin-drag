@@ -66,7 +66,7 @@ export default config({
 
         console.log('props', JSON.stringify(node.props, null, 4));
         dragPageAction.updateNode(node);
-        // dragPageAction.updateParentNode(selectedNode);
+        dragPageAction.updateNode(selectedNode);
     }, {wait: 300});
 
     function handleDeleteWrapper(index) {

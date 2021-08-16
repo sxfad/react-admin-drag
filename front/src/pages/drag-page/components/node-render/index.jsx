@@ -129,7 +129,6 @@ const NodeRender = React.memo(function(renderNodeProps) {
     // eslint-disable-next-line no-unused-vars
     const setState = dragPageAction.setPageState;
 
-    console.log(config.componentName, config.id, props);
     // 存在 wrapper，进行wrapper转换为父元素
     if (wrapper?.length) {
         wrapper[0].children = [{...config, wrapper: null}];
@@ -137,14 +136,14 @@ const NodeRender = React.memo(function(renderNodeProps) {
         const nextConfig = wrapper.reduce((prev, curr) => {
             curr.children = [prev];
 
-            return curr;
+            return {...curr};
         });
 
         return (
             <NodeRender
                 key={nextConfig.id}
                 {...renderProps}
-                config={nextConfig}
+                config={{...nextConfig}}
             />
         );
     }

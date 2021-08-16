@@ -1,17 +1,17 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { message, Switch } from 'antd';
+import React, {useEffect, useState, useRef} from 'react';
+import {message, Switch} from 'antd';
 import JSON5 from 'json5';
 import config from 'src/commons/config-hoc';
-import { CodeEditor } from 'src/pages/drag-page/components';
-import { isFunctionString } from 'src/pages/drag-page/util';
+import {CodeEditor} from 'src/pages/drag-page/components';
+import {isFunctionString, useRefreshByNode} from 'src/pages/drag-page/util';
 import {
     findNodeById,
     deleteNodeId,
     setNodeId,
     loopNode,
 } from 'src/pages/drag-page/util/node-util';
-import { deleteDefaultProps, getComponentConfig } from 'src/pages/drag-page/component-config';
-import { cloneDeep } from 'lodash';
+import {deleteDefaultProps, getComponentConfig} from 'src/pages/drag-page/component-config';
+import {cloneDeep} from 'lodash';
 import s from './style.less';
 
 const EDIT_TYPE = {
@@ -33,7 +33,7 @@ export default config({
         selectedNode,
         visible,
         componentPaneWidth,
-        action: { dragPage: dragPageAction },
+        action: {dragPage: dragPageAction},
     } = props;
 
     const [editType, setEditType] = useState(EDIT_TYPE.CURRENT_NODE);
@@ -127,7 +127,7 @@ export default config({
 
         saveRef.current = true;
 
-        dragPageAction.setFields({ pageConfig: {...nextPageConfig} });
+        dragPageAction.setFields({pageConfig: {...nextPageConfig}});
         //
         const nextSelectedNode = findNodeById(nextPageConfig, selectedNode?.id);
         console.log(nextSelectedNode);
@@ -137,7 +137,7 @@ export default config({
     }
 
     function handleClose() {
-        dragPageAction.setActiveSideKey(null);
+        dragPageAction.setFields({componentPaneExpended: false});
     }
 
     useEffect(() => {
@@ -171,7 +171,7 @@ export default config({
         loopNode(editNode, node => {
             const nodeConfig = getComponentConfig(node.componentName);
             const beforeSchemaEdit = nodeConfig?.hooks?.beforeSchemaEdit;
-            beforeSchemaEdit && beforeSchemaEdit({ node });
+            beforeSchemaEdit && beforeSchemaEdit({node});
             if (node.props) {
                 Object.entries(node.props)
                     .forEach(([key, value]) => {
@@ -204,7 +204,7 @@ export default config({
                 editorWidth={componentPaneWidth}
                 title={(
                     <div className={s.title}>
-                        <span style={{ marginRight: 8 }}>Schema 源码开发</span>
+                        <span style={{marginRight: 8}}>Schema 源码开发</span>
                         <Switch
                             checkedChildren="选中"
                             unCheckedChildren="全部"
