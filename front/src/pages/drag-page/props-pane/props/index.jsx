@@ -5,7 +5,7 @@ import {useHeight} from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
 import {getComponentConfig} from 'src/pages/drag-page/component-config';
 import PropsFormEditor from './props-form-editor';
-import {OTHER_HEIGHT, useRefreshByNode /*, scrollElement*/} from 'src/pages/drag-page/util';
+import {OTHER_HEIGHT, useNodeChange /*, scrollElement*/} from 'src/pages/drag-page/util';
 import {isNode} from 'src/pages/drag-page/util/node-util';
 import PropsCodeEditor from 'src/pages/drag-page/props-pane/props/props-code-editor';
 // import {v4 as uuid} from 'uuid';
@@ -26,8 +26,17 @@ export default config({
         action: {dragPage: dragPageAction},
     } = props;
 
-    // selectedNode 有更新时，刷新当前组件
-    useRefreshByNode(selectedNode);
+    // 相关属性节点
+    const propsNodes = selectedNode?.props ? Object.entries(selectedNode?.props)
+        .filter(([, value]) => isNode(value)) : [];
+
+    // 相关文本节点
+    let TextNode = selectedNode?.children?.find(item => item.componentName === 'Text');
+
+    // 相关包裹节点
+    const wrapperNodes = selectedNode?.wrapper || [];
+
+    const selectedNodeRefresh = useNodeChange(selectedNode);
 
     const rootRef = useRef(null);
     const [editNode, setEditNode] = useState(null);
@@ -66,7 +75,6 @@ export default config({
 
         console.log('props', JSON.stringify(node.props, null, 4));
         dragPageAction.updateNode(node);
-        dragPageAction.updateNode(selectedNode);
     }, {wait: 300});
 
     function handleDeleteWrapper(index) {
@@ -86,7 +94,7 @@ export default config({
     // 编辑当前选中节点
     useEffect(() => {
         setEditNode(selectedNode);
-    }, [selectedNode]);
+    }, [selectedNode, selectedNodeRefresh]);
 
     // 将属性面板滚动到顶部，并隐藏滚动条
     useEffect(() => {
@@ -105,12 +113,6 @@ export default config({
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [codeVisible, editNode, rootRef.current]);
-
-    const propsNodes = selectedNode?.props ? Object.entries(selectedNode?.props)
-        .filter(([, value]) => isNode(value)) : [];
-
-    // 将Text 节点加入，方便编辑
-    let TextNode = selectedNode?.children?.find(item => item.componentName === 'Text');
 
     return (
         <div ref={rootRef} style={{height, overflow: 'auto'}}>
@@ -133,16 +135,17 @@ export default config({
                             />
                         </section>
                     ) : null}
+
                     <section id={`fieldEditor_${selectedNode?.id}`}>
                         <PropsFormEditor
-                            fitHeight={!selectedNode?.wrapper?.length && !propsNodes?.length && !TextNode}
                             node={selectedNode}
                             onCodeEdit={() => handleEdit(selectedNode)}
                             onChange={(...args) => handleChange(selectedNode, ...args)}
                         />
                     </section>
-                    {selectedNode?.wrapper?.length ? selectedNode.wrapper.map((node, index) => {
-                        const isLast = !propsNodes.length && index === selectedNode.wrapper.length - 1;
+
+                    {wrapperNodes.map((node, index) => {
+                        const isLast = !propsNodes.length && index === wrapperNodes.length - 1;
                         return (
                             <section key={node.id} id={`fieldEditor_${node.id}`} style={{height: isLast ? '100%' : 'auto'}}>
                                 <PropsFormEditor
@@ -161,7 +164,7 @@ export default config({
                                 />
                             </section>
                         );
-                    }) : null}
+                    })}
 
                     {propsNodes.map(([key, node], index) => {
                         const isLast = index === propsNodes.length - 1;

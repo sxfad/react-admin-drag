@@ -3,7 +3,7 @@ import {message, Switch} from 'antd';
 import JSON5 from 'json5';
 import config from 'src/commons/config-hoc';
 import {CodeEditor} from 'src/pages/drag-page/components';
-import {isFunctionString, codeToObject} from 'src/pages/drag-page/util';
+import {isFunctionString, codeToObject, usePageConfigChange, useNodeChange} from 'src/pages/drag-page/util';
 import {
     findNodeById,
     deleteNodeId,
@@ -34,6 +34,9 @@ export default config({
         componentPaneWidth,
         action: {dragPage: dragPageAction},
     } = props;
+
+    const pageConfigRefresh = usePageConfigChange();
+    const selectedNodeRefresh = useNodeChange(selectedNode);
 
     const [editType, setEditType] = useState(EDIT_TYPE.CURRENT_NODE);
     const [code, setCode] = useState('');
@@ -141,8 +144,10 @@ export default config({
         setCode(nextCode);
     }, [
         editType,
-        selectedNode,
         pageConfig,
+        pageConfigRefresh,
+        selectedNode,
+        selectedNodeRefresh,
     ]);
 
     return (

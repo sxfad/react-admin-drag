@@ -8,7 +8,7 @@ import config from 'src/commons/config-hoc';
 import {convertNodeToTreeData} from './util';
 import s from './style.less';
 import {findNodeById, findParentNodes} from 'src/pages/drag-page/util/node-util';
-import {deleteNodeByKeyDown, scrollElement, useNextPageConfig} from 'src/pages/drag-page/util';
+import {deleteNodeByKeyDown, scrollElement, useNodeChange, usePageConfigChange} from 'src/pages/drag-page/util';
 import TreeNode from './TreeNode';
 
 export default React.memo(config({
@@ -22,21 +22,24 @@ export default React.memo(config({
     const {
         icon,
         title,
+        pageConfig,
         selectedNode,
         action: {dragPage: dragPageAction},
     } = props;
+
+    const pageConfigRefresh = usePageConfigChange();
+    const selectedNodeRefresh = useNodeChange(selectedNode);
 
     const [expandedKeys, setExpandedKeys] = useState([]);
     const [isAllExpanded, setIsAllExpanded] = useState(false);
     const contentRef = useRef(null);
 
-    const pageConfig = useNextPageConfig(props.pageConfig);
-
     const {treeData = [], nodeCount = 0, allKeys = []} = useMemo(() => {
         if (!pageConfig) return {};
 
+        console.log(pageConfigRefresh);
         return convertNodeToTreeData(pageConfig);
-    }, [pageConfig]);
+    }, [pageConfig, pageConfigRefresh]);
 
     const renderNode = useCallback((node) => {
         return (
@@ -74,7 +77,7 @@ export default React.memo(config({
             // 去重
             return Array.from(new Set([...prevKeys, ...keys, id]));
         });
-    }, [selectedNode, treeData]);
+    }, [selectedNode, selectedNodeRefresh, treeData]);
 
 
     // 当有节点选中，树滚动到相应位置
@@ -94,16 +97,15 @@ export default React.memo(config({
             scrollElement(containerEle, element);
         }, 200);
 
-    }, [selectedNode]);
-
-    const handleKeyDown = useCallback((e) => {
-        deleteNodeByKeyDown(e, selectedNode?.id, document.activeElement, dragPageAction);
-    }, [selectedNode, dragPageAction]);
+    }, [selectedNode, selectedNodeRefresh]);
 
     useEffect(() => {
+        const handleKeyDown = (e) => {
+            deleteNodeByKeyDown(e, selectedNode?.id, document.activeElement, dragPageAction);
+        };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [handleKeyDown]);
+    }, [selectedNode, selectedNodeRefresh, dragPageAction]);
 
     return (
         <Container>

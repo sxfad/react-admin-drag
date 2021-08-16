@@ -1,11 +1,11 @@
-import React, {useState, useRef, useCallback} from 'react';
+import React, {useState, useRef, useCallback, useMemo} from 'react';
 import {Collapse, ConfigProvider, Tooltip} from 'antd';
 import {useDebounceFn} from 'ahooks';
 import {v4 as uuid} from 'uuid';
 import {Icon} from 'src/components';
 import config from 'src/commons/config-hoc';
 import {StyleCodeEditor} from 'src/pages/drag-page/components';
-import {scrollElement, useRefreshByNode} from 'src/pages/drag-page/util';
+import {scrollElement, useNodeChange} from 'src/pages/drag-page/util';
 import Layout from './layout';
 import Font from './font';
 import Position from './position';
@@ -43,15 +43,16 @@ export default React.memo(config({
         action: {dragPage: dragPageAction},
     } = props;
 
-    // selectedNode 有更新时，刷新当前组件
-    useRefreshByNode(selectedNode);
+    const selectedNodeRefresh = useNodeChange(selectedNode);
 
-    const style = selectedNode?.props?.style || {};
+    const style = useMemo(() => {
+        console.log(selectedNodeRefresh);
+        return selectedNode?.props?.style || {};
+    }, [selectedNode, selectedNodeRefresh]);
+
     const componentId = selectedNode?.id;
-
     const [activeKey, setActiveKey] = useState(panes.map(item => item.key));
     const boxRef = useRef(null);
-
 
     // 表单改变事件，更新selectedNode的style属性
     const {run: handleChange} = useDebounceFn((values, replace) => {
@@ -73,8 +74,6 @@ export default React.memo(config({
         selectedNode.props.key = uuid();
 
         dragPageAction.updateNode(selectedNode);
-
-        console.log('selectedNode style', JSON.stringify(selectedNode.props.style, null, 4));
     }, {wait: 300});
 
     const handleNavClick = useCallback((key) => {

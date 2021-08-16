@@ -1,5 +1,5 @@
-import React, {createElement, useCallback, useState} from 'react';
-import {getComponent, useOnUpdateNodes} from 'src/pages/drag-page/util';
+import React, {createElement} from 'react';
+import {getComponent, useNodeChange} from 'src/pages/drag-page/util';
 import {isNode} from 'src/pages/drag-page/util/node-util';
 import {getComponentConfig} from 'src/pages/drag-page/component-config';
 import {store, actions} from 'src/models';
@@ -40,18 +40,7 @@ const NodeRender = React.memo(function(renderNodeProps) {
 
     const dragPageAction = actions.dragPage;
 
-    const [, setUpdate] = useState({});
-
-    const callback = useCallback((data) => {
-        const node = data.find(item => item.id === config?.id);
-        if (node) {
-            const {type} = node;
-            setUpdate({type});
-        }
-    }, [config]);
-
-    useOnUpdateNodes(callback);
-
+    useNodeChange(config);
 
     // 配置并不是组件节点，直接返回配置内容
     if (!isNode(config)) return config;
@@ -129,6 +118,8 @@ const NodeRender = React.memo(function(renderNodeProps) {
     // eslint-disable-next-line no-unused-vars
     const setState = dragPageAction.setPageState;
 
+    console.log(config.componentName, props);
+
     // 存在 wrapper，进行wrapper转换为父元素
     if (wrapper?.length) {
         wrapper[0].children = [{...config, wrapper: null}];
@@ -136,14 +127,14 @@ const NodeRender = React.memo(function(renderNodeProps) {
         const nextConfig = wrapper.reduce((prev, curr) => {
             curr.children = [prev];
 
-            return {...curr};
+            return curr;
         });
 
         return (
             <NodeRender
                 key={nextConfig.id}
                 {...renderProps}
-                config={{...nextConfig}}
+                config={nextConfig}
             />
         );
     }

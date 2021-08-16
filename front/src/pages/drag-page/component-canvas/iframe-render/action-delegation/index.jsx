@@ -9,7 +9,7 @@ import {
     usePageConfigChange,
     useNodeChange,
     getNodeByText,
-    getNodeByImage,
+    getNodeByImage, deleteNodeByKeyDown,
 } from 'src/pages/drag-page/util';
 import {findNodeById, setNodeId} from 'src/pages/drag-page/util/node-util';
 
@@ -216,22 +216,8 @@ export default React.memo(function DragDelegation(props) {
                 });
             }
 
-            // Backspace Delete 键也删除 要区分是否有输入框获取焦点
-            if (['Delete', 'Backspace'].includes(key)) {
-
-                const {activeElement} = canvasDocument;
-                if (activeElement && ['INPUT', 'TEXTAREA'].includes(activeElement.tagName)) {
-                    return;
-                }
-                dragPageAction.deleteNodeById(selectedNode?.id);
-            }
-
-            // command(ctrl) + d 删除选中节点
-            if (metaOrCtrl && key === 'd') {
-                e.stopPropagation();
-                e.preventDefault();
-                dragPageAction.deleteNodeById(selectedNode?.id);
-            }
+            const {activeElement} = canvasDocument;
+            deleteNodeByKeyDown(e, selectedNode?.id, activeElement, dragPageAction);
 
             // command(ctrl) + c 复制当前选中节点
             if (metaOrCtrl && key === 'c') {

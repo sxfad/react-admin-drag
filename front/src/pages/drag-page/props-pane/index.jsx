@@ -5,7 +5,7 @@ import {useHeight} from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
 import {Icon} from 'src/components';
 import {isNode} from 'src/pages/drag-page/util/node-util';
-import {useRefreshByNode} from 'src/pages/drag-page/util';
+import {useNodeChange} from 'src/pages/drag-page/util';
 import {DragBar, SelectedNode} from 'src/pages/drag-page/components';
 import Style from './style';
 import Props from './props';
@@ -41,15 +41,13 @@ export default React.memo(config({
 })(function PropsPane(props) {
     const {
         propsPaneActiveKey,
-        selectedNode,
         propsPaneWidth,
         propsPaneExpended,
+        selectedNode,
         action: {dragPage: dragPageAction},
     } = props;
 
-    // selectedNode 更新触发当前组件更新
-    // selectedNode引用类型，其内部属性有可能更新
-    useRefreshByNode(selectedNode);
+    useNodeChange(selectedNode);
 
     const rootRef = useRef(null);
     const [codeVisible, setCodeVisible] = useState(panes.reduce((prev, curr) => {
@@ -137,7 +135,7 @@ export default React.memo(config({
                 <div className={s.paneTop}>
                     {selectedNode && isNode(selectedNode) ? (
                         <>
-                            <SelectedNode node={selectedNode}/>
+                            <SelectedNode node={{...selectedNode}}/>
                             <Tooltip
                                 title={() => {
                                     const pane = panes.find(item => item.key === propsPaneActiveKey);
