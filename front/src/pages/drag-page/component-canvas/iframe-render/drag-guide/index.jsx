@@ -1,6 +1,6 @@
-import React, { useEffect, useCallback, useState } from 'react';
-import { getComponentDisplayName } from 'src/pages/drag-page/component-config';
-import { getElementInfo } from 'src/pages/drag-page/util';
+import React, {useEffect, useCallback, useState} from 'react';
+import {getComponentDisplayName} from 'src/pages/drag-page/component-config';
+import {getElementInfo, useNodeChange, usePageConfigChange} from 'src/pages/drag-page/util';
 import s from './style.less';
 
 // 改变背景颜色，不同投放类型，对应不同的样色
@@ -17,19 +17,24 @@ export default React.memo(function DragGuide(props) {
         canvasDocument,
         draggingElement,
         targetHoverPosition,
-        targetNode,
-        selectedNode,
-        draggingNode,
         componentPaneWidth,
         propsPaneWidth,
         componentPaneExpended,
         propsPaneExpended,
         canvasScale,
-        pageConfig,
         pageState,
+
+        pageConfig,
+        targetNode,
+        selectedNode,
+        draggingNode,
     } = props;
 
     const [refresh, setRefresh] = useState({});
+    const pageConfigRefresh = usePageConfigChange();
+    const selectedNodeRefresh = useNodeChange(selectedNode);
+    const targetNodeRefresh = useNodeChange(targetNode);
+    const draggingNodeRefresh = useNodeChange(draggingNode);
 
     const showGuideBg = useCallback((targetNode) => {
         if (!canvasDocument) return;
@@ -58,7 +63,7 @@ export default React.memo(function DragGuide(props) {
         guideNameEle.setAttribute('data-component-display-name', componentDisplayName);
         guideBgEle.classList.add(s.guideBgActive);
 
-        const { top, left, width, height } = targetElementSize;
+        const {top, left, width, height} = targetElementSize;
 
         guideBgEle.style.top = `${top + 1}px`;
         guideBgEle.style.left = `${left + 1}px`;
@@ -102,7 +107,7 @@ export default React.memo(function DragGuide(props) {
         });
 
 
-        const { top, left, width, height } = targetElementSize;
+        const {top, left, width, height} = targetElementSize;
         guideLineEle.classList.add(s.guideLineActive);
         guideLineEle.classList.remove(s.gLeft);
         guideLineEle.classList.remove(s.gRight);
@@ -119,11 +124,11 @@ export default React.memo(function DragGuide(props) {
         // 设置提示线条样式
         const lineSize = 2;
         let guideLineStyle = ({
-            left: { left: left - lineSize * 2, top, width: lineSize, height },
-            right: { left: left + width + lineSize, top, width: lineSize, height },
-            top: { left, top: top - lineSize * 2, width, height: lineSize },
-            bottom: { left, top: top + height + lineSize, width, height: lineSize },
-            center: { left, top: top + height / 2, width, height: lineSize },
+            left: {left: left - lineSize * 2, top, width: lineSize, height},
+            right: {left: left + width + lineSize, top, width: lineSize, height},
+            top: {left, top: top - lineSize * 2, width, height: lineSize},
+            bottom: {left, top: top + height + lineSize, width, height: lineSize},
+            center: {left, top: top + height / 2, width, height: lineSize},
         })[targetHoverPosition];
 
         Object.entries(guideLineStyle).forEach(([key, value]) => {
@@ -150,10 +155,7 @@ export default React.memo(function DragGuide(props) {
         return () => clearTimeout(t);
     }, [
         showGuideBg,
-        draggingNode,
         showGuideLine,
-        targetNode,
-        selectedNode,
         targetHoverPosition,
         refresh,
         componentPaneWidth,
@@ -161,7 +163,15 @@ export default React.memo(function DragGuide(props) {
         componentPaneExpended,
         propsPaneExpended,
         canvasScale,
+
         pageConfig,
+        pageConfigRefresh,
+        targetNode,
+        targetNodeRefresh,
+        selectedNode,
+        selectedNodeRefresh,
+        draggingNode,
+        draggingNodeRefresh,
     ]);
 
     // 滚动时，刷新
@@ -179,7 +189,7 @@ export default React.memo(function DragGuide(props) {
     useEffect(() => {
         const t = setTimeout(() => setRefresh({}), 400);
         return () => clearTimeout(t);
-    }, [canvasScale, pageConfig, pageState]);
+    }, [canvasScale, pageConfig, pageConfigRefresh, pageState]);
 
     // 弹框有可能会出现滚动条，滚动时，刷新
     useEffect(() => {

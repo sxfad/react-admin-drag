@@ -33,7 +33,6 @@ export default config({
         const draggingName = draggingNode?.config?.componentName || '目标';
 
         const {type, dropType, propsToSet} = draggingNode;
-        console.log(propsToSet);
 
         const color = (GUIDE_COLORS[dropType] || GUIDE_COLORS.default)(1);
 

@@ -219,7 +219,6 @@ export default {
         const { pageConfig } = state;
         const { config: draggingNodeConfig, dropType, propsToSet } = draggingNode;
         let nextSelectedNode = null;
-
         // 根节点为站位符时，直接替换
         if (pageConfig.componentName === 'DragHolder') {
             return {

@@ -7,7 +7,6 @@ import Tip from './tip';
 import s from './style.less';
 
 export default React.memo(config({})(function ComponentCanvas(props) {
-
     return (
         <div className={[s.root]}>
             <div className={s.iframeRender}>

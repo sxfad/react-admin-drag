@@ -7,7 +7,6 @@ import zhCN from 'antd/lib/locale-provider/zh_CN';
 import {NodeRender} from 'src/pages/drag-page/components';
 import ActionDelegation from './action-delegation';
 import DragGuide from './drag-guide';
-import {useNextPageConfig} from 'src/pages/drag-page/util';
 
 export default React.memo(config({
     connect: state => {
@@ -90,7 +89,6 @@ export default React.memo(config({
         </html>
     `;
     }, []);
-    const nextPageConfig = useNextPageConfig(pageConfig);
 
     const iframeRef = useRef(null);
     const isPreview = viewMode === 'preview';
@@ -182,29 +180,31 @@ export default React.memo(config({
                 onLoad={handleIframeLoad}
             />
             <DragGuide
-                draggingNode={draggingNode}
                 draggingElement={draggingElement}
-                targetNode={targetNode}
-                selectedNode={selectedNode}
                 canvasDocument={canvasDocument}
                 targetElementSize={targetElementSize}
-                targetHoverPosition={targetHoverPosition}
                 componentPaneWidth={componentPaneWidth}
                 propsPaneWidth={propsPaneWidth}
                 canvasScale={canvasScale}
-                pageConfig={nextPageConfig}
                 componentPaneExpended={componentPaneExpended}
                 propsPaneExpended={propsPaneExpended}
                 pageState={pageState}
+
+                pageConfig={pageConfig}
+                draggingNode={draggingNode}
+                selectedNode={selectedNode}
+                targetNode={targetNode}
+                targetHoverPosition={targetHoverPosition}
             />
             <ActionDelegation
                 componentPaneActiveKey={componentPaneActiveKey}
-                pageConfig={nextPageConfig}
                 dragPageAction={dragPageAction}
-                draggingNode={draggingNode}
                 canvasDocument={canvasDocument}
                 pageRenderRoot={pageRenderRoot}
                 nodeSelectType={nodeSelectType}
+
+                pageConfig={pageConfig}
+                draggingNode={draggingNode}
                 selectedNode={selectedNode}
                 targetNode={targetNode}
                 targetHoverPosition={targetHoverPosition}

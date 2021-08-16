@@ -1,72 +1,40 @@
-import React, {useCallback, useRef, useEffect} from 'react';
+import React, {useRef, useEffect} from 'react';
 import {useThrottleFn} from 'ahooks';
 import {
     setDragImage,
     getIdByElement,
     getDraggableNodeEle,
     getTargetNode,
-    copyTextToClipboard, getImageUrlByClipboard,
+    copyTextToClipboard,
+    usePageConfigChange,
+    useNodeChange,
+    getNodeByText,
+    getNodeByImage,
 } from 'src/pages/drag-page/util';
-import {findNodeById, isNode, setNodeId} from 'src/pages/drag-page/util/node-util';
+import {findNodeById, setNodeId} from 'src/pages/drag-page/util/node-util';
 
 export default React.memo(function DragDelegation(props) {
     const {
         dragPageAction,
-        pageConfig,
         componentPaneActiveKey,
-        draggingNode,
         canvasDocument,
         pageRenderRoot,
         nodeSelectType,
+        targetHoverPosition,
+
+        pageConfig,
+        draggingNode,
         selectedNode,
         targetNode,
-        targetHoverPosition,
     } = props;
+
+    const pageConfigRefresh = usePageConfigChange();
+    const selectedNodeRefresh = useNodeChange(selectedNode);
+    const targetNodeRefresh = useNodeChange(targetNode);
+    const draggingNodeRefresh = useNodeChange(draggingNode);
 
     const prevComponentPaneActiveKeyRef = useRef(null);
     const mousePositionRef = useRef('');
-
-    const handleDragStart = useCallback((e) => {
-        e.stopPropagation();
-        const draggingElement = getDraggableNodeEle(e.target);
-
-        if (!draggingElement) return;
-
-        // 设置拖拽缩略图
-        setDragImage(e);
-
-        // 打开组树，不是用timeout会导致拖拽失效
-        setTimeout(() => {
-            prevComponentPaneActiveKeyRef.current = componentPaneActiveKey;
-            dragPageAction.setFields({componentPaneActiveKey: 'componentTree'});
-        });
-
-        const componentId = getIdByElement(draggingElement);
-
-        const config = findNodeById(pageConfig, componentId);
-        if (!config) return;
-
-        dragPageAction.setFields({
-            draggingElement,
-        });
-        dragPageAction.setDraggingNode({
-            id: config.id,
-            type: 'move',
-            config,
-        });
-    }, [pageConfig, dragPageAction, componentPaneActiveKey]);
-
-    const handleDragEnd = useCallback((e) => {
-        e && e.stopPropagation();
-        e && e.preventDefault();
-
-        dragPageAction.setFields({
-            componentPaneActiveKey: prevComponentPaneActiveKeyRef.current,
-            draggingNode: null,
-            draggingElement: null,
-            targetNode: null,
-        });
-    }, [dragPageAction]);
 
     // 监听键盘事件 修改 draggingNode.type
     const {run: handleChangeDropType} = useThrottleFn((e) => {
@@ -102,23 +70,7 @@ export default React.memo(function DragDelegation(props) {
         e.dataTransfer.dropEffect = cursors[dropType] || cursors[draggingNode?.type] || 'auto';
     }, {wait: 100});
 
-    const handleDropEffect = useCallback((e) => {
-        if (!draggingNode) return;
-
-        const {dropType, type} = draggingNode;
-        // 改变鼠标样式
-        const cursors = {
-            'new': 'copy',
-            'move': 'move',
-            'props': 'link',
-            'wrapper': 'link',
-            'replace': 'link',
-        };
-
-        e.dataTransfer.dropEffect = cursors[dropType] || cursors[type] || 'auto';
-        setDragImage(e, dropType || type);
-    }, [draggingNode]);
-
+    // 节流操作
     const {run: handleDragOver} = useThrottleFn((e) => {
         const {pageY, pageX} = e;
         const mousePosition = `${pageY},${pageX}`;
@@ -149,161 +101,6 @@ export default React.memo(function DragDelegation(props) {
         });
     }, {wait: 200});
 
-    const handleDrop = useCallback((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        // 执行insertNode之后，会导致 handleDragEnd 不触发
-        dragPageAction.insertNode({
-            draggingNode,
-            targetNode,
-            targetHoverPosition,
-        });
-
-        // 手动调用一次dragEnd方法
-        handleDragEnd();
-
-    }, [dragPageAction, draggingNode, targetNode, targetHoverPosition, handleDragEnd]);
-
-    // 鼠标点击事件 选中节点
-    const handleClick = useCallback((e) => {
-        const element = getDraggableNodeEle(e.target);
-        if (!element) return;
-
-        const componentId = getIdByElement(element);
-        let nextSelectedNode = findNodeById(pageConfig, componentId);
-        if (!nextSelectedNode) return;
-
-        if (nodeSelectType === 'meta' && (e.metaKey || e.ctrlKey)) {
-            e.stopPropagation && e.stopPropagation();
-            e.preventDefault && e.preventDefault();
-            // 再次点击选中节点，取消选中
-            if (nextSelectedNode.id === selectedNode?.id) nextSelectedNode = null;
-            dragPageAction.setFields({selectedNode: nextSelectedNode});
-        }
-
-        if (nodeSelectType === 'click') {
-            if (nextSelectedNode.id === selectedNode?.id) nextSelectedNode = null;
-            dragPageAction.setFields({selectedNode: nextSelectedNode});
-        }
-
-    }, [dragPageAction, selectedNode, nodeSelectType, pageConfig]);
-
-    // 操作SelectedNode相关的快捷键
-    const handleSelectedNodeKeyDown = useCallback((e) => {
-        const {metaKey, ctrlKey, key} = e;
-        const metaOrCtrl = metaKey || ctrlKey;
-
-        // Escape 取消选中节点
-        if (key === 'Escape' && selectedNode) {
-            dragPageAction.setFields({
-                selectedNode: null,
-            });
-        }
-
-        // Backspace Delete 键也删除 要区分是否有输入框获取焦点
-        if (['Delete', 'Backspace'].includes(key)) {
-
-            const {activeElement} = canvasDocument;
-            if (activeElement && ['INPUT', 'TEXTAREA'].includes(activeElement.tagName)) {
-                return;
-            }
-            dragPageAction.deleteNodeById(selectedNode?.id);
-        }
-
-        // command(ctrl) + d 删除选中节点
-        if (metaOrCtrl && key === 'd') {
-            e.stopPropagation();
-            e.preventDefault();
-            dragPageAction.deleteNodeById(selectedNode?.id);
-        }
-
-        // command(ctrl) + c 复制当前选中节点
-        if (metaOrCtrl && key === 'c') {
-            if (!selectedNode) return;
-
-            const selection = window.getSelection();
-            const selectionText = selection + '';
-
-            // 用户有选中内容
-            if (selectionText) return;
-
-            // 将当前选中节点，保存到剪切板中
-            copyTextToClipboard(JSON.stringify(selectedNode));
-        }
-
-    }, [dragPageAction, selectedNode, canvasDocument]);
-
-    // 获取剪切板中的图片
-    const getNodeByImage = useCallback(async e => {
-        try {
-            const src = await getImageUrlByClipboard(e);
-            return {
-                componentName: 'img',
-                props: {
-                    src,
-                    width: '100%',
-                },
-            };
-        } catch (e) {
-            console.error(e);
-            return null;
-        }
-
-    }, []);
-
-    const getNodeByText = useCallback(e => {
-        try {
-            const clipboardData = e.clipboardData || window.clipboardData;
-            const text = clipboardData.getData('text/plain');
-            // 不是对象字符串
-            if (!text || !text.startsWith('{')) return;
-            const cloneNode = JSON.parse(text);
-
-            // 不是节点
-            if (!isNode(cloneNode)) return;
-
-            return cloneNode;
-        } catch (e) {
-            console.error(e);
-        }
-    }, []);
-
-    const handlePaste = useCallback(async (e) => {
-        if (!selectedNode) return;
-
-        const {activeElement} = canvasDocument;
-        if (activeElement && ['INPUT', 'TEXTAREA'].includes(activeElement.tagName)) {
-            return;
-        }
-
-        const node = await getNodeByText(e) || await getNodeByImage(e);
-
-        if (!node) return;
-
-        setNodeId(node, true);
-
-        // 插入
-        dragPageAction.insertNode({
-            draggingNode: {
-                id: node.id,
-                type: 'copy',
-                config: node,
-            },
-            targetNode: selectedNode,
-            targetHoverPosition: 'right',
-        });
-
-        // 等待插入结束之后，清空相关数据
-        setTimeout(() => {
-            dragPageAction.setFields({
-                draggingNode: null,
-                targetHoverPosition: null,
-            });
-        });
-    }, [canvasDocument, dragPageAction, selectedNode, getNodeByText, getNodeByImage]);
-
-
     // 空格 + 鼠标拖拽 移动画布
     useEffect(() => {
         if (!canvasDocument) return;
@@ -312,25 +109,25 @@ export default React.memo(function DragDelegation(props) {
             spaceKeyPress: false,
             mouseDown: false,
             startY: 0,
-            startX:0,
+            startX: 0,
             startScrollTop: 0,
-            startScrollLeft: 0
-        }
+            startScrollLeft: 0,
+        };
 
         let coverELe = canvasDocument.createElement('div');
 
-        function handleSpaceDown(e){
+        function handleSpaceDown(e) {
             const {activeElement} = canvasDocument;
             if (activeElement && ['INPUT', 'TEXTAREA'].includes(activeElement.tagName)) {
                 return;
             }
 
             const {key} = e;
-            if(key !==' ') return;
+            if (key !== ' ') return;
             e.preventDefault();
             e.stopPropagation();
 
-            if(info.spaceKeyPress) return;
+            if (info.spaceKeyPress) return;
 
             info.spaceKeyPress = true;
 
@@ -344,9 +141,10 @@ export default React.memo(function DragDelegation(props) {
             coverELe.style.cursor = 'grab';
             canvasDocument.getElementById('page-canvas').appendChild(coverELe);
         }
+
         function handleSpaceUp(e) {
             const {key} = e;
-            if(key === ' ') {
+            if (key === ' ') {
                 info.spaceKeyPress = false;
                 info.mouseDown = false;
                 coverELe.remove();
@@ -354,7 +152,7 @@ export default React.memo(function DragDelegation(props) {
         }
 
         function handleMouseDown(e) {
-            if(!info.spaceKeyPress) return;
+            if (!info.spaceKeyPress) return;
             info.mouseDown = true;
             coverELe.style.cursor = 'grabbing';
             const {clientY, clientX} = e;
@@ -363,10 +161,11 @@ export default React.memo(function DragDelegation(props) {
             info.startScrollTop = canvasDocument.documentElement.scrollTop;
             info.startScrollLeft = canvasDocument.documentElement.scrollLeft;
         }
+
         function handleMouseMove(e) {
-          // console.log(spaceKeyPress);
-            if(!info.spaceKeyPress) return;
-            if(!info.mouseDown) return;
+            // console.log(spaceKeyPress);
+            if (!info.spaceKeyPress) return;
+            if (!info.mouseDown) return;
 
             coverELe.style.cursor = 'grabbing';
 
@@ -380,8 +179,9 @@ export default React.memo(function DragDelegation(props) {
             canvasDocument.documentElement.scrollTop = top;
             canvasDocument.documentElement.scrollLeft = left;
         }
-        function handleMouseUp(){
-            if(!info.spaceKeyPress) return;
+
+        function handleMouseUp() {
+            if (!info.spaceKeyPress) return;
             info.mouseDown = false;
             coverELe.style.cursor = 'grab';
         }
@@ -401,43 +201,137 @@ export default React.memo(function DragDelegation(props) {
         };
     }, [canvasDocument]);
 
-
-    // 键盘事件
+    // 操作SelectedNode相关的快捷键 复制 删除
     useEffect(() => {
         if (!canvasDocument) return;
 
+        const handleSelectedNodeKeyDown = (e) => {
+            const {metaKey, ctrlKey, key} = e;
+            const metaOrCtrl = metaKey || ctrlKey;
+
+            // Escape 取消选中节点
+            if (key === 'Escape' && selectedNode) {
+                dragPageAction.setFields({
+                    selectedNode: null,
+                });
+            }
+
+            // Backspace Delete 键也删除 要区分是否有输入框获取焦点
+            if (['Delete', 'Backspace'].includes(key)) {
+
+                const {activeElement} = canvasDocument;
+                if (activeElement && ['INPUT', 'TEXTAREA'].includes(activeElement.tagName)) {
+                    return;
+                }
+                dragPageAction.deleteNodeById(selectedNode?.id);
+            }
+
+            // command(ctrl) + d 删除选中节点
+            if (metaOrCtrl && key === 'd') {
+                e.stopPropagation();
+                e.preventDefault();
+                dragPageAction.deleteNodeById(selectedNode?.id);
+            }
+
+            // command(ctrl) + c 复制当前选中节点
+            if (metaOrCtrl && key === 'c') {
+                if (!selectedNode) return;
+
+                const selection = window.getSelection();
+                const selectionText = selection + '';
+
+                // 用户有选中内容
+                if (selectionText) return;
+
+                // 将当前选中节点，保存到剪切板中
+                copyTextToClipboard(JSON.stringify(selectedNode));
+            }
+        };
+
         canvasDocument.addEventListener('keydown', handleSelectedNodeKeyDown);
-        canvasDocument.addEventListener('paste', handlePaste);
         return () => {
             canvasDocument.removeEventListener('keydown', handleSelectedNodeKeyDown);
-            canvasDocument.removeEventListener('paste', handlePaste);
         };
-    }, [canvasDocument, handleSelectedNodeKeyDown, handlePaste]);
+    }, [
+        canvasDocument,
+        dragPageAction,
+        selectedNode,
+        selectedNodeRefresh,
+    ]);
 
-    // 快捷键使组价搜索输入框获取焦点，并选中输入框中所有内容
-    const handleSearchKeyDown = useCallback((e) => {
-        const {metaKey, ctrlKey, key} = e;
-        const metaOrCtrl = metaKey || ctrlKey;
+    // 粘贴事件
+    useEffect(() => {
+        if (!canvasDocument) return;
 
-        if (metaOrCtrl && key === 'f') {
-            e.stopPropagation();
-            e.preventDefault();
+        const handlePaste = async (e) => {
+            if (!selectedNode) return;
 
-            const inputEle = window.document.getElementById('search-component');
-            if (!inputEle) return;
+            const {activeElement} = canvasDocument;
+            if (activeElement && ['INPUT', 'TEXTAREA'].includes(activeElement.tagName)) {
+                return;
+            }
 
-            dragPageAction.setFields({
-                componentPaneActiveKey: 'componentStore',
+            const node = await getNodeByText(e) || await getNodeByImage(e);
+
+            if (!node) return;
+
+            setNodeId(node, true);
+
+            // 插入
+            dragPageAction.insertNode({
+                draggingNode: {
+                    id: node.id,
+                    type: 'copy',
+                    config: node,
+                },
+                targetNode: selectedNode,
+                targetHoverPosition: 'right',
             });
 
-            inputEle.focus();
-            inputEle.select();
-        }
-    }, [dragPageAction]);
+            // 等待插入结束之后，清空相关数据
+            setTimeout(() => {
+                dragPageAction.setFields({
+                    draggingNode: null,
+                    targetHoverPosition: null,
+                });
+            });
+        };
+
+        canvasDocument.addEventListener('paste', handlePaste);
+        return () => {
+            canvasDocument.removeEventListener('paste', handlePaste);
+        };
+    }, [
+        canvasDocument,
+        dragPageAction,
+        selectedNode,
+        selectedNodeRefresh,
+    ]);
 
     // 在组件库中查找组件
     useEffect(() => {
         if (!canvasDocument) return;
+
+        // 快捷键使组价搜索输入框获取焦点，并选中输入框中所有内容
+        const handleSearchKeyDown = (e) => {
+            const {metaKey, ctrlKey, key} = e;
+            const metaOrCtrl = metaKey || ctrlKey;
+
+            if (metaOrCtrl && key === 'f') {
+                e.stopPropagation();
+                e.preventDefault();
+
+                const inputEle = window.document.getElementById('search-component');
+                if (!inputEle) return;
+
+                dragPageAction.setFields({
+                    componentPaneActiveKey: 'componentStore',
+                });
+
+                inputEle.focus();
+                inputEle.select();
+            }
+        };
 
         window.addEventListener('keydown', handleSearchKeyDown);
         canvasDocument.addEventListener('keydown', handleSearchKeyDown);
@@ -445,11 +339,28 @@ export default React.memo(function DragDelegation(props) {
             canvasDocument.removeEventListener('keydown', handleSearchKeyDown);
             window.removeEventListener('keydown', handleSearchKeyDown);
         };
-    }, [canvasDocument, handleSearchKeyDown]);
+    }, [canvasDocument, dragPageAction]);
 
     // 拖拽相关事件
     useEffect(() => {
         if (!pageRenderRoot) return;
+
+        const handleDropEffect = (e) => {
+            if (!draggingNode) return;
+
+            const {dropType, type} = draggingNode;
+            // 改变鼠标样式
+            const cursors = {
+                'new': 'copy',
+                'move': 'move',
+                'props': 'link',
+                'wrapper': 'link',
+                'replace': 'link',
+            };
+
+            e.dataTransfer.dropEffect = cursors[dropType] || cursors[type] || 'auto';
+            setDragImage(e, dropType || type);
+        };
 
         const onOver = e => {
             // 阻止默认事件，否则drop 不触发
@@ -459,29 +370,131 @@ export default React.memo(function DragDelegation(props) {
             handleChangeDropType(e);
             handleDragOver(e);
         };
+        const handleDragStart = (e) => {
+            e.stopPropagation();
+            const draggingElement = getDraggableNodeEle(e.target);
+
+            if (!draggingElement) return;
+
+            // 设置拖拽缩略图
+            setDragImage(e);
+
+            // 打开组树，不是用timeout会导致拖拽失效
+            setTimeout(() => {
+                prevComponentPaneActiveKeyRef.current = componentPaneActiveKey;
+                dragPageAction.setFields({componentPaneActiveKey: 'componentTree'});
+            });
+
+            const componentId = getIdByElement(draggingElement);
+
+            const config = findNodeById(pageConfig, componentId);
+            if (!config) return;
+
+            dragPageAction.setFields({
+                draggingElement,
+            });
+            dragPageAction.setDraggingNode({
+                id: config.id,
+                type: 'move',
+                config,
+            });
+        };
+
+        const handleDragEnd = (e) => {
+            e && e.stopPropagation();
+            e && e.preventDefault();
+
+            dragPageAction.setFields({
+                componentPaneActiveKey: prevComponentPaneActiveKeyRef.current,
+                draggingNode: null,
+                draggingElement: null,
+                targetNode: null,
+            });
+        };
+
+        const handleDrop = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // 执行insertNode之后，会导致 handleDragEnd 不触发
+            dragPageAction.insertNode({
+                draggingNode,
+                targetNode,
+                targetHoverPosition,
+            });
+
+            // 手动调用一次dragEnd方法
+            handleDragEnd();
+        };
+
         pageRenderRoot.addEventListener('dragstart', handleDragStart);
         pageRenderRoot.addEventListener('dragend', handleDragEnd);
         pageRenderRoot.addEventListener('dragover', onOver);
         pageRenderRoot.addEventListener('drop', handleDrop);
-        pageRenderRoot.addEventListener('click', handleClick);
 
         return () => {
             pageRenderRoot.removeEventListener('dragstart', handleDragStart);
             pageRenderRoot.removeEventListener('dragend', handleDragEnd);
             pageRenderRoot.removeEventListener('dragover', onOver);
             pageRenderRoot.removeEventListener('drop', handleDrop);
-            pageRenderRoot.removeEventListener('click', handleClick);
         };
 
     }, [
         pageRenderRoot,
-        handleDropEffect,
         handleChangeDropType,
         handleDragOver,
-        handleDragStart,
-        handleDragEnd,
-        handleDrop,
-        handleClick,
+        componentPaneActiveKey,
+        targetHoverPosition,
+
+        dragPageAction,
+        pageConfig,
+        pageConfigRefresh,
+        draggingNode,
+        draggingNodeRefresh,
+        targetNode,
+        targetNodeRefresh,
+    ]);
+
+    // 点击 选中节点
+    useEffect(() => {
+        if (!pageRenderRoot) return;
+
+        const handleClick = (e) => {
+            const element = getDraggableNodeEle(e.target);
+            if (!element) return;
+
+            const componentId = getIdByElement(element);
+            let nextSelectedNode = findNodeById(pageConfig, componentId);
+            if (!nextSelectedNode) return;
+
+            if (nodeSelectType === 'meta' && (e.metaKey || e.ctrlKey)) {
+                e.stopPropagation && e.stopPropagation();
+                e.preventDefault && e.preventDefault();
+                // 再次点击选中节点，取消选中
+                if (nextSelectedNode.id === selectedNode?.id) nextSelectedNode = null;
+                dragPageAction.setFields({selectedNode: nextSelectedNode});
+            }
+
+            if (nodeSelectType === 'click') {
+                if (nextSelectedNode.id === selectedNode?.id) nextSelectedNode = null;
+                dragPageAction.setFields({selectedNode: nextSelectedNode});
+            }
+        };
+
+        pageRenderRoot.addEventListener('click', handleClick);
+
+        return () => {
+            pageRenderRoot.removeEventListener('click', handleClick);
+        };
+
+    }, [
+        dragPageAction,
+        pageRenderRoot,
+        nodeSelectType,
+        selectedNode,
+        selectedNodeRefresh,
+        pageConfig,
+        pageConfigRefresh,
     ]);
 
     return null;

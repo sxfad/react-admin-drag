@@ -3,7 +3,7 @@ import {RightOutlined} from '@ant-design/icons';
 import config from 'src/commons/config-hoc';
 import {findParentNodes} from 'src/pages/drag-page/util/node-util';
 import {getComponentDisplayName} from 'src/pages/drag-page/component-config';
-import {useNextPageConfig} from 'src/pages/drag-page/util';
+import {useNodeChange, usePageConfigChange} from 'src/pages/drag-page/util';
 import {getColor} from '@ra-lib/admin';
 import s from './style.less';
 
@@ -16,11 +16,13 @@ export default config({
     },
 })(function NodePath(props) {
     const {
+        pageConfig,
         selectedNode,
         action: {dragPage: dragPageAction},
     } = props;
 
-    const pageConfig = useNextPageConfig(props.pageConfig);
+    const pageConfigRefresh = usePageConfigChange();
+    const selectedNodeRefresh = useNodeChange(selectedNode);
 
     const [paths, setPaths] = useState([]);
     const holdRef = useRef(false);
@@ -37,7 +39,12 @@ export default config({
 
         const parentNodes = findParentNodes(pageConfig, selectedNode.id);
         setPaths([...parentNodes, selectedNode]);
-    }, [selectedNode, pageConfig]);
+    }, [
+        selectedNode,
+        selectedNodeRefresh,
+        pageConfig,
+        pageConfigRefresh,
+    ]);
 
     const SHOW_COUNT = 5;
 

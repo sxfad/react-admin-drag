@@ -26,6 +26,38 @@ export const OTHER_HEIGHT = 0;
 export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
 export const TRIGGER_SIZE = 20;
 
+export async function getNodeByImage(e){
+    try {
+        const src = await getImageUrlByClipboard(e);
+        return {
+            componentName: 'img',
+            props: {
+                src,
+                width: '100%',
+            },
+        };
+    } catch (e) {
+        console.error(e);
+        return null;
+    }
+}
+
+export function getNodeByText(e) {
+    try {
+        const clipboardData = e.clipboardData || window.clipboardData;
+        const text = clipboardData.getData('text/plain');
+        // 不是对象字符串
+        if (!text || !text.startsWith('{')) return;
+        const cloneNode = JSON.parse(text);
+
+        // 不是节点
+        if (!isNode(cloneNode)) return;
+
+        return cloneNode;
+    } catch (e) {
+        console.error(e);
+    }
+}
 // 获取label宽度
 export function getLabelWidth(label) {
     if (!label?.length) return 0;
@@ -266,6 +298,43 @@ export function useNextPageConfig(pageConfig) {
     }, []);
 
     return nextPageConfig;
+}
+
+/**
+ * 任何节点改动，认为是pageConfig改动
+ * @returns {{}} 变化后的数据，需要跟pageConfig一起作为hooks依赖
+ */
+export function usePageConfigChange() {
+    const [refresh, setRefresh] = useState({});
+    useEffect(() => {
+        const onUpdateNode = pubsub.subscribe('update-nodes', () => setRefresh({}));
+        return () => {
+            pubsub.unsubscribe(onUpdateNode);
+        };
+    }, []);
+
+    return refresh;
+}
+
+/**
+ * 节点变动
+ * @returns {{}} 变化后的数据，需要跟pageConfig一起作为hooks依赖
+ */
+export function useNodeChange(node) {
+    const [refresh, setRefresh] = useState({});
+
+    useEffect(() => {
+        const onUpdateNode = pubsub.subscribe('update-nodes', (nodes) => {
+            if(nodes?.find(item => item.id === node?.id)) {
+                setRefresh({});
+            }
+        });
+        return () => {
+            pubsub.unsubscribe(onUpdateNode);
+        };
+    }, [node?.id]);
+
+    return refresh;
 }
 
 

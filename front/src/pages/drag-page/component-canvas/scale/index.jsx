@@ -15,7 +15,6 @@ const MAX = 200;
 
 export default config({
     connect: state => {
-
         return {
             canvasScale: state.dragPage.canvasScale,
             canvasDocument: state.dragPage.canvasDocument,
