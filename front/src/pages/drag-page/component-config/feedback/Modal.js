@@ -1,6 +1,6 @@
 import React from 'react';
-import {getNextField} from 'src/pages/drag-page/util';
-import {loopNode} from 'src/pages/drag-page/util/node-util';
+import { getNextField } from 'src/pages/drag-page/util';
+import { loopNode } from 'src/pages/drag-page/util/node-util';
 import inflection from 'inflection';
 // import {buttonTypeOptions} from '../options';
 
@@ -21,16 +21,16 @@ export default {
     ],
 
     // draggable: false,
-    componentDisplayName: ({node}) => {
-        const {componentName, props = {}} = node;
-        const {title} = props;
+    componentDisplayName: ({ node }) => {
+        const { componentName, props = {} } = node;
+        const { title } = props;
 
         if (!title) return componentName;
 
         return (
             <>
                 {componentName}
-                <span style={{marginLeft: 4}}>{title}</span>
+                <span style={{ marginLeft: 4 }}>{title}</span>
             </>
         );
     },
@@ -41,7 +41,7 @@ export default {
 
     // 需要使用的state数据
     state: (options) => {
-        const {state, node} = options;
+        const { state, node } = options;
 
         if (!node.props) node.props = {};
 
@@ -72,11 +72,33 @@ export default {
     },
     hooks: {
         beforeAdd: options => {
+            const { node, dragPageState: { pageConfig, pageState, pageFunction } } = options;
+            if (!node.props) node.props = {};
+            const id = Date.now();
+            const field = `visible__${id}`;
+            const handleCancel = `handleCancel__${id}`;
+            const handleShowModal = `handleShowModal__${id}`;
+            pageState[field] = true;
+            pageFunction[handleCancel] = `() => setState({${field}: false})`;
+            pageFunction[handleShowModal] = `() => setState({${field}: true})`;
 
+            node.props.visible = `state.${field}`;
+            node.props.onCancel = `func.${handleCancel}`;
+            node.propsToSet = {
+                onClick: `func.${handleShowModal}`,
+            };
+
+            if (!pageConfig.children) pageConfig.children = [];
+            pageConfig.children.push(node);
+
+            return {
+                pageState: { ...pageState },
+                pageFunction: { ...pageFunction },
+            };
         },
         afterDelete: options => {
             // 弹框删除之后，清除关联节点的onClick
-            const {dragPageState: {pageConfig}} = options;
+            const { dragPageState: { pageConfig } } = options;
             const propsToSet = options?.node?.propsToSet;
 
             if (propsToSet) {
@@ -93,18 +115,18 @@ export default {
     },
     fields: [
         // {label: '显示弹框', field: 'visible', type: 'boolean', version: '', desc: '弹框是否可见'},
-        {label: '弹框标题', field: 'title', type: 'string', version: '', desc: '标题'},
-        {label: '弹框宽度', field: 'width', type: 'unit', defaultValue: 520, version: '', desc: '宽度'},
-        {label: '遮罩', category: '选项', field: 'mask', type: 'boolean', defaultValue: true, version: '', desc: '是否展示遮罩'},
-        {label: '遮罩可关闭', category: '选项', field: 'maskClosable', type: 'boolean', defaultValue: true, version: '', desc: '点击蒙层是否允许关闭'},
-        {label: 'esc关闭', category: '选项', field: 'keyboard', type: 'boolean', defaultValue: true, version: '', desc: '是否支持键盘 esc 关闭'},
-        {label: '垂直居中', category: '选项', field: 'centered', type: 'boolean', defaultValue: false, version: '', desc: '垂直居中展示 Modal'},
-        {label: '展示默认底部', field: 'footer', type: 'FooterSwitch', version: '', desc: '底部内容，当不需要默认底部按钮时，可以设为 footer={null}'},
-        {label: '确认按钮文字', field: 'okText', appendField: {footer: undefined}, type: 'string', defaultValue: '确定', version: '', desc: '确认按钮文字'},
+        { label: '弹框标题', field: 'title', type: 'string', version: '', desc: '标题' },
+        { label: '弹框宽度', field: 'width', type: 'unit', defaultValue: 520, version: '', desc: '宽度' },
+        { label: '遮罩', category: '选项', field: 'mask', type: 'boolean', defaultValue: true, version: '', desc: '是否展示遮罩' },
+        { label: '遮罩可关闭', category: '选项', field: 'maskClosable', type: 'boolean', defaultValue: true, version: '', desc: '点击蒙层是否允许关闭' },
+        { label: 'esc关闭', category: '选项', field: 'keyboard', type: 'boolean', defaultValue: true, version: '', desc: '是否支持键盘 esc 关闭' },
+        { label: '垂直居中', category: '选项', field: 'centered', type: 'boolean', defaultValue: false, version: '', desc: '垂直居中展示 Modal' },
+        { label: '展示默认底部', field: 'footer', type: 'FooterSwitch', version: '', desc: '底部内容，当不需要默认底部按钮时，可以设为 footer={null}' },
+        { label: '确认按钮文字', field: 'okText', appendField: { footer: undefined }, type: 'string', defaultValue: '确定', version: '', desc: '确认按钮文字' },
         // {label: '确认按钮类型', field: 'okType', appendField: {footer: undefined}, type: 'radio-group', options: buttonTypeOptions, defaultValue: 'primary', version: '', desc: '确认按钮类型'},
-        {label: '确定loading', field: 'confirmLoading', appendField: {footer: undefined}, type: 'boolean', defaultValue: false, version: '', desc: '确定按钮 loading'},
-        {label: '取消按钮文字', field: 'cancelText', appendField: {footer: undefined}, type: 'string', defaultValue: '取消', version: '', desc: '取消按钮文字'},
-        {label: 'z-index', field: 'zIndex', type: 'number', defaultValue: 1000, version: '', desc: '设置 Modal 的 z-index'},
+        { label: '确定loading', field: 'confirmLoading', appendField: { footer: undefined }, type: 'boolean', defaultValue: false, version: '', desc: '确定按钮 loading' },
+        { label: '取消按钮文字', field: 'cancelText', appendField: { footer: undefined }, type: 'string', defaultValue: '取消', version: '', desc: '取消按钮文字' },
+        { label: 'z-index', field: 'zIndex', type: 'number', defaultValue: 1000, version: '', desc: '设置 Modal 的 z-index' },
         /*
         {label: 'Modal 完全关闭后的回调', field: 'afterClose', type: 'function', version: '', desc: 'Modal 完全关闭后的回调'},
         {label: 'Modal body 样式', field: 'bodyStyle', type: 'CSSProperties', defaultValue: '', version: '', desc: 'Modal body 样式'},

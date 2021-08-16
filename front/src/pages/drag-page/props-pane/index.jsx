@@ -1,4 +1,4 @@
-import React, {useRef, useCallback, useState} from 'react';
+import React, {useRef, useCallback} from 'react';
 import {Tabs, Tooltip, Empty} from 'antd';
 import {MenuFoldOutlined, MenuUnfoldOutlined} from '@ant-design/icons';
 import {useHeight} from '@ra-lib/admin';
@@ -6,7 +6,7 @@ import config from 'src/commons/config-hoc';
 import {Icon} from 'src/components';
 import {isNode} from 'src/pages/drag-page/util/node-util';
 import {useNodeChange} from 'src/pages/drag-page/util';
-import {DragBar, SelectedNode} from 'src/pages/drag-page/components';
+import {DragBar} from 'src/pages/drag-page/components';
 import Style from './style';
 import Props from './props';
 import s from './style.less';
@@ -50,15 +50,10 @@ export default React.memo(config({
     useNodeChange(selectedNode);
 
     const rootRef = useRef(null);
-    const [codeVisible, setCodeVisible] = useState(panes.reduce((prev, curr) => {
-        const {key} = curr;
-        prev[key] = false;
-        return prev;
-    }, {}));
 
     // 计算面板内容高度
     const [height] = useHeight(rootRef);
-    const paneContainerHeight = height - 85;
+    const paneContainerHeight = height - 40;
 
     // tab切换改变事件
     const handleTabChange = useCallback((key) => {
@@ -79,15 +74,6 @@ export default React.memo(config({
     const handleToggleClick = useCallback(() => {
         dragPageAction.setFields({propsPaneExpended: !propsPaneExpended});
     }, [dragPageAction, propsPaneExpended]);
-
-    // 源码编辑器图标点击事件
-    const handleCodeIconClick = useCallback(() => {
-        Object.entries(codeVisible)
-            .forEach(([key, value]) => {
-                if (key === propsPaneActiveKey) codeVisible[key] = !value;
-            });
-        setCodeVisible({...codeVisible});
-    }, [propsPaneActiveKey, codeVisible]);
 
     return (
         <div
@@ -132,30 +118,6 @@ export default React.memo(config({
             {/* Tab 页 */}
             <div className={s.toolTabs}>
                 <DragBar left onDragging={handleDragging}/>
-                <div className={s.paneTop}>
-                    {selectedNode && isNode(selectedNode) ? (
-                        <>
-                            <SelectedNode node={{...selectedNode}}/>
-                            <Tooltip
-                                title={() => {
-                                    const pane = panes.find(item => item.key === propsPaneActiveKey);
-                                    const {key, title} = pane;
-                                    const visible = codeVisible[key];
-                                    const tip = visible ? '关闭' : '打开';
-
-                                    return `${tip}${title}源码编辑器`;
-                                }}
-                                placement="left"
-                            >
-                                <Icon
-                                    type="icon-code"
-                                    className={s.codeIcon}
-                                    onClick={handleCodeIconClick}
-                                />
-                            </Tooltip>
-                        </>
-                    ) : '未选中节点'}
-                </div>
                 <Tabs
                     tabBarExtraContent={{
                         left: (
@@ -185,8 +147,6 @@ export default React.memo(config({
                                         {selectedNode && isNode(selectedNode) ? (
                                             <Component
                                                 height={paneContainerHeight}
-                                                codeVisible={codeVisible[key]}
-                                                onCodeCancel={() => setCodeVisible({...codeVisible, [key]: false})}
                                             />
                                         ) : (
                                             <Empty style={{marginTop: 100}} description="未选中节点"/>

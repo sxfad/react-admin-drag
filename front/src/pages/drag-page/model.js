@@ -85,7 +85,7 @@ export default {
         // 页面中函数
         pageFunction: {
             handleCancel: '() => setState({visible: false})',
-            handleClick: '() => setState({visible: true})'
+            handleClick: '() => setState({visible: true})',
         },
         // 页面中变量
         pageVariable: {},
@@ -192,7 +192,7 @@ export default {
      * @param state
      */
     updateParentNode(node, state) {
-        const {pageConfig} = state;
+        const { pageConfig } = state;
         const parentNode = findParentNodeById(pageConfig, node?.id);
         emitUpdateNodes([
             {
@@ -215,38 +215,58 @@ export default {
      * @param _
      * @param state
      */
-    insertNode({ draggingNode, targetNode, targetHoverPosition }, state) {
+    insertNode({ draggingNode: _draggingNode, targetNode, targetHoverPosition }, state) {
         const { pageConfig } = state;
-        const { config: draggingNodeConfig, dropType, propsToSet } = draggingNode;
+        let { config: draggingNode, dropType, propsToSet } = _draggingNode;
         let nextSelectedNode = null;
         // 根节点为站位符时，直接替换
         if (pageConfig.componentName === 'DragHolder') {
             return {
-                pageConfig: draggingNodeConfig,
-                selectedNode: draggingNodeConfig,
+                pageConfig: draggingNode,
+                selectedNode: draggingNode,
             };
         }
 
         if (!targetNode) return null;
+        const targetNodeConfig = getComponentConfig(targetNode?.componentName);
 
-        const parentNode = findParentNodeById(pageConfig, targetNode?.id);
-        const draggingParentNode = findParentNodeById(pageConfig, draggingNodeConfig?.id);
-        const nodeConfig = getComponentConfig(targetNode?.componentName);
-        const parentNodeConfig = getComponentConfig(parentNode?.componentName);
+        const targetParentNode = findParentNodeById(pageConfig, targetNode?.id);
+        const targetParentNodeConfig = getComponentConfig(targetParentNode?.componentName);
+
+        const draggingParentNode = findParentNodeById(pageConfig, draggingNode?.id);
+        const draggingNodeConfig = getComponentConfig(draggingNode?.componentName);
+
         const {
             beforeAdd = () => undefined,
             afterAdd = () => undefined,
+        } = (draggingNodeConfig?.hooks || {});
+
+        let beforeAddState;
+        let afterAddState;
+
+        const {
             beforeAddChildren = () => undefined,
             afterAddChildren = () => undefined,
-        } = (nodeConfig?.hooks || {});
+        } = (targetNodeConfig?.hooks || {});
 
-        const result = beforeAdd({ dragPageState: state, node: draggingNode, parentNode });
-        if (result === false) return null;
+        let beforeAddChildrenState;
+        let afterAddChildrenState;
+
+        beforeAddState = beforeAdd({ dragPageState: state, node: draggingNode, parentNode: draggingParentNode });
+        if (beforeAddState === false) return null;
 
         const {
             beforeAddChildren: parentBeforeAddChildren = () => undefined,
             afterAddChildren: parentAfterAddChildren = () => undefined,
-        } = (parentNodeConfig?.hooks || {});
+        } = (targetParentNodeConfig?.hooks || {});
+
+        let parentBeforeAddChildrenState;
+        let parentAfterAddChildrenState;
+
+        // 节点上propsToSet优先
+        if (draggingNode.propsToSet) {
+            propsToSet = draggingNode.propsToSet;
+        }
 
         // 设置属性 state func node等都有可能
         if (dropType === 'props' && propsToSet) {
@@ -272,14 +292,14 @@ export default {
 
         if (dropType === 'wrapper') {
             // 移除拖动节点
-            deleteNodeById(pageConfig, draggingNodeConfig?.id);
+            deleteNodeById(pageConfig, draggingNode?.id);
 
 
             if (!targetNode?.wrapper?.length) targetNode.wrapper = [];
 
-            targetNode.wrapper.push(draggingNodeConfig);
+            targetNode.wrapper.push(draggingNode);
 
-            nextSelectedNode = draggingNodeConfig;
+            nextSelectedNode = draggingNode;
 
             // 发布订阅方式更新具体节点
             emitUpdateNodes([
@@ -292,16 +312,16 @@ export default {
 
         if (dropType === 'replace') {
             // 保留wrapper
-            draggingNodeConfig.wrapper = targetNode.wrapper;
+            draggingNode.wrapper = targetNode.wrapper;
 
-            replaceNode(pageConfig, draggingNodeConfig, targetNode);
+            replaceNode(pageConfig, draggingNode, targetNode);
 
-            nextSelectedNode = draggingNodeConfig;
+            nextSelectedNode = draggingNode;
 
             // 发布订阅方式更新具体节点
             emitUpdateNodes([
                 {
-                    id: parentNode?.id,
+                    id: targetParentNode?.id,
                     type: 'update',
                 },
             ]);
@@ -316,26 +336,26 @@ export default {
             const isChildren = ['center'].includes(targetHoverPosition);
 
             if (isBefore || isAfter) {
-                const args = { node: parentNode, childNode: draggingNodeConfig, dragPageState: state };
-                const result = parentBeforeAddChildren(args);
+                const args = { node: targetParentNode, childNode: draggingNode, dragPageState: state };
+                parentBeforeAddChildrenState = parentBeforeAddChildren(args);
 
-                if (result === false) return null;
+                if (parentBeforeAddChildrenState === false) return null;
 
                 // 方法内部会做： 如果存在，先删除，相当于移动位置
-                isBefore && insertBefore(pageConfig, draggingNodeConfig, targetNodeId);
-                isAfter && insertAfter(pageConfig, draggingNodeConfig, targetNodeId);
+                isBefore && insertBefore(pageConfig, draggingNode, targetNodeId);
+                isAfter && insertAfter(pageConfig, draggingNode, targetNodeId);
 
-                nextSelectedNode = draggingNodeConfig;
+                nextSelectedNode = draggingNode;
 
                 // 发布订阅方式更新具体节点
                 emitUpdateNodes([
                     {
-                        id: parentNode?.id,
+                        id: targetParentNode?.id,
                         type: 'update',
                     },
                 ]);
 
-                parentAfterAddChildren(args);
+                parentAfterAddChildrenState = parentAfterAddChildren(args);
 
             }
 
@@ -348,14 +368,14 @@ export default {
                     targetNode.children.pop();
                 }
 
-                const args = { node: targetNode, childNode: draggingNodeConfig, dragPageState: state };
-                const result = beforeAddChildren(args);
+                const args = { node: targetNode, childNode: draggingNode, dragPageState: state };
+                beforeAddChildrenState = beforeAddChildren(args);
 
-                if (result === false) return null;
+                if (beforeAddChildrenState === false) return null;
 
-                insertChildren(pageConfig, draggingNodeConfig, targetNode);
+                insertChildren(pageConfig, draggingNode, targetNode);
 
-                nextSelectedNode = draggingNodeConfig;
+                nextSelectedNode = draggingNode;
 
                 // 发布订阅方式更新具体节点
                 emitUpdateNodes([
@@ -365,7 +385,7 @@ export default {
                     },
                 ]);
 
-                afterAddChildren(args);
+                afterAddChildrenState = afterAddChildren(args);
             }
         }
 
@@ -380,11 +400,17 @@ export default {
             },
         ]);
 
-        afterAdd({ dragPageState: state, node: draggingNode, parentNode });
+        afterAddState = afterAdd({ dragPageState: state, node: draggingNode, parentNode: draggingParentNode });
 
         return {
             // 选中刚拖拽的节点
             selectedNode: nextSelectedNode,
+            ...beforeAddState,
+            ...afterAddState,
+            ...beforeAddChildrenState,
+            ...afterAddChildrenState,
+            ...parentBeforeAddChildrenState,
+            ...parentAfterAddChildrenState,
         };
     },
     /**

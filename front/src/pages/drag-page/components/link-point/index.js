@@ -14,7 +14,7 @@ export default function LinkProps(props) {
         node,
         selectedNode,
         canvasDocument,
-        action: {dragPage: dragPageAction},
+        action: {dragPage: dragPageAction} = {},
         className,
         onDragStart,
         movingPoint,
