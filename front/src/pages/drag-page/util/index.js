@@ -531,7 +531,7 @@ export function getTargetNode(
     // 如果是设置属性或者设置包裹，直接返回，不做accept判断
     if (['props', 'wrapper'].includes(draggingNode.dropType)) return result;
 
-    const {isContainer} = getComponentConfig(targetNode.componentName);
+    const {isContainer} = getComponentConfig(targetNode?.componentName);
     if (
         hoverPosition === 'center'
         && isContainer

@@ -35,6 +35,10 @@ export default {
         );
     },
 
+    propsToSet: {
+        onClick: 'func.handleShowModal',
+    },
+
     // 需要使用的state数据
     state: (options) => {
         const {state, node} = options;
@@ -67,6 +71,9 @@ export default {
         };
     },
     hooks: {
+        beforeAdd: options => {
+
+        },
         afterDelete: options => {
             // 弹框删除之后，清除关联节点的onClick
             const {dragPageState: {pageConfig}} = options;
