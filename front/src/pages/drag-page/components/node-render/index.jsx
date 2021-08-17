@@ -26,7 +26,7 @@ const loop = (obj, cb) => {
 };
 
 const NodeRender = React.memo(function(renderNodeProps) {
-    console.log('NodeRender');
+    // console.log('NodeRender');
     let {
         config,
         isPreview = true,
@@ -196,7 +196,7 @@ const NodeRender = React.memo(function(renderNodeProps) {
     // 组件样式，将组件id拼接到样式中，有些组件无法自定义属性，统一通过样式标记
     const cls = [props.className, `id_${id}`, className].filter(item => !!item).join(' ');
 
-    console.log(config.componentName, props, others);
+    // console.log(config.componentName, props, others);
     return createElement(component, {
         key: key || id, // 如果节点设置了key，则使用key，否则使用id，key的改变会使组件卸载然后重新创建
         ...props,

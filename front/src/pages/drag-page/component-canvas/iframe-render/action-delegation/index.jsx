@@ -467,10 +467,11 @@ export default React.memo(function DragDelegation(props) {
             }
         };
 
-        pageRenderRoot.addEventListener('click', handleClick);
+        // 捕获阶段触发，通过 e.stopPropagation() 阻止传递，防止组件自身的点击事件触发
+        pageRenderRoot.addEventListener('click', handleClick, true);
 
         return () => {
-            pageRenderRoot.removeEventListener('click', handleClick);
+            pageRenderRoot.removeEventListener('click', handleClick, true);
         };
 
     }, [

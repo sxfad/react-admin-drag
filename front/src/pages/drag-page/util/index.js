@@ -26,6 +26,68 @@ export const OTHER_HEIGHT = 0;
 export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
 export const TRIGGER_SIZE = 20;
 
+/**
+ * 删除pageState中数据
+ * @param pageState
+ * @param data
+ * @returns {*}
+ */
+export function deletePageStateField(pageState, data) {
+    const dataSource = Array.isArray(data) ? data : [data];
+
+    dataSource.forEach(item => {
+        if (typeof item !== 'string') return;
+        if (!item.startsWith('state.')) return;
+
+        const field = item.replace('state.', '');
+        Reflect.deleteProperty(pageState, field);
+    });
+
+    return pageState;
+}
+
+
+/**
+ * 删除pageFunction中数据
+ * @param pageFunction
+ * @param data
+ * @returns {*}
+ */
+export function deletePageFunctionField(pageFunction, data) {
+    const dataSource = Array.isArray(data) ? data : [data];
+
+    dataSource.forEach(item => {
+        if (typeof item !== 'string') return;
+        if (!item.startsWith('func.')) return;
+
+        const field = item.replace('func.', '');
+        Reflect.deleteProperty(pageFunction, field);
+    });
+
+    return pageFunction;
+}
+
+
+/**
+ * 删除pageVariable中数据
+ * @param pageVariable
+ * @param data
+ * @returns {*}
+ */
+export function deletePageVariableField(pageVariable, data) {
+    const dataSource = Array.isArray(data) ? data : [data];
+
+    dataSource.forEach(item => {
+        if (typeof item !== 'string') return;
+        if (!item.startsWith('variable.')) return;
+
+        const field = item.replace('variable.', '');
+        Reflect.deleteProperty(pageVariable, field);
+    });
+
+    return pageVariable;
+}
+
 export function codeToObject(code) {
 
     if (!code) return null;

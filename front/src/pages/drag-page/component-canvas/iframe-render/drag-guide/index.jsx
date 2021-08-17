@@ -60,7 +60,8 @@ export default React.memo(function DragGuide(props) {
         }
 
         const componentDisplayName = getComponentDisplayName(targetNode);
-        guideNameEle.setAttribute('data-component-display-name', componentDisplayName);
+        const displayName = typeof componentDisplayName === 'object' ? targetNode?.componentName : componentDisplayName;
+        guideNameEle.setAttribute('data-component-display-name', displayName);
         guideBgEle.classList.add(s.guideBgActive);
 
         const {top, left, width, height} = targetElementSize;
