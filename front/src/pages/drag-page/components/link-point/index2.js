@@ -6,23 +6,10 @@ import {findNodeById} from 'src/pages/drag-page/util/node-util';
 import {cloneDeep} from 'lodash';
 // import {v4 as uuid} from 'uuid';
 import {throttle} from 'lodash';
+
 import styles from './style.less';
 
-/**
- *
- * targets
- * 本身就是一个source点，可以对应多个target
- *
- * */
-
 export default function LinkPoint(props) {
-    const {
-        style, // 控制source点样式
-        tip, // source点上鼠标悬停提示
-        getTargets, // 获取 targets [{x,y}]，只有坐标信息
-        lineVisible, // 连线是否可见
-    } = props;
-
     let {
         node,
         selectedNode,

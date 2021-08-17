@@ -1,4 +1,3 @@
-import React from 'react';
 import {loopNode} from 'src/pages/drag-page/util/node-util';
 import {deletePageFunctionField, deletePageStateField} from 'src/pages/drag-page/util';
 // import {buttonTypeOptions} from '../options';
