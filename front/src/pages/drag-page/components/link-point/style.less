@@ -1,5 +1,9 @@
 @noLinkColor: red;
 @linkPointColor: green;
+@arrowLineColor: green;
+@arrowLineSize: 2px;
+@arrowLineArrowSize: 8px;
+@linkPointColor: green;
 
 .root {
     position: relative;
@@ -32,6 +36,24 @@
                 background: @noLinkColor;
             }
         }
+    }
+}
+
+.arrowLine{
+    position: fixed;
+    height: @arrowLineSize;
+    background-color: @arrowLineColor;
+    transform-origin: left top;
+    z-index: 9999;
+    pointer-events: none;
+
+    &:after {
+        content: ' ';
+        position: absolute;
+        top: -@arrowLineArrowSize + @arrowLineSize/2;
+        right: -@arrowLineSize - @arrowLineArrowSize;
+        border: @arrowLineArrowSize solid transparent;
+        border-left: @arrowLineArrowSize * 1.2 solid @arrowLineColor;
     }
 }
 

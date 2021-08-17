@@ -110,8 +110,9 @@ export default {
 
         let {config, type, dropType} = draggingNode;
 
-        const nodeConfig = getComponentConfig(config.componentName);
-        const {propsToSet, isWrapper} = nodeConfig;
+        const nodeConfig = getComponentConfig(config?.componentName) || {};
+        const {isWrapper} = nodeConfig;
+        const propsToSet = config?.propsToSet || draggingNode?.propsToSet || nodeConfig?.propsToSet;
 
         let dropTypeChangeable = true;
         if (propsToSet) dropType = 'props';
@@ -122,7 +123,7 @@ export default {
 
         return {
             draggingNode: {
-                id: config.id,
+                id: config?.id,
                 type,
                 config,
                 propsToSet: cloneDeep(propsToSet),
@@ -323,7 +324,6 @@ export default {
         }
 
         if (!dropType) {
-
             const targetNodeId = targetNode.id;
 
             const isBefore = ['top', 'left'].includes(targetHoverPosition);

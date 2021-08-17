@@ -1,12 +1,15 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Tooltip} from 'antd';
+import {useThrottleFn} from 'ahooks';
 import {AimOutlined} from '@ant-design/icons';
-import {getEleCenterInWindow, findLinkTargetsPosition} from 'src/pages/drag-page/util';
+import {getEleCenterInWindow, findLinkTargetsPosition, getLinkLineStyle} from 'src/pages/drag-page/util';
 import {findNodeById} from 'src/pages/drag-page/util/node-util';
 import {cloneDeep} from 'lodash';
 // import {v4 as uuid} from 'uuid';
 import {throttle} from 'lodash';
 import styles from './style.less';
+import {getComponentConfig} from 'src/pages/drag-page/component-config';
+import {store, actions} from 'src/models';
 
 /**
  *
@@ -17,173 +20,159 @@ import styles from './style.less';
 
 export default function LinkPoint(props) {
     const {
+        node,
         style, // 控制source点样式
         tip, // source点上鼠标悬停提示
         getTargets, // 获取 targets [{x,y}]，只有坐标信息
         lineVisible, // 连线是否可见
-    } = props;
-
-    let {
-        node,
-        selectedNode,
-        canvasDocument,
-        action: {dragPage: dragPageAction} = {},
         className,
-        onDragStart,
-        movingPoint,
-        pageConfig,
-        source = false,
-        id,
-        loginUser,
-        staticContext,
         ...others
     } = props;
 
-    selectedNode = node || selectedNode;
+    const {canvasDocument} = store.getState().dragPage;
+    const dragPageAction = actions.dragPage;
 
-    const propsToSet = selectedNode?.propsToSet;
+
+    const source = true;
+    const targets = [];
+
+    const id = props.id ? props.id : node?.id ? `sourceLinkPoint_${node?.id}` : undefined;
+    const nodeConfig = getComponentConfig(node?.componentName);
+    const propsToSet = node?.propsToSet || nodeConfig?.propsToSet;
 
     const startRef = useRef(null);
-    // const lineRef = useRef(null);
+    const lineRef = useRef(null);
     const pointRef = useRef(null);
     const [dragging, setDragging] = useState(false);
 
-    const showDraggingArrowLine = throttle(({endX, endY}) => {
-        const options = {
-            ...startRef.current,
-            endX,
-            endY,
-            key: 'dragging',
-        };
-
-        // lineRef.current = options;
-        dragPageAction.showDraggingArrowLine(options);
-    }, 1000 / 70, {trailing: false}); // 最后一次不触发
-
-    function handleDragStart(e) {
-        onDragStart && onDragStart(e);
-        e.stopPropagation();
-        // e.preventDefault();
+    // 拖拽开始
+    const handleDragStart = useCallback(e => {
+        e && e.stopPropagation();
 
         if (!propsToSet) return;
 
-        dragPageAction.setSelectedNode(selectedNode);
+        // 标记拖拽开始
         setDragging(true);
 
-        dragPageAction.setDraggingNode({toSetProps: true, nodeData: {propsToSet: cloneDeep(propsToSet)}});
-
+        // 获取拖拽开始位置
         const center = getEleCenterInWindow(e.target);
         if (center) {
-            const {x: startX, y: startY} = center;
-            startRef.current = {startX, startY};
+            startRef.current = center;
         }
 
+        // 设置拖拽缩略图
         const img = new Image();
-        img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQYV2NgAAIAAAUAAarVyFEAAAAASUVORK5CYII=';
-
         e.dataTransfer.setDragImage(img, 0, 0);
 
-        // 显示所有 link line
-        dragPageAction.setShowArrowLines(true);
-    }
+        // 设置拖拽节点
+        dragPageAction.setDraggingNode({
+            dropType: 'props',
+            propsToSet,
+            config: {
+                componentName: 'Text',
+                props: {
+                    text: '设置关联',
+                },
+            },
+        });
 
-    function handleDragEnd(e) {
+    }, []);
+
+    // 拖拽结束
+    const handleDragEnd = useCallback(e => {
         e.preventDefault();
         e.stopPropagation();
         setDragging(false);
+        dragPageAction.setDraggingNode(null);
+    }, []);
 
-        if (movingPoint) {
-            const {targetComponentId, propsKey, propsValue} = movingPoint;
+    // 原点点击事件
+    const handleClick = useCallback(e => {
 
-            const node = findNodeById(pageConfig, targetComponentId);
-            if (node) {
-                const props = node.props || {};
+    });
 
-                Object.entries(props)
-                    .forEach(([key, value]) => {
-                        if (key === propsKey && value === propsValue) {
-                            Reflect.deleteProperty(props, key);
-                            // props.key = uuid();
-                        }
-                    });
-                dragPageAction.render();
-            }
+    // 显示拖拽中连线
+    useEffect(() => {
+        if (!dragging) {
+            lineRef.current = null;
+            return;
         }
 
-        dragPageAction.setRefreshArrowLines({});
+        const lineEle = lineRef.current = document.createElement('div');
+        lineEle.classList.add(styles.arrowLine);
+        document.body.append(lineEle);
 
-        // 拖拽完成之后，延迟一秒隐藏连线
-        setTimeout(() => {
-            dragPageAction.setShowArrowLines(false);
-        }, 1000);
-    }
+        return () => {
+            lineEle.remove();
+            lineRef.current = null;
+        };
+    }, [dragging]);
 
-    function handleOver(e) {
-        e.preventDefault();
-        if (!startRef.current) return;
-
-        const {pageX, pageY, clientX, clientY} = e;
-        const endX = pageX || clientX;
-        const endY = pageY || clientY;
-
-        showDraggingArrowLine({endX, endY});
-    }
-
-    function handleIframeOver(e) {
-        e.preventDefault();
-        if (!startRef.current) return;
-
-        const {pageX, pageY, clientX, clientY} = e;
-        const documentElement = canvasDocument.documentElement || canvasDocument.body;
-        const scrollX = documentElement.scrollLeft;
-        const scrollY = documentElement.scrollTop;
-        let endX = pageX - scrollX || clientX;
-        let endY = pageY - scrollY || clientY;
-
-        const iframe = document.getElementById('dnd-iframe');
-        const rect = iframe.getBoundingClientRect();
-        const {x, y} = rect;
-
-        endX = endX + x;
-        endY = endY + y;
-
-        showDraggingArrowLine({endX, endY});
-    }
-
-    function handleClick(e) {
-        e.stopPropagation();
-        dragPageAction.setSelectedNode(selectedNode);
-        // 不传递参数，标识toggle
-        dragPageAction.setShowArrowLines();
-    }
+    // 更新拖拽过程中连线位置
+    const {run: updateLinkLine} = useThrottleFn(({endX, endY}) => {
+        const {x: startX, y: startY} = startRef.current;
+        const linkLineStyle = getLinkLineStyle({
+            startX,
+            startY,
+            endX,
+            endY,
+        });
+        Object.entries(linkLineStyle)
+            .forEach(([key, value]) => {
+                lineRef.current.style[key] = value;
+            });
+    }, {wait: 1000 / 70, trailing: false});
 
     useEffect(() => {
         if (!canvasDocument) return;
         if (!dragging) return;
 
+        const handleOver = (e) => {
+            e.preventDefault();
+
+            const {pageX, pageY, clientX, clientY} = e;
+            const endX = pageX || clientX;
+            const endY = pageY || clientY;
+
+            updateLinkLine({endX, endY});
+        };
+        const handleCanvasOver = e => {
+            e.preventDefault();
+
+            const {pageX, pageY, clientX, clientY} = e;
+            const documentElement = canvasDocument.documentElement || canvasDocument.body;
+            const scrollX = documentElement.scrollLeft;
+            const scrollY = documentElement.scrollTop;
+            let endX = pageX - scrollX || clientX;
+            let endY = pageY - scrollY || clientY;
+
+            const iframe = document.getElementById('dnd-iframe');
+            const rect = iframe.getBoundingClientRect();
+            const {x, y} = rect;
+
+            endX = endX + x;
+            endY = endY + y;
+
+            updateLinkLine({endX, endY});
+        };
+
         // 捕获方式
-        canvasDocument.addEventListener('dragover', handleIframeOver, true);
+        canvasDocument.addEventListener('dragover', handleCanvasOver, true);
         window.addEventListener('dragover', handleOver, true);
         return () => {
-            canvasDocument.removeEventListener('dragover', handleIframeOver, true);
+            canvasDocument.removeEventListener('dragover', handleCanvasOver, true);
             window.removeEventListener('dragover', handleOver, true);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [canvasDocument, dragging]);
 
-    const links = movingPoint ? [] : findLinkTargetsPosition({
-        pageConfig,
-        selectedNode,
-        canvasDocument,
-    });
-
-    const pointElement = (
+    const sourcePoint = (
         <div
             className={[
                 className,
                 styles.root,
-                !links?.length && !movingPoint ? styles.noLink : '',
+                !targets?.length && styles.noLink,
             ].join(' ')}
+            style={style}
             draggable
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
@@ -191,20 +180,28 @@ export default function LinkPoint(props) {
             id={id}
             {...others}
         >
-            {source ? <div className={styles.sourcePoint} ref={pointRef}><AimOutlined/></div> : <div className={styles.point} ref={pointRef}/>}
+            {source ? (
+                <div
+                    className={styles.sourcePoint}
+                    ref={pointRef}
+                >
+                    <AimOutlined/>
+                </div>
+            ) : (
+                <div className={styles.point} ref={pointRef}/>
+            )}
         </div>
     );
 
-    if (movingPoint) return pointElement;
-
+    if (!tip) return sourcePoint;
 
     return (
         <Tooltip
-            title={`已关联(${links?.length || 0})，点击查看所有，拖拽指定关联`}
+            title={tip}
             placement="top"
             getPopupContainer={() => document.body}
         >
-            {pointElement}
+            {sourcePoint}
         </Tooltip>
     );
 }

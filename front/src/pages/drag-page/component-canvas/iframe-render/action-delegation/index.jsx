@@ -33,7 +33,7 @@ export default React.memo(function DragDelegation(props) {
     const targetNodeRefresh = useNodeChange(targetNode);
     const draggingNodeRefresh = useNodeChange(draggingNode);
 
-    const prevComponentPaneActiveKeyRef = useRef(null);
+    const prevComponentPaneActiveKeyRef = useRef(componentPaneActiveKey);
     const mousePositionRef = useRef('');
 
     // 监听键盘事件 修改 draggingNode.type

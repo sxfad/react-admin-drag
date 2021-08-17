@@ -28,11 +28,10 @@ export default config({
             right: '后',
         }[targetHoverPosition];
 
-
         const {componentName: targetName} = targetNode;
-        const draggingName = draggingNode?.config?.componentName || '目标';
+        const draggingName = draggingNode?.config?.componentName || '组件';
 
-        const {type, dropType, propsToSet} = draggingNode;
+        const {type, dropType, propsToSet = {}} = draggingNode;
 
         const color = (GUIDE_COLORS[dropType] || GUIDE_COLORS.default)(1);
 

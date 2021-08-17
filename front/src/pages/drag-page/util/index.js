@@ -27,6 +27,44 @@ export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
 export const TRIGGER_SIZE = 20;
 
 /**
+ * 获取连接线样式
+ * @param options
+ * @returns {{transform: string, top, left, width: number}}
+ */
+export function getLinkLineStyle(options) {
+    const {
+        startX,
+        startY,
+        endX,
+        endY,
+    } = options;
+
+    const w = Math.abs(startX - endX);
+    const h = Math.abs(startY - endY);
+
+    // 勾股定理算长度
+    const width = Math.sqrt(w * w + h * h);
+
+    // 计算旋转角度
+
+    // 右下
+    let deg = Math.atan(h / w) * 180 / Math.PI;
+    // 右上
+    if (endX > startX && endY < startY) deg = -deg;
+    // 左上
+    if (endX < startX && endY < startY) deg = -(180 - deg);
+    // 左下
+    if (endX < startX && endY > startY) deg = 180 - deg;
+
+    return {
+        top: `${startY}px`,
+        left: `${startX}px`,
+        width: `${width}px`,
+        transform: `rotate(${deg}deg) scaleY(.5)`,
+    };
+}
+
+/**
  * 删除pageState中数据
  * @param pageState
  * @param data
@@ -554,6 +592,7 @@ export function getTargetNode(
     },
 ) {
     if (!targetElement) return null;
+    if (!draggingNode) return null;
 
     const componentId = getIdByElement(targetElement);
 
