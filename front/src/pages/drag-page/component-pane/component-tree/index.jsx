@@ -37,7 +37,8 @@ export default React.memo(config({
     const {treeData = [], nodeCount = 0, allKeys = []} = useMemo(() => {
         if (!pageConfig) return {};
 
-        console.log(pageConfigRefresh);
+        // 无用，防止 hooks 提醒
+        Object(pageConfigRefresh);
         return convertNodeToTreeData(pageConfig);
     }, [pageConfig, pageConfigRefresh]);
 

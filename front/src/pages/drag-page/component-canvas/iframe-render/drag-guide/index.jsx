@@ -94,6 +94,7 @@ export default React.memo(function DragGuide(props) {
             !targetElement
             // 投放位置不存在
             || !targetHoverPosition
+            || !draggingNode
             // 属性、包裹、替换时，也不现实line
             || (draggingNode && ['props', 'wrapper', 'replace'].includes(draggingNode.dropType))
         ) {

@@ -123,6 +123,7 @@ export default {
 
         return {
             draggingNode: {
+                ...draggingNode,
                 id: config?.id,
                 type,
                 config,
@@ -212,7 +213,7 @@ export default {
      * @param state
      */
     insertNode({draggingNode: _draggingNode, targetNode, targetHoverPosition}, state) {
-        const {pageConfig} = state;
+        const {pageConfig, selectedNode} = state;
         let {config: draggingNode, dropType, propsToSet} = _draggingNode;
         let nextSelectedNode = null;
         // 根节点为站位符时，直接替换
@@ -276,7 +277,7 @@ export default {
                     targetNode.props[key] = value;
                 });
 
-            nextSelectedNode = null;
+            nextSelectedNode = selectedNode;
             // 发布订阅方式更新具体节点
             emitUpdateNodes([
                 {
@@ -289,7 +290,6 @@ export default {
         if (dropType === 'wrapper') {
             // 移除拖动节点
             deleteNodeById(pageConfig, draggingNode?.id);
-
 
             if (!targetNode?.wrapper?.length) targetNode.wrapper = [];
 

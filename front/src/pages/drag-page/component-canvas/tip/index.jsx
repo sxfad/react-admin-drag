@@ -30,10 +30,11 @@ export default config({
 
         const {componentName: targetName} = targetNode;
         const draggingName = draggingNode?.config?.componentName || '组件';
-
+        const tip = draggingNode?.tip;
         const {type, dropType, propsToSet = {}} = draggingNode;
-
         const color = (GUIDE_COLORS[dropType] || GUIDE_COLORS.default)(1);
+
+        if (tip) return <span style={{color}}>{tip({draggingName, targetName, targetNode})}</span>;
 
         if (dropType === 'props') return <span style={{color}}>将 {draggingName} 设置为 {targetName} 的 {Object.keys(propsToSet)} 属性</span>;
         if (dropType === 'replace') return <span style={{color}}>{draggingName} 替换 {targetName} </span>;
