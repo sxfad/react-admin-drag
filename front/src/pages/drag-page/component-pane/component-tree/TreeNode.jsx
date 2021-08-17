@@ -2,7 +2,9 @@ import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import {useThrottleFn} from 'ahooks';
 import config from 'src/commons/config-hoc';
 import {getTargetNode} from 'src/pages/drag-page/util';
+
 import s from './style.less';
+import {LinkPoint} from 'src/pages/drag-page/components';
 
 export default config({
     connect: state => {
@@ -231,6 +233,10 @@ export default config({
             onDragEnd={handleDragEnd}
         >
             {name}
+            <LinkPoint
+                node={nodeData}
+                style={{marginRight: 4}}
+            />
             {hoverPosition ? (
                 <div className={s.dragGuide} style={{display: dragIn && draggingNode ? 'flex' : 'none'}}>
                     <span>{positionMap[hoverPosition]}</span>

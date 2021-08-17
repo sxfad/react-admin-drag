@@ -52,7 +52,7 @@ function getLinkTarget(node, pageConfig, canvasDocument) {
  *
  * */
 
-export default function LinkPoint(props) {
+function LinkPoint(props) {
     const {
         node,
         style, // 控制source点样式
@@ -74,19 +74,28 @@ export default function LinkPoint(props) {
     const id = props.id ? props.id : node?.id ? `sourceLinkPoint_${node?.id}` : undefined;
     const nodeConfig = getComponentConfig(node?.componentName);
     const propsToSet = node?.propsToSet || nodeConfig?.propsToSet;
-    const sourceEle = document.getElementById(id);
-    const sourcePosition = getEleCenterInWindow(sourceEle);
 
     const startRef = useRef(null);
     const lineRef = useRef(null);
-    const pointRef = useRef(null);
+    const sourcePointRef = useRef(null);
     const [dragging, setDragging] = useState(false);
+    const [refresh, setRefresh] = useState({});
 
     // 获取关联节点
     useEffect(() => {
         const targets = getLinkTarget(node, pageConfig, canvasDocument);
         setTargets(targets);
-    }, [node, pageConfig, canvasDocument, pageConfigRefresh]);
+    }, [node, pageConfig, canvasDocument, pageConfigRefresh, refresh]);
+
+    // 滚动时，刷新
+    useEffect(() => {
+        if (!canvasDocument) return;
+        const handleScroll = () => setRefresh({});
+        canvasDocument.addEventListener('scroll', handleScroll);
+        return () => {
+            canvasDocument.removeEventListener('scroll', handleScroll);
+        };
+    }, [canvasDocument]);
 
     // 拖拽开始
     const handleDragStart = useCallback(e => {
@@ -159,6 +168,9 @@ export default function LinkPoint(props) {
 
     // 原点点击，显示隐藏关联线
     const handleClick = useCallback(e => {
+        e.stopPropagation();
+        e.preventDefault();
+
         setShowTargets(!showTargets);
     }, [showTargets]);
 
@@ -242,6 +254,7 @@ export default function LinkPoint(props) {
                 className,
                 styles.root,
                 !targets?.length && styles.noLink,
+                id,
             ]}
             style={style}
             draggable
@@ -255,17 +268,18 @@ export default function LinkPoint(props) {
             {source ? (
                 <div
                     className={styles.sourcePoint}
-                    ref={pointRef}
+                    ref={sourcePointRef}
                 >
                     <AimOutlined/>
                 </div>
             ) : (
-                <div className={styles.point} ref={pointRef}/>
+                <div className={styles.point}/>
             )}
         </div>
     );
 
     const _showTargets = showTargets || dragging;
+    const sourcePosition = getEleCenterInWindow(sourcePointRef.current);
 
     return (
         <>
@@ -308,4 +322,15 @@ export default function LinkPoint(props) {
             })}
         </>
     );
+}
+
+export default function wrapper(props) {
+    const {node} = props;
+    if (!node) return null;
+
+    const nodeConfig = getComponentConfig(node?.componentName);
+    const propsToSet = node?.propsToSet || nodeConfig?.propsToSet;
+    if (!propsToSet) return null;
+
+    return LinkPoint(props);
 }

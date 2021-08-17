@@ -1,7 +1,6 @@
 import React from 'react';
 import {getComponentDisplayName} from 'src/pages/drag-page/component-config';
 import {LinkPoint} from 'src/pages/drag-page/components';
-import {isNode} from 'src/pages/drag-page/util/node-util';
 
 export default function SelectedNode(props) {
     let {
@@ -9,18 +8,14 @@ export default function SelectedNode(props) {
         node: selectedNode,
     } = props;
 
-    const hasPropsToSet = selectedNode?.propsToSet;
     const name = getComponentDisplayName(selectedNode);
-    const showPoint = isNode(selectedNode) && hasPropsToSet;
 
     return (
         <div style={{display: 'flex', alignItems: 'center'}}>
-            {showPoint ? (
-                <LinkPoint
-                    node={selectedNode}
-                    style={{marginRight: 4}}
-                />
-            ) : null}
+            <LinkPoint
+                node={selectedNode}
+                style={{marginRight: 4}}
+            />
             {tip} {name}
         </div>
     );
