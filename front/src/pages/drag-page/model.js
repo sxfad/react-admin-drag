@@ -67,9 +67,10 @@ export default {
         // 页面尺寸
         pageWidth: 'auto',
         pageHeight: '100%',
-        // 画布尺寸，指的是iframe尺寸
+        // 画布尺寸
         canvasWidth: 2200,
         canvasHeight: 2000,
+        // 画布缩放
         canvasScale: 100,
         // 画布document节点
         canvasDocument: null,
