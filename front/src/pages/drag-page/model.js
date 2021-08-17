@@ -106,6 +106,16 @@ export default {
 
     setFields: fields => ({...fields}),
 
+    // 组件另存为
+    saveComponentAs(selectedNode) {
+        // TODO
+    },
+
+    // 保存页面配置到服务端
+    savePageConfig() {
+        // TODO
+    },
+
     setDraggingNode: draggingNode => {
         if (!draggingNode) return {draggingNode: null};
 
@@ -159,16 +169,6 @@ export default {
         return {
             pageVariable: {...pageVariable, ...data},
         };
-    },
-
-    // 组件另存为
-    saveComponentAs(selectedNode) {
-        // TODO
-    },
-
-    // 保存页面配置到服务端
-    savePageConfig() {
-        // TODO
     },
 
     /**
