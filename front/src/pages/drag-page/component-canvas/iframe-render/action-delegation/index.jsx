@@ -5,13 +5,10 @@ import {
     getIdByElement,
     getDraggableNodeEle,
     getTargetNode,
-    copyTextToClipboard,
     usePageConfigChange,
     useNodeChange,
-    getNodeByText,
-    getNodeByImage, deleteNodeByKeyDown,
 } from 'src/pages/drag-page/util';
-import {findNodeById, setNodeId} from 'src/pages/drag-page/util/node-util';
+import {findNodeById} from 'src/pages/drag-page/util/node-util';
 
 export default React.memo(function DragDelegation(props) {
     const {
@@ -200,132 +197,6 @@ export default React.memo(function DragDelegation(props) {
             coverELe && coverELe.removeEventListener('mouseup', handleMouseUp);
         };
     }, [canvasDocument]);
-
-    // 操作SelectedNode相关的快捷键 复制 删除
-    useEffect(() => {
-        if (!canvasDocument) return;
-
-        const handleSelectedNodeKeyDown = (e) => {
-            const {metaKey, ctrlKey, key} = e;
-            const metaOrCtrl = metaKey || ctrlKey;
-
-            // Escape 取消选中节点
-            if (key === 'Escape' && selectedNode) {
-                dragPageAction.setFields({
-                    selectedNode: null,
-                });
-            }
-
-            const {activeElement} = canvasDocument;
-            deleteNodeByKeyDown(e, selectedNode?.id, activeElement, dragPageAction);
-
-            // command(ctrl) + c 复制当前选中节点
-            if (metaOrCtrl && key === 'c') {
-                if (!selectedNode) return;
-
-                const selection = window.getSelection();
-                const selectionText = selection + '';
-
-                // 用户有选中内容
-                if (selectionText) return;
-
-                // 将当前选中节点，保存到剪切板中
-                copyTextToClipboard(JSON.stringify(selectedNode));
-            }
-        };
-
-        canvasDocument.addEventListener('keydown', handleSelectedNodeKeyDown);
-        return () => {
-            canvasDocument.removeEventListener('keydown', handleSelectedNodeKeyDown);
-        };
-    }, [
-        canvasDocument,
-        dragPageAction,
-        selectedNode,
-        selectedNodeRefresh,
-    ]);
-
-    // 粘贴事件
-    useEffect(() => {
-        if (!canvasDocument) return;
-
-        const handlePaste = async (e) => {
-            if (!selectedNode) return;
-
-            const {activeElement} = canvasDocument;
-            if (activeElement && ['INPUT', 'TEXTAREA'].includes(activeElement.tagName)) {
-                return;
-            }
-
-            const node = await getNodeByText(e) || await getNodeByImage(e);
-
-            if (!node) return;
-
-            setNodeId(node, true);
-
-            // 插入
-            dragPageAction.insertNode({
-                draggingNode: {
-                    id: node.id,
-                    type: 'copy',
-                    config: node,
-                },
-                targetNode: selectedNode,
-                targetHoverPosition: 'right',
-            });
-
-            // 等待插入结束之后，清空相关数据
-            setTimeout(() => {
-                dragPageAction.setFields({
-                    draggingNode: null,
-                    targetHoverPosition: null,
-                });
-            });
-        };
-
-        canvasDocument.addEventListener('paste', handlePaste);
-        return () => {
-            canvasDocument.removeEventListener('paste', handlePaste);
-        };
-    }, [
-        canvasDocument,
-        dragPageAction,
-        selectedNode,
-        selectedNodeRefresh,
-    ]);
-
-    // 在组件库中查找组件
-    useEffect(() => {
-        if (!canvasDocument) return;
-
-        // 快捷键使组价搜索输入框获取焦点，并选中输入框中所有内容
-        const handleSearchKeyDown = (e) => {
-            const {metaKey, ctrlKey, key} = e;
-            const metaOrCtrl = metaKey || ctrlKey;
-
-            if (metaOrCtrl && key === 'f') {
-                e.stopPropagation();
-                e.preventDefault();
-
-                const inputEle = window.document.getElementById('search-component');
-                if (!inputEle) return;
-
-                dragPageAction.setFields({
-                    componentPaneActiveKey: 'componentStore',
-                });
-
-                inputEle.focus();
-                inputEle.select();
-            }
-        };
-
-        window.addEventListener('keydown', handleSearchKeyDown);
-        canvasDocument.addEventListener('keydown', handleSearchKeyDown);
-        return () => {
-            canvasDocument.removeEventListener('keydown', handleSearchKeyDown);
-            window.removeEventListener('keydown', handleSearchKeyDown);
-        };
-    }, [canvasDocument, dragPageAction]);
 
     // 拖拽相关事件
     useEffect(() => {

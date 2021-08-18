@@ -163,7 +163,6 @@ export default config({
         }
     }, [draggable]);
 
-
     const handleDragEnd = useCallback(() => {
         setDragIn(false);
         if (!draggable) return;

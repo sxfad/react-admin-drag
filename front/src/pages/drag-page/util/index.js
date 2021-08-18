@@ -520,31 +520,9 @@ export async function getImageUrlByClipboard(e) {
     });
 }
 
-export function deleteNodeByKeyDown(e, id, activeElement, dragPageAction) {
-    if (!id) return;
-    const {metaKey, ctrlKey, key} = e;
-    const metaOrCtrl = metaKey || ctrlKey;
-
-    // Backspace Delete 键也删除 要区分是否有输入框获取焦点
-    if (['Delete', 'Backspace'].includes(key)) {
-
-        if (activeElement && ['INPUT', 'TEXTAREA'].includes(activeElement.tagName)) {
-            return;
-        }
-        dragPageAction.deleteNodeById(id);
-    }
-
-    // command(ctrl) + d 删除选中节点
-    if (metaOrCtrl && key === 'd') {
-        e.stopPropagation();
-        e.preventDefault();
-        dragPageAction.deleteNodeById(id);
-    }
-}
-
 // 复制兼容函数
 function fallbackCopyTextToClipboard(text) {
-    var textArea = document.createElement('textarea');
+    let textArea = document.createElement('textarea');
     textArea.value = text;
 
     // Avoid scrolling to bottom

@@ -18,7 +18,7 @@ import ComponentSchema from 'src/pages/drag-page/component-pane/component-schema
 import ComponentSetting from 'src/pages/drag-page/component-pane/component-setting';
 import s from './style.less';
 
-const tools = [
+export const panes = [
     {
         title: '页面菜单',
         key: 'menu',
@@ -133,14 +133,14 @@ export default React.memo(config({
                             {componentPaneExpended ? <MenuFoldOutlined/> : <MenuUnfoldOutlined/>}
                         </div>
                     </Tooltip>
-                    {renderTools(tools)}
+                    {renderTools(panes)}
                 </div>
                 <div className={s.leftBottom}>
-                    {renderTools(tools, true)}
+                    {renderTools(panes, true)}
                 </div>
             </div>
             <div className={s.right} ref={rightRef} style={{width: rightWidth}}>
-                {tools.map(item => {
+                {panes.map(item => {
                     const {key, title, icon, Component} = item;
                     const visible = key === componentPaneActiveKey;
                     if (key === 'schemaEditor' && !visible) return null;

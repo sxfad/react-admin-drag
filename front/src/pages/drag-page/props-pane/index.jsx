@@ -21,7 +21,7 @@ const ComingSoon = () => {
     );
 };
 // 所有可用面板配置
-const panes = [
+export const panes = [
     {key: 'style', title: '样式', icon: <Icon type="icon-style"/>, Component: Style},
     {key: 'props', title: '属性', icon: <Icon type="icon-props"/>, Component: Props},
     {key: 'action', title: '事件', icon: <Icon type="icon-click"/>, Component: ComingSoon},

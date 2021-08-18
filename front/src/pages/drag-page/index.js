@@ -6,6 +6,7 @@ import ComponentPane from 'src/pages/drag-page/component-pane';
 import PropsPane from 'src/pages/drag-page/props-pane';
 import ComponentCanvas from 'src/pages/drag-page/component-canvas';
 import baseStore from 'src/pages/drag-page/component-category';
+import GlobalKeyMap from 'src/pages/drag-page/global-key-map';
 import s from './style.less';
 import 'antd/dist/antd.less';
 // 需要引入所有样式，否则有些组件通过node-render渲染无样式
@@ -34,6 +35,7 @@ export default config({
 
     return (
         <PageContent className={s.root}>
+            <GlobalKeyMap/>
             <div className={s.top}>
                 <Toolbar/>
             </div>

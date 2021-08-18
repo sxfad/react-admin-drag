@@ -8,7 +8,7 @@ import config from 'src/commons/config-hoc';
 import {convertNodeToTreeData} from './util';
 import s from './style.less';
 import {findNodeById, findParentNodes} from 'src/pages/drag-page/util/node-util';
-import {deleteNodeByKeyDown, scrollElement, useNodeChange, usePageConfigChange} from 'src/pages/drag-page/util';
+import {scrollElement, useNodeChange, usePageConfigChange} from 'src/pages/drag-page/util';
 import TreeNode from './TreeNode';
 
 export default React.memo(config({
@@ -99,14 +99,6 @@ export default React.memo(config({
         }, 200);
 
     }, [selectedNode, selectedNodeRefresh]);
-
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            deleteNodeByKeyDown(e, selectedNode?.id, document.activeElement, dragPageAction);
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedNode, selectedNodeRefresh, dragPageAction]);
 
     return (
         <Container>
