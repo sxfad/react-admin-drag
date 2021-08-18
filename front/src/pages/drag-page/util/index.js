@@ -26,6 +26,28 @@ export const OTHER_HEIGHT = 0;
 export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
 export const TRIGGER_SIZE = 20;
 
+
+/**
+ * 获取字段对应关系
+ */
+export function getFieldsMap(obj) {
+    const result = {};
+
+    Object.keys(obj)
+        .forEach(prevField => {
+            const nextField = getNextField(result, prevField.split('__')[0]);
+
+            result[nextField] = prevField;
+        });
+
+    // key value 互换
+    return Object.entries(result)
+        .reduce((prev, [key, value]) => {
+            prev[value] = key;
+            return prev;
+        }, {});
+}
+
 /**
  * 获取连接线样式
  * @param options

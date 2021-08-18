@@ -5,7 +5,7 @@ import parserBabel from 'prettier/parser-babel';
 import inflection from 'inflection';
 import {getComponentConfig} from 'src/pages/drag-page/component-config';
 import {isNode, loopNode} from 'src/pages/drag-page/util/node-util';
-import {getComponent, isFunctionString, getFieldOption, getNextField} from 'src/pages/drag-page/util';
+import {getComponent, isFunctionString, getFieldOption, getNextField, getFieldsMap} from 'src/pages/drag-page/util';
 
 export default function schemaToCode(options = {}) {
     let {
@@ -25,9 +25,6 @@ export default function schemaToCode(options = {}) {
 
     // 导入
     const imports = new Map();
-    const states = [];
-    const variables = [];
-    const functions = [];
 
     loopNode(pageConfig, node => {
         const nodeConfig = getComponentConfig(node?.componentName);
@@ -38,13 +35,14 @@ export default function schemaToCode(options = {}) {
             imports,
             pageState,
             pageStateDefault,
-            pageFunction,
             pageVariable,
+            pageFunction,
         });
 
         generateImport(node?.componentName);
     });
 
+    // 生成jsx
     function generateJsx() {
         const loop = node => {
             let {componentName, props, wrapper, children} = node;
@@ -53,7 +51,6 @@ export default function schemaToCode(options = {}) {
 
             // 处理当前节点上的包装节点
             if (wrapper?.length) {
-                wrapper = cloneDeep(wrapper);
                 parseWrapper(wrapper, node, loop);
                 if (wrapper?.length) {
                     wrapper[0].children = [{...node, wrapper: null}];
@@ -147,14 +144,11 @@ export default function schemaToCode(options = {}) {
 
             if (!node.props) node.props = {};
 
-            const functionName = getNextField(functions.map(item => item.name), 'handleClick');
-            functions.push({
-                name: functionName,
-                params: '',
-                content: `${name}.${type}({${propsStr}})`,
-            });
 
-            node.props.onClick = `{${functionName}}`;
+            const handleClickField = `handleClick__${Date.now()}`;
+            pageFunction[handleClickField] = `() => ${name}.${type}({${propsStr}})`;
+
+            node.props.onClick = `func.${handleClickField}`;
 
             const options = {name};
             const objSets = imports.get('antd');
@@ -214,7 +208,6 @@ export default function schemaToCode(options = {}) {
     function parseProps(props, node, loopNode) {
         if (!props) return [];
 
-        const componentProps = cloneDeep(props);
         const loop = (obj, cb) => {
             if (typeof obj !== 'object' || obj === null) return;
 
@@ -242,7 +235,7 @@ export default function schemaToCode(options = {}) {
             }
         };
 
-        loop(componentProps, (obj, key, value) => {
+        loop(props, (obj, key, value) => {
             const fieldOption = getFieldOption(node, key) || {};
             const {functionType, defaultValue} = fieldOption;
 
@@ -270,7 +263,7 @@ export default function schemaToCode(options = {}) {
             }
         });
 
-        return Object.entries(componentProps)
+        return Object.entries(props)
             .map(([key, value]) => {
                 if (value === undefined) return '';
 
@@ -291,26 +284,6 @@ export default function schemaToCode(options = {}) {
                 if (value === true) return key;
 
                 return `${key}={${value}}`;
-            })
-            .map(str => {
-                const i = str.indexOf('=');
-                const key = str.substring(0, i);
-                let value = str.substring(i + 1, str.length);
-
-                if (node?.variables?.length && node.variables.includes(key)) {
-                    if (value.startsWith('{')) value = value.slice(1, -1);
-
-                    const nextName = getNextField(variables.map(item => item.name), key);
-
-                    variables.push({
-                        name: nextName,
-                        initialValue: value,
-                    });
-
-                    return `${key}={${nextName}}`;
-                }
-
-                return str;
             });
     }
 
@@ -330,16 +303,6 @@ export default function schemaToCode(options = {}) {
     }
 
     function parsePropsValue(value, loop) {
-        // state 数据
-        if (typeof value === 'string' && value.startsWith('state.')) {
-            const [name, initialValue = ''] = value.replace('state.', '').split('<---->');
-            states.push({
-                name,
-                initialValue,
-            });
-            return `{${name}}`;
-        }
-
         // 节点
         if (isNode(value) || (Array.isArray(value) && value.every(item => isNode(item)))) {
             if (Array.isArray(value)) {
@@ -351,10 +314,6 @@ export default function schemaToCode(options = {}) {
             } else {
                 return `{${loop(value)}}`;
             }
-        }
-
-        if (isFunctionString(value)) {
-            return `{${value.replace('state.', '')}}`;
         }
 
         if (typeof value === 'string') return value;
@@ -439,11 +398,20 @@ export default function schemaToCode(options = {}) {
     }
 
     const jsx = generateJsx();
+
+    const stateFieldsMap = getFieldsMap(pageState);
+    const variableFieldsMap = getFieldsMap(pageVariable);
+    const functionFieldsMap = getFieldsMap(pageFunction);
+
     const params = {
-        states,
-        variables,
+        pageState,
+        pageStateDefault,
+        stateFieldsMap,
+        pageFunction,
+        functionFieldsMap,
+        pageVariable,
+        variableFieldsMap,
         imports: importString(),
-        functions,
         jsx,
     };
     const code = classCode ? getClassCode(params) : getFunctionCode(params);
@@ -457,34 +425,79 @@ export default function schemaToCode(options = {}) {
 }
 
 function getFunctionCode(options) {
-    const {states, variables, imports, functions, jsx} = options;
+    const {
+        pageState,
+        pageStateDefault,
+        stateFieldsMap,
+        pageFunction,
+        functionFieldsMap,
+        pageVariable,
+        variableFieldsMap,
+
+        imports,
+        jsx,
+    } = options;
+
+    const hasState = !!Object.keys(pageState).length;
+
+    const stateDefinedStr = ''; // states.map(({name, initialValue}) => `const [${name}, set${inflection.camelize(name)}] = useState(${initialValue});`).join('\n')
+    const variableDefinedStr = ''; // variables.map(({name, initialValue}) => `const ${name} = ${initialValue};`).join('\n')
+
+    const functionDefinedStr = '';
+    /*
+    * functions.map(item => {
+        const {name, params, content} = item;
+        return `function ${name}(${params}) {
+         ${content}
+        }`;
+    }).join('\n')
+    * */
+
+    // 替换jsx中的state、function、variable等
+    const jsxStr = jsx;
+
     return `
-        import React ${states.length ? ',{useState}' : ''} from 'react';
+        import React ${hasState ? ',{useState}' : ''} from 'react';
         import config from 'src/commons/config-hoc';
         ${imports.join('\n')}
 
         export default config({
             path: '/route'
         })(function Page(props) {
-    ${states.map(({name, initialValue}) => `const [${name}, set${inflection.camelize(name)}] = useState(${initialValue});`).join('\n')}
+            ${stateDefinedStr}
 
-    ${variables.map(({name, initialValue}) => `const ${name} = ${initialValue};`).join('\n')}
+            ${variableDefinedStr}
 
-    ${functions.map(item => {
-        const {name, params, content} = item;
-        return `function ${name}(${params}) {
-         ${content}
-        }`;
-    }).join('\n')}
+            ${functionDefinedStr}
             return (
-            ${jsx}
+                ${jsxStr}
             );
-        })
+        });
     `;
 }
 
 function getClassCode(options) {
-    const {states, variables, imports, functions, jsx} = options;
+    const {
+        pageState,
+        pageStateDefault,
+        stateFieldsMap,
+        pageFunction,
+        functionFieldsMap,
+        pageVariable,
+        variableFieldsMap,
+
+        imports,
+        jsx,
+    } = options;
+
+    // state 初始化
+    const stateDefinedStr = '';
+    const stateGetStr = '';
+    const variableDefinedStr = ''; // variables.map(({name, initialValue}) => `const ${name} = ${initialValue};`).join('\n')
+    const functionDefinedStr = '';
+
+    // 替换jsx中的state、function、variable等
+    const jsxStr = jsx;
 
     return `
         import React, {Component} from 'react';
@@ -495,19 +508,13 @@ function getClassCode(options) {
             path: '/route'
         })
         export default class Page extends Component {
-
-        ${variables.map(({name, initialValue}) => `${name} = ${initialValue};`).join('\n')}
-
-    ${functions.map(item => {
-        const {name, params, content} = item;
-        return `${name} = (${params}) => {
-         ${content}
-        }`;
-    }).join('\n')}
-        render() {
-            ${states?.length ? `const {${states.map(item => item.name).join(',')}} = this.state` : ''}
-            return (
-                ${jsx}
+            ${stateDefinedStr}
+            ${functionDefinedStr}
+            render() {
+                ${stateGetStr}
+                ${variableDefinedStr}
+                return (
+                    ${jsxStr}
                 );
             }
         }
