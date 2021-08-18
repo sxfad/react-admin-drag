@@ -93,8 +93,10 @@ export default {
     syncLocal: [
         'pageConfig',
         'pageState',
+        'pageStateDefault',
         'pageFunction',
         'pageVariable',
+        'pageVariableDefault',
         'viewMode',
 
         'componentPaneWidth',
@@ -480,6 +482,8 @@ export default {
         // 选择下一个兄弟节点 或 上一个兄弟节点
         const nextNode = children[deleteIndex];
         const prevNode = children[deleteIndex - 1];
+
+        // TODO 修复 pageState pageFunction pageVariable
 
         return {
             selectedNode: nextNode || prevNode,

@@ -5,7 +5,7 @@ import parserBabel from 'prettier/parser-babel';
 import inflection from 'inflection';
 import {getComponentConfig} from 'src/pages/drag-page/component-config';
 import {isNode, loopNode} from 'src/pages/drag-page/util/node-util';
-import {getComponent, isFunctionString, getFieldOption, getNextField, getFieldsMap} from 'src/pages/drag-page/util';
+import {getComponent, getFieldOption, getFieldsMap} from 'src/pages/drag-page/util';
 
 export default function schemaToCode(options = {}) {
     let {
@@ -439,25 +439,79 @@ function getFunctionCode(options) {
     } = options;
 
     const hasState = !!Object.keys(pageState).length;
+    const hasFunction = !!Object.keys(pageFunction).length;
 
-    const stateDefinedStr = ''; // states.map(({name, initialValue}) => `const [${name}, set${inflection.camelize(name)}] = useState(${initialValue});`).join('\n')
-    const variableDefinedStr = ''; // variables.map(({name, initialValue}) => `const ${name} = ${initialValue};`).join('\n')
+    const stateDefinedStr = Object.keys(pageState).map(key => {
+        const field = stateFieldsMap[key];
+        let initialValue = pageStateDefault[key];
+        if (initialValue === undefined) initialValue = '';
+        initialValue = JSON5.stringify(initialValue);
 
-    const functionDefinedStr = '';
-    /*
-    * functions.map(item => {
-        const {name, params, content} = item;
-        return `function ${name}(${params}) {
-         ${content}
-        }`;
-    }).join('\n')
-    * */
+        return `const [${field}, set${inflection.camelize(field)}] = useState(${initialValue});`;
+    }).join('\n');
+
+    const variableDefinedStr = Object.keys(pageVariable).map(key => {
+        const field = variableFieldsMap[key];
+        let initialValue = pageVariable[key];
+        if (initialValue === undefined) initialValue = '';
+        initialValue = JSON5.stringify(initialValue);
+
+        return `const ${field} = ${initialValue}`;
+    }).join('\n');
+
+    const functionDefinedStr = Object.keys(pageFunction)
+        .map(key => {
+            const field = functionFieldsMap[key];
+            let value = pageFunction[key];
+
+            const result = value.match(/setState\(([^)]*)\)/);
+            if (result) {
+                const oldStr = result[0];
+                const stateStr = result[1];
+                const stateData = stateStr
+                    .substring(1, stateStr.length - 1)
+                    .split(',')
+                    .map(str => str.split(':').map(s => s.trim()));
+
+                const setState = stateData.map(item => {
+                    const [key, value] = item;
+                    const field = stateFieldsMap[key];
+                    return `set${inflection.camelize(field)}(${value});`;
+                }).join('\n');
+
+                value = value.replace(oldStr, setState);
+            }
+
+            return `const ${field} = useCallback(${value}, []);`;
+        }).join('\n\n');
 
     // 替换jsx中的state、function、variable等
-    const jsxStr = jsx;
+    let jsxStr = jsx;
+
+    // 替换state
+    Object.keys(pageState).forEach(key => {
+        const field = stateFieldsMap[key];
+        jsxStr = jsxStr.replace(`"state.${key}"`, `{${field}}`);
+    });
+
+    // 替换function
+    Object.keys(pageFunction).forEach(key => {
+        const field = functionFieldsMap[key];
+        jsxStr = jsxStr.replace(`"func.${key}"`, `{${field}}`);
+    });
+
+    // 替换variable
+    Object.keys(pageVariable).forEach(key => {
+        const field = variableFieldsMap[key];
+        jsxStr = jsxStr.replace(`"variable.${key}"`, `{${field}}`);
+    });
+
+    const reactHooks = [];
+    if (hasState) reactHooks.push('useState');
+    if (hasFunction) reactHooks.push('useCallback');
 
     return `
-        import React ${hasState ? ',{useState}' : ''} from 'react';
+        ${reactHooks.length ? `import {${reactHooks.join(',')}} from 'react';` : ''}
         import config from 'src/commons/config-hoc';
         ${imports.join('\n')}
 
@@ -469,6 +523,7 @@ function getFunctionCode(options) {
             ${variableDefinedStr}
 
             ${functionDefinedStr}
+
             return (
                 ${jsxStr}
             );
@@ -478,13 +533,13 @@ function getFunctionCode(options) {
 
 function getClassCode(options) {
     const {
-        pageState,
-        pageStateDefault,
-        stateFieldsMap,
-        pageFunction,
-        functionFieldsMap,
-        pageVariable,
-        variableFieldsMap,
+        // pageState,
+        // pageStateDefault,
+        // stateFieldsMap,
+        // pageFunction,
+        // functionFieldsMap,
+        // pageVariable,
+        // variableFieldsMap,
 
         imports,
         jsx,

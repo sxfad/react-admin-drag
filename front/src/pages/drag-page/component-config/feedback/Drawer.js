@@ -1,6 +1,3 @@
-import {loopNode} from 'src/pages/drag-page/util/node-util';
-import {deletePageFunctionField, deletePageStateField} from 'src/pages/drag-page/util';
-
 export default {
     isContainer: true,
     editableContents: [
@@ -31,10 +28,10 @@ export default {
             const field = `visible__${id}`;
             const handleDrawerClose = `handleDrawerClose__${id}`;
             const handleDrawerShow = `handleDrawerShow__${id}`;
-            pageState[field] = true;
-            pageStateDefault[field] = true;
-            pageFunction[handleDrawerClose] = `() => setState({${field}: false})`;
-            pageFunction[handleDrawerShow] = `() => setState({${field}: true})`;
+            pageState[field] = false;
+            pageStateDefault[field] = false;
+            pageFunction[handleDrawerClose] = `() => {setState({${field}: false})}`;
+            pageFunction[handleDrawerShow] = `() => {setState({${field}: true})}`;
 
             node.props.visible = `state.${field}`;
             node.props.onClose = `func.${handleDrawerClose}`;
@@ -48,33 +45,6 @@ export default {
             return {
                 pageState: {...pageState},
                 pageStateDefault: {...pageStateDefault},
-                pageFunction: {...pageFunction},
-            };
-        },
-
-        afterDelete: options => {
-            const {node, dragPageState: {pageConfig, pageState, pageFunction}} = options;
-            const {propsToSet, props} = node;
-
-            // 弹框删除之后，清除关联节点的onClick属性
-            if (propsToSet) {
-                loopNode(pageConfig, node => {
-                    const props = node.props || [];
-
-                    Object.entries(propsToSet)
-                        .forEach(([key, value]) => {
-                            if (props[key] === value) Reflect.deleteProperty(props, key);
-                            deletePageFunctionField(pageFunction, value);
-                        });
-                });
-            }
-
-            // 删除 pageState、pageFunction中相关数据
-            deletePageStateField(pageState, props.visible);
-            deletePageFunctionField(pageFunction, props.onCancel);
-
-            return {
-                pageState: {...pageState},
                 pageFunction: {...pageFunction},
             };
         },

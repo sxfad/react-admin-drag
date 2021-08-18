@@ -13,40 +13,36 @@ export default {
                 Reflect.deleteProperty(node.props, 'columns');
             }
         },
-        beforeToCode: ({node, pageState, pageStateDefault, pageFunction}) => {
-            const {columns, rowSelection} = node.props || {};
+        beforeToCode: ({node, pageState, pageStateDefault, pageVariable, pageFunction}) => {
+            const {columns = [], rowSelection} = node.props || {};
             const {children = []} = node;
-            node.variables = ['columns'];
 
             const dataSourceField = `dataSource__${Date.now()}`;
             pageState[dataSourceField] = [];
             pageStateDefault[dataSourceField] = [];
 
-
             node.props.dataSource = `state.${dataSourceField}`;
-            if (columns?.length) {
-                columns.forEach((col, index) => {
-                    // 清除默认值
-                    const tableColumn = children[index];
-                    Object.entries((tableColumn.props || {}))
-                        .forEach(([key, value]) => {
-                            const fieldOption = getFieldOption(tableColumn, key) || {};
-                            const {defaultValue} = fieldOption;
+            columns.forEach((col, index) => {
+                // 清除默认值
+                const tableColumn = children[index];
+                Object.entries((tableColumn.props || {}))
+                    .forEach(([key, value]) => {
+                        const fieldOption = getFieldOption(tableColumn, key) || {};
+                        const {defaultValue} = fieldOption;
 
-                            // 删除默认值
-                            if (JSON.stringify(defaultValue) === JSON.stringify(value)) {
-                                Reflect.deleteProperty(col, key);
-                            }
-                        });
+                        // 删除默认值
+                        if (JSON.stringify(defaultValue) === JSON.stringify(value)) {
+                            Reflect.deleteProperty(col, key);
+                        }
+                    });
 
-                    // 处理render
-                    const {props: {render}} = tableColumn;
-                    if (render) col.render = render;
+                // 处理render
+                const {props: {render}} = tableColumn;
+                if (render) col.render = render;
 
-                    // 删除 className id_{uuid}
-                    Reflect.deleteProperty(col, 'className');
-                });
-            }
+                // 删除 className id_{uuid}
+                Reflect.deleteProperty(col, 'className');
+            });
 
             if (rowSelection === true) {
                 const selectedRowKeysField = `selectedRowKeys__${Date.now()}`;
@@ -55,7 +51,7 @@ export default {
                 pageState[selectedRowKeysField] = [];
                 pageStateDefault[selectedRowKeysField] = [];
 
-                pageFunction[handleSelectedRowKeysChangeField] = `selectedRowKeys => setState({${selectedRowKeysField}: selectedRowKeys)`;
+                pageFunction[handleSelectedRowKeysChangeField] = `selectedRowKeys => {setState({${selectedRowKeysField}: selectedRowKeys)}`;
 
 
                 node.props.rowSelection = {

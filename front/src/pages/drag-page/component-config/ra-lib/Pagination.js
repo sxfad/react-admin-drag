@@ -18,8 +18,8 @@ export default {
             pageStateDefault[pageNumField] = 1;
             pageStateDefault[pageSizeField] = 20;
 
-            pageFunction[handlePageNumChangeField] = `(pageNum) => setState({${pageNumField}: pageNum)`;
-            pageFunction[handlePageSizeChangeField] = `(pageSize) => setState({${pageNumField}: 1, ${pageSizeField}: pageSize)`;
+            pageFunction[handlePageNumChangeField] = `(pageNum) => {setState({${pageNumField}: pageNum})}`;
+            pageFunction[handlePageSizeChangeField] = `(pageSize) => {setState({${pageNumField}: 1, ${pageSizeField}: pageSize})}`;
 
             const props = {
                 total: `state.${totalField}`,
