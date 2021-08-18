@@ -1,16 +1,6 @@
 export default {
     draggable: true,
     isContainer: true,
-    hooks: {
-        // afterPropsChange: options => {
-        //     const {node, dragPageAction} = options;
-        //
-        //     if (!node.props.dot) {
-        //         Reflect.deleteProperty(node.props, 'color');
-        //         dragPageAction.render(true);
-        //     }
-        // },
-    },
     fields: [
         {label: '只展示小红点', category: '选项', field: 'dot', type: 'boolean', defaultValue: false, version: '', desc: '不展示数字，只有一个小红点'},
         {label: '0是否展示', category: '选项', field: 'showZero', type: 'boolean', defaultValue: false, version: '', desc: '当数值为 0 时，是否展示 Badge'},

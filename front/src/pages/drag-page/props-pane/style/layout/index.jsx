@@ -4,9 +4,9 @@ import {
     InputNumber,
 } from 'antd';
 import {Icon} from 'src/components';
-import {RadioGroup, UnitInput, RectInputsWrapper} from 'src/pages/drag-page/components'
+import {RadioGroup, UnitInput, RectInputsWrapper} from 'src/pages/drag-page/components';
 import {handleSyncFields} from '../util';
-import styles from './style.less';
+import s from './style.less';
 
 const displayOptions = [
     {value: 'inline', label: '内联布局', icon: <Icon type="icon-display-inline"/>},
@@ -75,7 +75,7 @@ export default React.memo(function Layout(props) {
         // 同步表单数据
         form.setFieldsValue(allValues);
         onChange(allValues);
-    }, [form, onChange])
+    }, [form, onChange]);
 
     useEffect(() => {
         // 先重置，否则会有字段不清空情况
@@ -95,7 +95,7 @@ export default React.memo(function Layout(props) {
     }, [componentId, canvasDocument]);
 
     return (
-        <div className={styles.root}>
+        <div className={s.root}>
             <Form
                 form={form}
                 onValuesChange={handleChange}
@@ -181,7 +181,7 @@ export default React.memo(function Layout(props) {
                                 />
                             </Form.Item>
                         ))}
-                        <div className={styles.innerInput}>
+                        <div className={s.innerInput}>
                             <Form.Item
                                 label="宽"
                                 name="width"
@@ -235,4 +235,4 @@ export default React.memo(function Layout(props) {
             </Form>
         </div>
     );
-})
+});

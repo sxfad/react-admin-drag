@@ -8,7 +8,7 @@ import {
 } from 'antd';
 import {Icon} from 'src/components';
 import {RadioGroup, UnitInput, SliderInput, ColorInput} from 'src/pages/drag-page/components';
-import styles from './style.less';
+import s from './style.less';
 
 
 const textAlignOptions = [
@@ -34,7 +34,7 @@ export default React.memo(function Font(props) {
     }, [value, form]);
 
     return (
-        <div className={styles.root}>
+        <div className={s.root}>
             <Form
                 form={form}
                 onValuesChange={handleChange}

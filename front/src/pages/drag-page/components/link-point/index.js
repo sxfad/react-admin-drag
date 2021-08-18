@@ -4,9 +4,9 @@ import {useThrottleFn} from 'ahooks';
 import {AimOutlined} from '@ant-design/icons';
 import {getEleCenterInWindow, getLinkLineStyle, usePageConfigChange} from 'src/pages/drag-page/util';
 import {findNodeById, loopNode} from 'src/pages/drag-page/util/node-util';
-import styles from './style.less';
 import {getComponentConfig, getComponentDisplayName} from 'src/pages/drag-page/component-config';
 import {store, actions} from 'src/models';
+import s from './style.less';
 
 function getLinkTarget(node, pageConfig, canvasDocument) {
     if (!node) return;
@@ -182,7 +182,7 @@ function LinkPoint(props) {
         }
 
         const lineEle = lineRef.current = document.createElement('div');
-        lineEle.classList.add(styles.arrowLine);
+        lineEle.classList.add(s.arrowLine);
         document.body.append(lineEle);
 
         return () => {
@@ -252,8 +252,8 @@ function LinkPoint(props) {
         <div
             className={[
                 className,
-                styles.root,
-                !targets?.length && styles.noLink,
+                s.root,
+                !targets?.length && s.noLink,
                 id,
             ]}
             style={style}
@@ -267,13 +267,13 @@ function LinkPoint(props) {
         >
             {source ? (
                 <div
-                    className={styles.sourcePoint}
+                    className={s.sourcePoint}
                     ref={sourcePointRef}
                 >
                     <AimOutlined/>
                 </div>
             ) : (
-                <div className={styles.point}/>
+                <div className={s.point}/>
             )}
         </div>
     );
@@ -313,7 +313,7 @@ function LinkPoint(props) {
                         style={style}
                     >
                         <div
-                            className={styles.arrowLine}
+                            className={s.arrowLine}
                             style={linkLineStyle}
                         />
                         {point(false, id)}

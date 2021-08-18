@@ -60,7 +60,7 @@ const ArrayElement = props => {
 };
 
 ArrayElement.propTypes = {
-    value: PropTypes.array,
+    value: PropTypes.any,
     onChange: PropTypes.func,
     allowClear: PropTypes.bool,
     placeholder: PropTypes.array,

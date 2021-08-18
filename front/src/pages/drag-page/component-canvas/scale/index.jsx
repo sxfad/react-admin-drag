@@ -6,7 +6,7 @@ import {
 } from '@ant-design/icons';
 import config from 'src/commons/config-hoc';
 import {UnitInput} from 'src/pages/drag-page/components';
-import styles from './style.less';
+import s from './style.less';
 
 const INIT = 100;
 const STEP = 10;
@@ -51,11 +51,11 @@ export default config({
     }, [canvasDocument, canvasScale]);
 
     return (
-        <div className={styles.root}>
+        <div className={s.root}>
             <PlusCircleOutlined disabled={canvasScale >= MAX} onClick={handlePlus}/>
             <MinusCircleOutlined disabled={canvasScale <= MIN} onClick={handleMinus}/>
             <RetweetOutlined onClick={handleReset}/>
-            <span className={styles.inputWrapper}>
+            <span className={s.inputWrapper}>
                 <UnitInput
                     allowClear={false}
                     value={canvasScale}

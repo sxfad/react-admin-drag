@@ -16,7 +16,7 @@ import ComponentTree from 'src/pages/drag-page/component-pane/component-tree';
 import ComponentMenu from 'src/pages/drag-page/component-pane/component-menu';
 import ComponentSchema from 'src/pages/drag-page/component-pane/component-schema';
 import ComponentSetting from 'src/pages/drag-page/component-pane/component-setting';
-import styles from './style.less';
+import s from './style.less';
 
 const tools = [
     {
@@ -110,8 +110,8 @@ export default React.memo(config({
                 <Tooltip key={key} placement="right" title={title}>
                     <div
                         className={[
-                            styles.toolItem,
-                            {[styles.active]: active},
+                            s.toolItem,
+                            {[s.active]: active},
                         ]}
                         onClick={() => handleToolClick(key)}
                     >
@@ -124,22 +124,22 @@ export default React.memo(config({
 
     const rightWidth = componentPaneExpended ? componentPaneWidth : 0;
     return (
-        <div className={styles.root}>
+        <div className={s.root}>
             {componentPaneExpended ? <DragBar onDragging={handleDragging}/> : null}
-            <div className={styles.left}>
-                <div className={styles.leftTop}>
+            <div className={s.left}>
+                <div className={s.leftTop}>
                     <Tooltip placement="right" title={componentPaneExpended ? '收起' : '展开'}>
-                        <div className={[styles.toggle, styles.toolItem]} onClick={() => handleToggleCollapse()}>
+                        <div className={[s.toggle, s.toolItem]} onClick={() => handleToggleCollapse()}>
                             {componentPaneExpended ? <MenuFoldOutlined/> : <MenuUnfoldOutlined/>}
                         </div>
                     </Tooltip>
                     {renderTools(tools)}
                 </div>
-                <div className={styles.leftBottom}>
+                <div className={s.leftBottom}>
                     {renderTools(tools, true)}
                 </div>
             </div>
-            <div className={styles.right} ref={rightRef} style={{width: rightWidth}}>
+            <div className={s.right} ref={rightRef} style={{width: rightWidth}}>
                 {tools.map(item => {
                     const {key, title, icon, Component} = item;
                     const visible = key === componentPaneActiveKey;

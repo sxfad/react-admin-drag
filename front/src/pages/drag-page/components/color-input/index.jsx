@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Input, Popover} from 'antd';
 import {SketchPicker} from 'react-color';
-import styles from './style.less';
+import s from './style.less';
 import theme from 'src/theme.less';
 
 const presetColors = [
@@ -33,14 +33,14 @@ function ColorInput(props) {
     } = props;
 
     return (
-        <div className={styles.root}>
+        <div className={s.root}>
             <Input
                 value={value}
                 onChange={onChange}
                 addonBefore={(
                     <Popover
                         trigger="click"
-                        overlayClassName={styles.overlay}
+                        overlayClassName={s.overlay}
                         getPopupContainer={() => document.body}
                         content={(
                             <SketchPicker
@@ -56,7 +56,7 @@ function ColorInput(props) {
                             />
                         )}
                     >
-                        <div className={styles.colorPreview} style={{backgroundColor: value}}/>
+                        <div className={s.colorPreview} style={{backgroundColor: value}}/>
                     </Popover>
                 )}
                 {...others}

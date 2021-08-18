@@ -1,16 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styles from './style.less';
+import s from './style.less';
 
 const RectInputsWrapper = props => {
     const {children, inner, large, tip, ...others} = props;
 
     return (
         <div className={{
-            [styles.root]: true,
-            [styles.inner]: true,
-            [styles.large]: large,
-            [styles.tip]: tip
+            [s.root]: true,
+            [s.inner]: true,
+            [s.large]: large,
+            [s.tip]: tip
         }}
              {...others}
         >

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import styles from './style.less';
+import s from './style.less';
 
 export default class DragBar extends Component {
     constructor(props) {
@@ -100,7 +100,7 @@ export default class DragBar extends Component {
                 onMouseDown={this.handleDragStart}
                 onTouchStart={this.handleDragStart}
             >
-                <div className={[styles.dragBarIcon, left ? styles.left : ''].join(' ')}>
+                <div className={[s.dragBarIcon, left ? s.left : ''].join(' ')}>
                     <span/>
                     <span/>
                     <span/>
