@@ -78,7 +78,7 @@ export default {
                 }).filter(item => !!item);
             }
         },
-        beforeToCode: ({node, imports, options}) => {
+        beforeToCode: ({node, imports, useRaFormItem}) => {
             // 处理校验规则
             const rules = node?.props?.rules;
             if (rules?.length) {
@@ -104,7 +104,6 @@ export default {
             }
 
             // 转为 ra-lib FormItem
-            const useRaFormItem = options?.useRaFormItem;
             if (useRaFormItem) {
                 node.componentName = 'FormItem';
                 const options = {name: 'FormItem'};

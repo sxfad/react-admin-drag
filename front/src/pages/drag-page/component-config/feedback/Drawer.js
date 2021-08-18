@@ -1,7 +1,5 @@
-import React from 'react';
-import {getNextField} from 'src/pages/drag-page/util';
-import inflection from 'inflection';
 import {loopNode} from 'src/pages/drag-page/util/node-util';
+import {deletePageFunctionField, deletePageStateField} from 'src/pages/drag-page/util';
 
 export default {
     isContainer: true,
@@ -19,51 +17,46 @@ export default {
 
         if (!title) return componentName;
 
-        return (
-            <>
-                {componentName}
-                <span style={{marginLeft: 4}}>{title}</span>
-            </>
-        );
+        return `${componentName} ${title}`;
     },
 
-    // 需要使用的state数据
-    state: (options) => {
-        const {state, node} = options;
-
-        if (!node.props) node.props = {};
-
-        const propsField = 'visible';
-
-        const field = getNextField(state, propsField);
-
-        // 首字母大写
-        const Field = inflection.camelize(field);
-
-        node.props.visible = `state.${field}`;
-
-        // 关联给其他组件使用的
-        node.propsToSet = {
-            onClick: `() => state.set${Field}(true)`,
-        };
-
-        node.props.onClose = `() => state.set${Field}(false)`;
-
-        node.state = {
-            field,
-            fieldValue: false,
-            // eslint-disable-next-line
-            fieldDesc: 'node => `抽屉「${node.props.title}」是否可见`',
-            funcField: `set${Field}`,
-            funcValue: `${propsField} => state.${field} = ${propsField}`,
-        };
+    propsToSet: {
+        onClick: 'func.handleShowDrawer',
     },
     hooks: {
-        afterDelete: options => {
-            // 弹框删除之后，清除关联节点的onClick
-            const {dragPageState: {pageConfig}} = options;
-            const propsToSet = options?.node?.propsToSet;
+        beforeAdd: options => {
+            const {node, dragPageState: {pageConfig, pageState, pageStateDefault, pageFunction}} = options;
+            if (!node.props) node.props = {};
+            const id = Date.now();
+            const field = `visible__${id}`;
+            const handleDrawerClose = `handleDrawerClose__${id}`;
+            const handleDrawerShow = `handleDrawerShow__${id}`;
+            pageState[field] = true;
+            pageStateDefault[field] = true;
+            pageFunction[handleDrawerClose] = `() => setState({${field}: false})`;
+            pageFunction[handleDrawerShow] = `() => setState({${field}: true})`;
 
+            node.props.visible = `state.${field}`;
+            node.props.onClose = `func.${handleDrawerClose}`;
+            node.propsToSet = {
+                onClick: `func.${handleDrawerShow}`,
+            };
+
+            if (!pageConfig.children) pageConfig.children = [];
+            pageConfig.children.push(node);
+
+            return {
+                pageState: {...pageState},
+                pageStateDefault: {...pageStateDefault},
+                pageFunction: {...pageFunction},
+            };
+        },
+
+        afterDelete: options => {
+            const {node, dragPageState: {pageConfig, pageState, pageFunction}} = options;
+            const {propsToSet, props} = node;
+
+            // 弹框删除之后，清除关联节点的onClick属性
             if (propsToSet) {
                 loopNode(pageConfig, node => {
                     const props = node.props || [];
@@ -71,11 +64,19 @@ export default {
                     Object.entries(propsToSet)
                         .forEach(([key, value]) => {
                             if (props[key] === value) Reflect.deleteProperty(props, key);
+                            deletePageFunctionField(pageFunction, value);
                         });
                 });
             }
 
-            return {pageConfig};
+            // 删除 pageState、pageFunction中相关数据
+            deletePageStateField(pageState, props.visible);
+            deletePageFunctionField(pageFunction, props.onCancel);
+
+            return {
+                pageState: {...pageState},
+                pageFunction: {...pageFunction},
+            };
         },
     },
     fields: [

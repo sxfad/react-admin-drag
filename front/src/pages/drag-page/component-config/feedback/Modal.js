@@ -34,20 +34,21 @@ export default {
     hooks: {
         // 在modal添加到页面之前，准备好相关state、function等数据
         beforeAdd: options => {
-            const {node, dragPageState: {pageConfig, pageState, pageFunction}} = options;
+            const {node, dragPageState: {pageConfig, pageState, pageStateDefault, pageFunction}} = options;
             if (!node.props) node.props = {};
             const id = Date.now();
             const field = `visible__${id}`;
-            const handleCancel = `handleCancel__${id}`;
-            const handleShowModal = `handleShowModal__${id}`;
+            const handleModalCancel = `handleModalCancel__${id}`;
+            const handleModalShow = `handleModalShow__${id}`;
             pageState[field] = true;
-            pageFunction[handleCancel] = `() => setState({${field}: false})`;
-            pageFunction[handleShowModal] = `() => setState({${field}: true})`;
+            pageStateDefault[field] = true;
+            pageFunction[handleModalCancel] = `() => setState({${field}: false})`;
+            pageFunction[handleModalShow] = `() => setState({${field}: true})`;
 
             node.props.visible = `state.${field}`;
-            node.props.onCancel = `func.${handleCancel}`;
+            node.props.onCancel = `func.${handleModalCancel}`;
             node.propsToSet = {
-                onClick: `func.${handleShowModal}`,
+                onClick: `func.${handleModalShow}`,
             };
 
             if (!pageConfig.children) pageConfig.children = [];
@@ -55,6 +56,7 @@ export default {
 
             return {
                 pageState: {...pageState},
+                pageStateDefault: {...pageStateDefault},
                 pageFunction: {...pageFunction},
             };
         },

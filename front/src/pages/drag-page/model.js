@@ -81,6 +81,8 @@ export default {
         pageConfig: rootNode(),
         // 页面中state数据 state.
         pageState: {},
+        // 页面state默认值
+        pageStateDefault: {},
         // 页面中函数 func.
         pageFunction: {},
         // 页面中变量 variable.

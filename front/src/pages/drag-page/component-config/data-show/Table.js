@@ -13,12 +13,17 @@ export default {
                 Reflect.deleteProperty(node.props, 'columns');
             }
         },
-        beforeToCode: ({node}) => {
+        beforeToCode: ({node, pageState, pageStateDefault, pageFunction}) => {
             const {columns, rowSelection} = node.props || {};
             const {children = []} = node;
             node.variables = ['columns'];
 
-            node.props.dataSource = 'state.dataSource<---->[]';
+            const dataSourceField = `dataSource__${Date.now()}`;
+            pageState[dataSourceField] = [];
+            pageStateDefault[dataSourceField] = [];
+
+
+            node.props.dataSource = `state.${dataSourceField}`;
             if (columns?.length) {
                 columns.forEach((col, index) => {
                     // 清除默认值
@@ -44,9 +49,18 @@ export default {
             }
 
             if (rowSelection === true) {
+                const selectedRowKeysField = `selectedRowKeys__${Date.now()}`;
+                const handleSelectedRowKeysChangeField = `handleSelectedRowKeysChange__${Date.now()}`;
+
+                pageState[selectedRowKeysField] = [];
+                pageStateDefault[selectedRowKeysField] = [];
+
+                pageFunction[handleSelectedRowKeysChangeField] = `selectedRowKeys => setState({${selectedRowKeysField}: selectedRowKeys)`;
+
+
                 node.props.rowSelection = {
-                    selectedRowKeys: 'state.selectedRowKeys<---->[]',
-                    onChange: 'selectedRowKeys => state.setSelectedRowKeys(selectedRowKeys)',
+                    selectedRowKeys: `state.${selectedRowKeysField}`,
+                    onChange: `func.${handleSelectedRowKeysChangeField}`,
                 };
             }
         },

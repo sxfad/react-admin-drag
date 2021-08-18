@@ -2,14 +2,31 @@ export default {
     componentType: '@ra-lib/admin',
     isContainer: false,
     hooks: {
-        beforeToCode: ({node}) => {
+        beforeToCode: ({node, pageState, pageStateDefault, pageFunction}) => {
+            const id = Date.now();
+            const totalField = `total__${id}`;
+            const pageNumField = `pageNum__${id}`;
+            const pageSizeField = `pageSize__${id}`;
+            const handlePageNumChangeField = `handlePageNumChange__${id}`;
+            const handlePageSizeChangeField = `handlePageSizeChange__${id}`;
+
+            pageState[totalField] = 100;
+            pageState[pageNumField] = 1;
+            pageState[pageSizeField] = 20;
+
+            pageStateDefault[totalField] = 100;
+            pageStateDefault[pageNumField] = 1;
+            pageStateDefault[pageSizeField] = 20;
+
+            pageFunction[handlePageNumChangeField] = `(pageNum) => setState({${pageNumField}: pageNum)`;
+            pageFunction[handlePageSizeChangeField] = `(pageSize) => setState({${pageNumField}: 1, ${pageSizeField}: pageSize)`;
 
             const props = {
-                total: 'state.total<---->0',
-                pageNum: 'state.pageNum<---->1',
-                pageSize: 'state.pageSize<---->20',
-                onPageNumChange: 'pageNum => setPageNum(pageNum)',
-                onPageSizeChange: 'pageSize => setPageNum(1) || setPageSize(pageSize)',
+                total: `state.${totalField}`,
+                pageNum: `state.${pageNumField}`,
+                pageSize: `state.${pageSizeField}`,
+                onPageNumChange: `func.${handlePageNumChangeField}`,
+                onPageSizeChange: `func.${handlePageSizeChangeField}`,
             };
             node.props = {...node.props, ...props};
         },
