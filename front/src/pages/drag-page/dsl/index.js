@@ -147,7 +147,7 @@ export default function schemaToCode(options = {}) {
 
             const uid = getFieldUUID();
             const handleClickField = `handleClick__${uid}`;
-            pageFunction[handleClickField] = `() => ${name}.${type}({${propsStr}})`;
+            pageFunction[handleClickField] = `() => {${name}.${type}({${propsStr}})}`;
 
             node.props.onClick = `func.${handleClickField}`;
 

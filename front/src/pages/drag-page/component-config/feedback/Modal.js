@@ -30,7 +30,6 @@ export default {
         onClick: 'func.handleShowModal',
     },
     hooks: {
-        // 在modal添加到页面之前，准备好相关state、function等数据
         beforeAdd: options => {
             const { node, dragPageState: { pageConfig } } = options;
             if (!node.props) node.props = {};
