@@ -261,6 +261,7 @@ export default function schemaToCode(options = {}) {
             } else {
                 obj[key] = val;
             }
+
         });
 
         return Object.entries(props)
@@ -268,14 +269,26 @@ export default function schemaToCode(options = {}) {
                 if (value === undefined) return '';
 
                 if (typeof value === 'object') {
-                    let val = `${key}={${JSON5.stringify(value)}}`;
-                    val = val.replace(/'{/g, '');
-                    val = val.replace(/}'/g, '');
-                    val = val.replace(/"{/g, '');
-                    val = val.replace(/}"/g, '');
-                    val = val.replace(/\\'/g, '\'');
-                    val = val.replace(/\\n/g, '');
-                    return val;
+                    let kv = `${key}={${JSON5.stringify(value)}}`;
+                    kv = kv.replace(/'{/g, '');
+                    kv = kv.replace(/}'/g, '');
+                    kv = kv.replace(/"{/g, '');
+                    kv = kv.replace(/}"/g, '');
+                    kv = kv.replace(/\\'/g, '\'');
+                    kv = kv.replace(/\\n/g, '');
+
+                    // Table column 提出为变量
+                    if (node.componentName === 'Table' && key === 'columns') {
+                        let columnsValue = kv.replace(`${key}=`, '');
+                        columnsValue = columnsValue.substring(1, columnsValue.length - 1);
+
+                        const columnsField = `columns__${Date.now()}`;
+                        pageVariable[columnsField] = columnsValue;
+
+                        return `${key}="variable.${columnsField}"`;
+                    }
+
+                    return kv;
                 }
 
                 if (typeof value === 'string' && !value.startsWith('{')) return `${key}="${value}"`;
@@ -454,7 +467,14 @@ function getFunctionCode(options) {
         const field = variableFieldsMap[key];
         let initialValue = pageVariable[key];
         if (initialValue === undefined) initialValue = '';
-        initialValue = JSON5.stringify(initialValue);
+        let needStringify = true;
+        if (typeof initialValue === 'string' && (initialValue.startsWith('[') || initialValue.startsWith('{'))) {
+            needStringify = false;
+        }
+        if (needStringify) {
+            initialValue = JSON5.stringify(initialValue);
+        }
+
 
         return `const ${field} = ${initialValue}`;
     }).join('\n');

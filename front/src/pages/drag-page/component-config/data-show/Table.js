@@ -13,7 +13,7 @@ export default {
                 Reflect.deleteProperty(node.props, 'columns');
             }
         },
-        beforeToCode: ({node, pageState, pageStateDefault, pageVariable, pageFunction}) => {
+        beforeToCode: ({node, pageState, pageStateDefault, pageFunction}) => {
             const {columns = [], rowSelection} = node.props || {};
             const {children = []} = node;
 
