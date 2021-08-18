@@ -4,7 +4,8 @@ import {
     findParentNodeById,
     insertAfter,
     insertBefore,
-    insertChildren, loopNode, replaceNode,
+    insertChildren,
+    replaceNode,
     setNodeId,
 } from 'src/pages/drag-page/util/node-util';
 import {addDragHolder, emitUpdateNodes} from 'src/pages/drag-page/util';
@@ -92,10 +93,6 @@ export default {
     // 同步localStorage
     syncLocal: [
         'pageConfig',
-        'pageState',
-        'pageStateDefault',
-        'pageFunction',
-        'pageVariable',
         'viewMode',
 
         'componentPaneWidth',
@@ -167,24 +164,6 @@ export default {
 
         return {
             pageState: {...pageState, ...data},
-        };
-    },
-
-    // 设置页面函数
-    setPageFunction(data, state) {
-        const {pageFunction} = state;
-
-        return {
-            pageFunction: {...pageFunction, ...data},
-        };
-    },
-
-    // 设置页面变量
-    setPageVariable(data, state) {
-        const {pageVariable} = state;
-
-        return {
-            pageVariable: {...pageVariable, ...data},
         };
     },
 
@@ -464,10 +443,6 @@ export default {
             return {
                 pageConfig: rootNode(),
                 selectedNode: null,
-                pageState: {},
-                pageStateDefault: {},
-                pageFunction: {},
-                pageVariable: {},
             };
         }
 
@@ -500,59 +475,12 @@ export default {
         const nextNode = children[deleteIndex];
         const prevNode = children[deleteIndex - 1];
 
-        // 修复 pageState pageFunction pageVariable
-        const stateKeys = [];
-        const functionKeys = [];
-        const variableKeys = [];
-
-        loopNode(pageConfig, node => {
-            const props = node.props || {};
-            console.log(props);
-            Object.values(props)
-                .forEach(value => {
-                    if (typeof value !== 'string') return;
-
-                    if (value.startsWith('state.')) stateKeys.push(value.replace('state.', ''));
-                    if (value.startsWith('func.')) functionKeys.push(value.replace('func.', ''));
-                    if (value.startsWith('variable.')) variableKeys.push(value.replace('variable.', ''));
-                });
-        });
-
-        const deleteKey = (keys, obj) => {
-            if (!obj) return;
-            Object.keys(obj)
-                .forEach(key => {
-                    if (!keys.includes(key)) Reflect.deleteProperty(obj, key);
-                });
-        };
-
-        const nextState = {
-            ...state,
+        return {
             selectedNode: nextNode || prevNode,
             ...beforeDeleteState,
             ...afterDeleteState,
             ...beforeDeleteChildrenState,
             ...afterDeleteChildrenState,
-        };
-
-        const {
-            pageState,
-            pageStateDefault,
-            pageFunction,
-            pageVariable,
-        } = nextState;
-
-        deleteKey(stateKeys, pageState);
-        deleteKey(stateKeys, pageStateDefault);
-        deleteKey(functionKeys, pageFunction);
-        deleteKey(variableKeys, pageVariable);
-
-        return {
-            ...nextState,
-            pageState: {...pageState},
-            pageStateDefault: {...pageStateDefault},
-            pageFunction: {...pageFunction},
-            pageVariable: {...pageVariable},
         };
     },
 };

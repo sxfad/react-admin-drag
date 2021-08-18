@@ -1,12 +1,15 @@
-import React, {useRef, useCallback, useEffect, useMemo} from 'react';
+import React, { useRef, useCallback, useEffect, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import config from 'src/commons/config-hoc';
 import s from './style.less';
-import {ConfigProvider} from 'antd';
+import { ConfigProvider } from 'antd';
 import zhCN from 'antd/lib/locale-provider/zh_CN';
-import {NodeRender} from 'src/pages/drag-page/components';
+import { NodeRender } from 'src/pages/drag-page/components';
 import ActionDelegation from './action-delegation';
 import DragGuide from './drag-guide';
+import { usePageConfigChange } from 'src/pages/drag-page/util';
+import { loopNode } from 'src/pages/drag-page/util/node-util';
+import { isEqual } from 'lodash';
 
 export default React.memo(config({
     connect: state => {
@@ -18,6 +21,7 @@ export default React.memo(config({
             canvasScale: state.dragPage.canvasScale,
             pageConfig: state.dragPage.pageConfig,
             pageState: state.dragPage.pageState,
+            pageStateDefault: state.dragPage.pageStateDefault,
             pageFunction: state.dragPage.pageFunction,
             pageVariable: state.dragPage.pageVariable,
             viewMode: state.dragPage.viewMode,
@@ -47,6 +51,7 @@ export default React.memo(config({
         viewMode,
         pageConfig,
         pageState,
+        pageStateDefault,
         pageFunction,
         pageVariable,
         canvasDocument,
@@ -63,8 +68,10 @@ export default React.memo(config({
         propsPaneWidth,
         componentPaneExpended,
         propsPaneExpended,
-        action: {dragPage: dragPageAction},
+        action: { dragPage: dragPageAction },
     } = props;
+
+    const pageConfigRefresh = usePageConfigChange();
 
     // 构建iframe内容
     const iframeSrcDoc = useMemo(() => {
@@ -98,7 +105,7 @@ export default React.memo(config({
         const canvasDocument = iframeRef.current.contentDocument;
         const pageRenderRoot = canvasDocument.getElementById('page-render-container');
 
-        dragPageAction.setFields({canvasDocument, pageRenderRoot});
+        dragPageAction.setFields({ canvasDocument, pageRenderRoot });
     }, [dragPageAction]);
 
     useEffect(() => {
@@ -165,6 +172,65 @@ export default React.memo(config({
         isPreview,
         pageConfig,
         pageState,
+        pageFunction,
+        pageVariable,
+    ]);
+
+    // 提取 pageState，pageStateDefault，pageFunction， pageVariable
+    useEffect(() => {
+        let nextPageState = {};
+        let nextPageStateDefault = {};
+        let nextPageFunction = {};
+        let nextPageVariable = {};
+        loopNode(pageConfig, node => {
+            const { __config } = node;
+            if (!__config) return;
+
+            const {
+                pageState: __pageState,
+                pageFunction: __pageFunction,
+                pageVariable: __pageVariable,
+            } = __config;
+
+            if (__pageState) {
+                Object.entries(__pageState)
+                    .forEach(([__key, __value]) => {
+                        let value = pageState[__key];
+                        if (value === undefined) value = __value;
+                        nextPageStateDefault[__key] = __value;
+                        nextPageState[__key] = value;
+                    });
+            }
+            if (__pageFunction) {
+                Object.entries(__pageFunction)
+                    .forEach(([__key, __value]) => {
+                        nextPageFunction[__key] = __value;
+                    });
+            }
+            if (__pageVariable) {
+                Object.entries(__pageVariable)
+                    .forEach(([__key, __value]) => {
+                        nextPageVariable[__key] = __value;
+                    });
+            }
+        });
+        if (isEqual(nextPageState, pageState)) nextPageState = pageState;
+        if (isEqual(nextPageStateDefault, pageStateDefault)) nextPageStateDefault = pageStateDefault;
+        if (isEqual(nextPageFunction, pageFunction)) nextPageFunction = pageFunction;
+        if (isEqual(nextPageVariable, pageVariable)) nextPageVariable = pageVariable;
+
+        dragPageAction.setFields({
+            pageState: nextPageState,
+            pageStateDefault: nextPageStateDefault,
+            pageFunction: nextPageFunction,
+            pageVariable: nextPageVariable,
+        });
+    }, [
+        pageConfig,
+        dragPageAction,
+        pageConfigRefresh,
+        pageState,
+        pageStateDefault,
         pageFunction,
         pageVariable,
     ]);

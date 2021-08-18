@@ -1,3 +1,5 @@
+import { getFieldUUID } from 'src/pages/drag-page/util';
+
 export default {
     isContainer: true,
     editableContents: [
@@ -22,16 +24,21 @@ export default {
     },
     hooks: {
         beforeAdd: options => {
-            const {node, dragPageState: {pageConfig, pageState, pageStateDefault, pageFunction}} = options;
+            const {node, dragPageState: {pageConfig}} = options;
             if (!node.props) node.props = {};
-            const id = Date.now();
-            const field = `visible__${id}`;
-            const handleDrawerClose = `handleDrawerClose__${id}`;
-            const handleDrawerShow = `handleDrawerShow__${id}`;
-            pageState[field] = false;
-            pageStateDefault[field] = false;
-            pageFunction[handleDrawerClose] = `() => {setState({${field}: false})}`;
-            pageFunction[handleDrawerShow] = `() => {setState({${field}: true})}`;
+            const uid = getFieldUUID();
+            const field = `visible__${uid}`;
+            const handleDrawerClose = `handleDrawerClose__${uid}`;
+            const handleDrawerShow = `handleDrawerShow__${uid}`;
+            node.__config = {
+                pageState: {
+                    [field]: false,
+                },
+                pageFunction: {
+                    [handleDrawerShow]: `() => {setState({${field}: true})}`,
+                    [handleDrawerClose]: `() => {setState({${field}: false})}`,
+                },
+            };
 
             node.props.visible = `state.${field}`;
             node.props.onClose = `func.${handleDrawerClose}`;
@@ -41,12 +48,6 @@ export default {
 
             if (!pageConfig.children) pageConfig.children = [];
             pageConfig.children.push(node);
-
-            return {
-                pageState: {...pageState},
-                pageStateDefault: {...pageStateDefault},
-                pageFunction: {...pageFunction},
-            };
         },
     },
     fields: [

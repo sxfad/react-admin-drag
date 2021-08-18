@@ -5,7 +5,7 @@ import parserBabel from 'prettier/parser-babel';
 import inflection from 'inflection';
 import {getComponentConfig} from 'src/pages/drag-page/component-config';
 import {isNode, loopNode} from 'src/pages/drag-page/util/node-util';
-import {getComponent, getFieldOption, getFieldsMap} from 'src/pages/drag-page/util';
+import { getComponent, getFieldOption, getFieldsMap, getFieldUUID } from 'src/pages/drag-page/util';
 
 export default function schemaToCode(options = {}) {
     let {
@@ -145,7 +145,8 @@ export default function schemaToCode(options = {}) {
             if (!node.props) node.props = {};
 
 
-            const handleClickField = `handleClick__${Date.now()}`;
+            const uid = getFieldUUID();
+            const handleClickField = `handleClick__${uid}`;
             pageFunction[handleClickField] = `() => ${name}.${type}({${propsStr}})`;
 
             node.props.onClick = `func.${handleClickField}`;
@@ -282,7 +283,8 @@ export default function schemaToCode(options = {}) {
                         let columnsValue = kv.replace(`${key}=`, '');
                         columnsValue = columnsValue.substring(1, columnsValue.length - 1);
 
-                        const columnsField = `columns__${Date.now()}`;
+                        const uid = getFieldUUID();
+                        const columnsField = `columns__${uid}`;
                         pageVariable[columnsField] = columnsValue;
 
                         return `${key}="variable.${columnsField}"`;

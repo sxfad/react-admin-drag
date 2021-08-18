@@ -1,25 +1,28 @@
+import { getFieldUUID } from 'src/pages/drag-page/util';
+
 export default {
     componentType: '@ra-lib/admin',
     isContainer: false,
     hooks: {
-        beforeToCode: ({node, pageState, pageStateDefault, pageFunction}) => {
-            const id = Date.now();
-            const totalField = `total__${id}`;
-            const pageNumField = `pageNum__${id}`;
-            const pageSizeField = `pageSize__${id}`;
-            const handlePageNumChangeField = `handlePageNumChange__${id}`;
-            const handlePageSizeChangeField = `handlePageSizeChange__${id}`;
+        beforeAdd: ({node}) => {
+            const uid = getFieldUUID();
+            const totalField = `total__${uid}`;
+            const pageNumField = `pageNum__${uid}`;
+            const pageSizeField = `pageSize__${uid}`;
+            const handlePageNumChangeField = `handlePageNumChange__${uid}`;
+            const handlePageSizeChangeField = `handlePageSizeChange__${uid}`;
 
-            pageState[totalField] = 100;
-            pageState[pageNumField] = 1;
-            pageState[pageSizeField] = 20;
-
-            pageStateDefault[totalField] = 100;
-            pageStateDefault[pageNumField] = 1;
-            pageStateDefault[pageSizeField] = 20;
-
-            pageFunction[handlePageNumChangeField] = `(pageNum) => {setState({${pageNumField}: pageNum})}`;
-            pageFunction[handlePageSizeChangeField] = `(pageSize) => {setState({${pageNumField}: 1, ${pageSizeField}: pageSize})}`;
+            node.__config = {
+                pageState: {
+                    [totalField]: 100,
+                    [pageNumField]: 1,
+                    [pageSizeField]: 20,
+                },
+                pageFunction: {
+                    [handlePageNumChangeField]: `(pageNum) => {setState({${pageNumField}: pageNum})}`,
+                    [handlePageSizeChangeField]: `(pageSize) => {setState({${pageNumField}: 1, ${pageSizeField}: pageSize})}`,
+                },
+            };
 
             const props = {
                 total: `state.${totalField}`,

@@ -1,5 +1,5 @@
 import React from 'react';
-import {getFieldOption} from 'src/pages/drag-page/util';
+import { getFieldOption, getFieldUUID } from 'src/pages/drag-page/util';
 
 export default {
     dropAccept: 'Table.Column',
@@ -17,7 +17,9 @@ export default {
             const {columns = [], rowSelection} = node.props || {};
             const {children = []} = node;
 
-            const dataSourceField = `dataSource__${Date.now()}`;
+            const uid = getFieldUUID();
+
+            const dataSourceField = `dataSource__${uid}`;
             pageState[dataSourceField] = [];
             pageStateDefault[dataSourceField] = [];
 
@@ -45,14 +47,13 @@ export default {
             });
 
             if (rowSelection === true) {
-                const selectedRowKeysField = `selectedRowKeys__${Date.now()}`;
-                const handleSelectedRowKeysChangeField = `handleSelectedRowKeysChange__${Date.now()}`;
+                const selectedRowKeysField = `selectedRowKeys__${uid}`;
+                const handleSelectedRowKeysChangeField = `handleSelectedRowKeysChange__${uid}`;
 
                 pageState[selectedRowKeysField] = [];
                 pageStateDefault[selectedRowKeysField] = [];
 
                 pageFunction[handleSelectedRowKeysChangeField] = `selectedRowKeys => {setState({${selectedRowKeysField}: selectedRowKeys)}`;
-
 
                 node.props.rowSelection = {
                     selectedRowKeys: `state.${selectedRowKeysField}`,

@@ -1,4 +1,4 @@
-import {getComponentConfig} from 'src/pages/drag-page/component-config';
+import { getComponentConfig } from 'src/pages/drag-page/component-config';
 import {
     findNodesByName,
     findParentNodeByName,
@@ -16,15 +16,19 @@ import replaceImage from './drap-images/replace.svg';
 import propsImage from './drap-images/props.svg';
 import wrapperImage from './drap-images/wrapper.svg';
 import moveImage from './drap-images/move.svg';
-import {v4 as uuid} from 'uuid';
+import { v4 as uuid } from 'uuid';
 import PubSub from 'PubSub';
-import {useEffect, useState, createElement} from 'react';
+import { useEffect, useState, createElement } from 'react';
 import ReactDOM from 'react-dom';
 import inflection from 'inflection';
 
 export const OTHER_HEIGHT = 0;
 export const isMac = /macintosh|mac os x/i.test(navigator.userAgent);
 export const TRIGGER_SIZE = 20;
+
+export function getFieldUUID() {
+    return uuid().replaceAll('-', '_');
+}
 
 
 /**
@@ -252,7 +256,7 @@ export function getLabelWidth(label) {
 export function getEleCenterInWindow(element) {
     if (!element) return null;
 
-    const {x, y, width, height} = element.getBoundingClientRect();
+    const { x, y, width, height } = element.getBoundingClientRect();
 
     return {
         x: x + width / 2,
@@ -310,7 +314,7 @@ function findLinkTargetComponentIds(options) {
     const result = [];
 
     loopNode(pageConfig, node => {
-        let {props} = node;
+        let { props } = node;
         if (!props) props = {};
 
         if (props[key] === value) {
@@ -325,13 +329,13 @@ function findLinkTargetComponentIds(options) {
 
 // 获取关联元素位置
 export function findLinkTargetsPosition(options) {
-    const {pageConfig, selectedNode, canvasDocument} = options;
+    const { pageConfig, selectedNode, canvasDocument } = options;
 
     if (!canvasDocument) return [];
 
     if (!selectedNode) return [];
 
-    const {id: componentId, propsToSet} = selectedNode;
+    const { id: componentId, propsToSet } = selectedNode;
 
     if (!propsToSet) return [];
 
@@ -370,7 +374,7 @@ function findElementPosition(options) {
         }
         if (!ele) return false;
 
-        const {x, y, width, height} = ele.getBoundingClientRect();
+        const { x, y, width, height } = ele.getBoundingClientRect();
         return {
             key: `${value}__${targetComponentId}`,
             propsKey: key,
@@ -428,7 +432,7 @@ export async function objectToCss(style) {
 
         document.body.append(ele);
 
-        ReactDOM.render(createElement('div', {style}), ele);
+        ReactDOM.render(createElement('div', { style }), ele);
 
         setTimeout(() => {
             const css = ele.childNodes[0].style.cssText;
@@ -446,7 +450,6 @@ const pubsub = new PubSub();
 export function emitUpdateNodes(data) {
     pubsub.publish('update-nodes', data);
 }
-
 /**
  * 任何节点改动，认为是pageConfig改动
  * @returns {{}} 变化后的数据，需要跟pageConfig一起作为hooks依赖
@@ -562,17 +565,17 @@ export function getTextFromClipboard() {
 export function addDragHolder(node) {
     if (!isNode(node)) return;
 
-    const {componentName, children} = node;
+    const { componentName, children } = node;
 
     const nodeConfig = getComponentConfig(componentName);
-    const {isContainer, withHolder, holderProps} = nodeConfig;
+    const { isContainer, withHolder, holderProps } = nodeConfig;
 
     if (isContainer && withHolder && !children?.length) {
         node.children = [
             {
                 id: uuid(),
                 componentName: 'DragHolder',
-                props: {...holderProps},
+                props: { ...holderProps },
             },
         ];
     }
@@ -632,11 +635,11 @@ export function getTargetNode(
     // 如果是设置属性或者设置包裹，直接返回，不做accept判断
     if (['props', 'wrapper'].includes(draggingNode.dropType)) return result;
 
-    const {isContainer} = getComponentConfig(targetNode?.componentName);
+    const { isContainer } = getComponentConfig(targetNode?.componentName);
     if (
         hoverPosition === 'center'
         && isContainer
-        && isAccept({draggingNode, targetNode, pageConfig})
+        && isAccept({ draggingNode, targetNode, pageConfig })
     ) {
         return result;
     }
@@ -646,8 +649,8 @@ export function getTargetNode(
         const parentNode = findParentNodeById(pageConfig, targetNode.id);
         if (!parentNode) return null;
 
-        const {isContainer} = getComponentConfig(parentNode.componentName);
-        if (isContainer && isAccept({draggingNode, targetNode: parentNode, pageConfig})) {
+        const { isContainer } = getComponentConfig(parentNode.componentName);
+        if (isContainer && isAccept({ draggingNode, targetNode: parentNode, pageConfig })) {
             return result;
         }
     }
@@ -662,8 +665,8 @@ export function getTargetNode(
  * @param pageConfig
  * @returns {boolean}
  */
-function isAccept({draggingNode, targetNode, pageConfig}) {
-    let {dropInTo} = getComponentConfig(draggingNode?.config?.componentName) || {};
+function isAccept({ draggingNode, targetNode, pageConfig }) {
+    let { dropInTo } = getComponentConfig(draggingNode?.config?.componentName) || {};
 
     const args = {
         draggingNode,
@@ -681,7 +684,7 @@ function isAccept({draggingNode, targetNode, pageConfig}) {
         if (!dropInTo.includes(targetNode.componentName)) return false;
     }
 
-    let {dropAccept} = getComponentConfig(targetNode?.componentName) || {};
+    let { dropAccept } = getComponentConfig(targetNode?.componentName) || {};
 
     if (typeof dropAccept === 'function') {
         if (!dropAccept(args)) return false;
@@ -752,7 +755,7 @@ export function filterTree(array, filter) {
         }
         if (Array.isArray(node.children)) {
             const children = node.children.reduce(getNodes, []);
-            if (children.length) result.push({...node, children});
+            if (children.length) result.push({ ...node, children });
         }
         return result;
     };
@@ -762,9 +765,9 @@ export function filterTree(array, filter) {
 
 // 根据 componentName 获取组件
 export function getComponent(options) {
-    let {componentName} = options;
+    let { componentName } = options;
     const componentConfig = getComponentConfig(componentName);
-    const {renderComponentName, componentType} = componentConfig;
+    const { renderComponentName, componentType } = componentConfig;
 
     componentName = renderComponentName || componentName;
 
@@ -841,7 +844,7 @@ export function getFieldOption(node, field) {
     const config = getComponentConfig(node?.componentName);
     if (!config) return null;
 
-    const {fields} = config;
+    const { fields } = config;
 
 
     const loopFields = fields => {
@@ -874,13 +877,13 @@ export function getFieldOption(node, field) {
  * @returns {{top: number, left: number, bottom: number, width: number, right: number, scrollTop, height: number}}
  */
 export function getElementInfo(element, options = {}) {
-    let {top, left, bottom, right, width, height} = element.getBoundingClientRect();
-    const {scrollTop} = element;
-    const {scale = 100} = options;
+    let { top, left, bottom, right, width, height } = element.getBoundingClientRect();
+    const { scrollTop } = element;
+    const { scale = 100 } = options;
 
     if (options?.viewSize) {
-        const {documentElement} = options;
-        const {scrollTop, scrollLeft, clientHeight, clientWidth} = documentElement;
+        const { documentElement } = options;
+        const { scrollTop, scrollLeft, clientHeight, clientWidth } = documentElement;
 
         if (top < 0) {
             if (height + top > clientHeight) {
@@ -916,8 +919,8 @@ export function getElementInfo(element, options = {}) {
     let hoverPosition;
 
     if (options?.hoverPosition) {
-        let {documentElement, pageY, pageX, horizontal, simple} = options;
-        const {scrollTop, scrollLeft} = documentElement;
+        let { documentElement, pageY, pageX, horizontal, simple } = options;
+        const { scrollTop, scrollLeft } = documentElement;
 
         pageY = pageY - scrollTop;
         pageX = pageX - scrollLeft;

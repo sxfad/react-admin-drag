@@ -140,7 +140,7 @@ export default React.memo(config({
                 </div>
             </div>
             <div className={s.right} ref={rightRef} style={{width: rightWidth}}>
-                {panes.map(item => {
+                {componentPaneExpended && panes.map(item => {
                     const {key, title, icon, Component} = item;
                     const visible = key === componentPaneActiveKey;
                     if (key === 'schemaEditor' && !visible) return null;
@@ -150,7 +150,7 @@ export default React.memo(config({
                             key={key}
                             id={key}
                             style={{
-                                display: componentPaneExpended && key === componentPaneActiveKey ? 'flex' : 'none',
+                                display: visible ? 'flex' : 'none',
                                 height: '100%',
                                 width: '100%',
                             }}

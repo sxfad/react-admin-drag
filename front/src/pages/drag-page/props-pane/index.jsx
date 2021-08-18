@@ -81,83 +81,89 @@ export default React.memo(config({
             className={[s.root, propsPaneExpended && s.expended]}
             style={{width: propsPaneExpended ? propsPaneWidth : 45}}
         >
-            {/* 收起时 右侧竖向工具条 */}
-            <div className={s.toolBar}>
-                <Tooltip
-                    placement="right"
-                    title={'展开'}
-                    onClick={handleToggleClick}
-                >
-                    <div className={s.tool}>
-                        <MenuFoldOutlined/>
-                    </div>
-                </Tooltip>
-
-                {panes.map(item => {
-                    const {key, title, icon} = item;
-                    const isActive = propsPaneActiveKey === key;
-
-                    return (
-                        <Tooltip
-                            key={key}
-                            placement="right"
-                            title={title}
-                            onClick={() => {
-                                handleTabChange(key);
-                                handleToggleClick();
+            {propsPaneExpended ? (
+                <>
+                    {/* Tab 页 */}
+                    <div className={s.toolTabs}>
+                        <DragBar left onDragging={handleDragging}/>
+                        <Tabs
+                            tabBarExtraContent={{
+                                left: (
+                                    <div className={s.toggle} onClick={handleToggleClick}>
+                                        <MenuUnfoldOutlined/>
+                                    </div>
+                                ),
                             }}
+                            type="card"
+                            tabBarStyle={{marginBottom: 0}}
+                            activeKey={propsPaneActiveKey}
+                            onChange={handleTabChange}
                         >
-                            <div key={key} className={[s.tool, isActive && s.active]}>
-                                {icon}
+                            {panes.map(item => {
+                                const {key, title, Component} = item;
+
+                                return (
+                                    <TabPane tab={title} key={key}>
+                                        <div className={s.paneRoot}>
+                                            <div
+                                                className={s.paneContainer}
+                                                style={{
+                                                    height: paneContainerHeight,
+                                                    flexBasis: paneContainerHeight,
+                                                }}
+                                            >
+                                                {selectedNode && isNode(selectedNode) ? (
+                                                    <Component
+                                                        height={paneContainerHeight}
+                                                    />
+                                                ) : (
+                                                    <Empty style={{marginTop: 100}} description="未选中节点"/>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </TabPane>
+                                );
+                            })}
+                        </Tabs>
+                    </div>
+                </>
+            ) : (
+                <>
+                    {/* 收起时 右侧竖向工具条 */}
+                    <div className={s.toolBar}>
+                        <Tooltip
+                            placement="right"
+                            title={'展开'}
+                            onClick={handleToggleClick}
+                        >
+                            <div className={s.tool}>
+                                <MenuFoldOutlined/>
                             </div>
                         </Tooltip>
-                    );
-                })}
-            </div>
 
-            {/* Tab 页 */}
-            <div className={s.toolTabs}>
-                <DragBar left onDragging={handleDragging}/>
-                <Tabs
-                    tabBarExtraContent={{
-                        left: (
-                            <div className={s.toggle} onClick={handleToggleClick}>
-                                <MenuUnfoldOutlined/>
-                            </div>
-                        ),
-                    }}
-                    type="card"
-                    tabBarStyle={{marginBottom: 0}}
-                    activeKey={propsPaneActiveKey}
-                    onChange={handleTabChange}
-                >
-                    {panes.map(item => {
-                        const {key, title, Component} = item;
+                        {panes.map(item => {
+                            const {key, title, icon} = item;
+                            const isActive = propsPaneActiveKey === key;
 
-                        return (
-                            <TabPane tab={title} key={key}>
-                                <div className={s.paneRoot}>
-                                    <div
-                                        className={s.paneContainer}
-                                        style={{
-                                            height: paneContainerHeight,
-                                            flexBasis: paneContainerHeight,
-                                        }}
-                                    >
-                                        {selectedNode && isNode(selectedNode) ? (
-                                            <Component
-                                                height={paneContainerHeight}
-                                            />
-                                        ) : (
-                                            <Empty style={{marginTop: 100}} description="未选中节点"/>
-                                        )}
+                            return (
+                                <Tooltip
+                                    key={key}
+                                    placement="right"
+                                    title={title}
+                                    onClick={() => {
+                                        handleTabChange(key);
+                                        handleToggleClick();
+                                    }}
+                                >
+                                    <div key={key} className={[s.tool, isActive && s.active]}>
+                                        {icon}
                                     </div>
-                                </div>
-                            </TabPane>
-                        );
-                    })}
-                </Tabs>
-            </div>
+                                </Tooltip>
+                            );
+                        })}
+                    </div>
+                </>
+            )}
         </div>
     );
 }));
