@@ -7,7 +7,7 @@ import config from 'src/commons/config-hoc';
 import {SelectedNode, StyleCodeEditor} from 'src/pages/drag-page/components';
 import {scrollElement} from 'src/pages/drag-page/util';
 import Layout from './layout';
-// import Font from './font';
+import Font from './font';
 // import Position from './position';
 // import Background from './background';
 // import Border from './border';
@@ -18,7 +18,7 @@ const {Panel} = Collapse;
 // 所有属性面板配置
 const panes = [
     {key: 'layout', title: '布局', icon: <Icon type="icon-layout"/>, Component: Layout},
-    // {key: 'font', title: '文字', icon: <Icon type="icon-font"/>, Component: Font},
+    {key: 'font', title: '文字', icon: <Icon type="icon-font"/>, Component: Font},
     // {key: 'position', title: '定位', icon: <Icon type="icon-position"/>, Component: Position},
     // {key: 'background', title: '背景', icon: <Icon type="icon-background"/>, Component: Background},
     // {key: 'border', title: '边框', icon: <Icon type="icon-border"/>, Component: Border},
@@ -51,7 +51,7 @@ export default React.memo(config({
     // selectedNode改变，回填表单
     useEffect(() => {
         // 各个模块需要自己将style转为from数据
-        panes.forEach(pane => pane.Component.styleToFormValues(selectedNodeStyle));
+        panes.forEach(pane => pane.Component.styleToFormValues && pane.Component.styleToFormValues(selectedNodeStyle));
 
         // 先重置，否则会有字段不清空情况
         form.resetFields();
@@ -61,7 +61,7 @@ export default React.memo(config({
     // 表单改变事件，更新selectedNode的style属性
     const {run: handleChange} = useDebounceFn((changedValues, allValues, replace = false) => {
         // 各个模块需要自己将form数据转为style
-        panes.forEach(pane => pane.Component.formValuesToStyle(changedValues, allValues));
+        panes.forEach(pane => pane.Component.formValuesToStyle && pane.Component.formValuesToStyle(changedValues, allValues));
 
         if (!selectedNode?.props) selectedNode.props = {};
         if (!selectedNode.props.style) selectedNode.props.style = {};
