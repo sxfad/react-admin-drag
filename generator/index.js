@@ -10,7 +10,7 @@ module.exports = function(app) {
     // 生成器首页路由
     app.get('/ra-generator', function(req, res) {
         res.setHeader('Content-Type', 'text/html');
-        res.sendfile(path.join(__dirname, 'public', 'index.html'));
+        res.sendFile(path.join(__dirname, 'public', 'index.html'));
 
         // res.json({custom: 'response333'});
     });
