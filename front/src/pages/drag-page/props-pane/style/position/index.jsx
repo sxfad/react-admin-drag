@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback} from 'react';
 import {Form, InputNumber, Select} from 'antd';
 import {PicCenterOutlined} from '@ant-design/icons';
 import {Icon} from 'src/components';
@@ -44,237 +44,226 @@ const quickPositionFields = {
 
 };
 
-export default React.memo(function Position(props) {
-    const {value, onChange = () => undefined} = props;
-    const [form] = Form.useForm();
+const Position = React.memo(function Position(props) {
+    const {form} = props;
 
-    const handleChange = useCallback((changedValues, allValues) => {
-
-        const {translateY, translateX, position} = allValues;
-
-        if (position === 'static') {
-            const fields = ['top', 'right', 'bottom', 'left'];
-            const fieldsValue = fields.reduce((prev, curr) => {
-                allValues[curr] = prev[curr] = undefined;
-                return prev;
-            }, {});
-
-            form.setFieldsValue(fieldsValue);
-        }
-
-        let {transform} = value;
-
-        if (!transform) transform = '';
-
-        const setTransform = (key, value) => {
-            const re = new RegExp(`${key}([^)]+)`);
-
-            if (value) {
-                if (transform.includes(key)) {
-                    transform = transform.replace(re, `${key}(${value})`);
-                } else {
-                    transform = `${transform} ${key}(${value})`;
-                }
-            } else {
-                transform = transform.replace(re, '');
-            }
-            // 去前后空格
-            transform = transform.trim();
-            // 多个空格转为单个空格
-            transform = transform.replace(/\s{2,}/g, ' ');
-            Reflect.deleteProperty(allValues, key);
-        };
-
-        setTransform('translateY', translateY);
-        setTransform('translateX', translateX);
-
-        allValues.transform = transform;
-
-        console.log('allValues', JSON.stringify(allValues, null, 4));
-        onChange(allValues);
-
-    }, [onChange, form, value]);
-
-
-    useEffect(() => {
-        // 先重置，否则会有字段不清空情况
-        form.resetFields();
-        form.setFieldsValue(value);
-        const {transform} = value;
-        if (!transform) return;
-
-        const [, translateY] = (/translateY\(([^)]+)\)/.exec(transform) || []);
-        const [, translateX] = (/translateX\(([^)]+)\)/.exec(transform) || []);
-
-        form.setFieldsValue({translateY, translateX});
-    }, [value, form]);
+    const handleChange = useCallback(() => form.submit(), [form]);
 
     return (
         <div className={s.root}>
-            <Form
-                form={form}
-                onValuesChange={handleChange}
+            <Form.Item
+                label="定位类型"
                 name="position"
+                colon={false}
             >
-                <Form.Item
-                    label="定位类型"
-                    name="position"
-                    colon={false}
-                >
-                    <Select
-                        placeholder="position"
-                        options={positionOptions.map(item => {
-                            const {value, label, icon} = item;
+                <Select
+                    placeholder="position"
+                    options={positionOptions.map(item => {
+                        const {value, label, icon} = item;
 
-                            let lab = `${label} ${value}`;
+                        let lab = `${label} ${value}`;
 
-                            if (icon) lab = <span>{icon} {lab}</span>;
+                        if (icon) lab = <span>{icon} {lab}</span>;
 
-                            return {
-                                value,
-                                label: lab,
-                            };
-                        })}
-                    />
-                </Form.Item>
-                <Form.Item shouldUpdate noStyle>
-                    {({getFieldValue}) => {
-                        const position = getFieldValue('position');
-                        if (position === 'absolute' || position === 'fixed') {
-
-                            return (
-                                <div style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-around',
-                                    marginLeft: 60,
-                                    marginBottom: 5,
-                                }}>
-                                    <QuickPosition
-                                        selectedKey={item => {
-                                            const {value} = item;
-                                            const fieldsValue = quickPositionFields[value];
-                                            const {
-                                                top = 'auto',
-                                                right = 'auto',
-                                                left = 'auto',
-                                                bottom = 'auto',
-                                                translateY,
-                                                translateX,
-                                            } = fieldsValue;
-
-                                            const values = form.getFieldsValue();
-
-                                            if ((
-                                                values.top === top
-                                                && values.right === right
-                                                && values.left === left
-                                                && values.bottom === bottom
-                                                && values.translateY === translateY
-                                                && values.translateX === translateX
-                                            )) {
-                                                return value;
-                                            }
-                                        }}
-                                        onClick={item => {
-                                            const {value} = item;
-                                            const fieldsValue = quickPositionFields[value];
-                                            const {
-                                                top = 'auto',
-                                                right = 'auto',
-                                                left = 'auto',
-                                                bottom = 'auto',
-                                                translateY,
-                                                translateX,
-                                            } = fieldsValue;
-
-                                            const fields = {
-                                                top,
-                                                right,
-                                                left,
-                                                bottom,
-                                                translateY,
-                                                translateX,
-                                            };
-
-                                            form.setFieldsValue(fields);
-
-                                            handleChange(fields, form.getFieldsValue());
-                                        }}/>
-                                </div>
-                            );
-                        }
-                    }}
-                </Form.Item>
-                <Form.Item shouldUpdate noStyle>
-                    {({getFieldValue}) => {
-                        const position = getFieldValue('position');
-
-                        if (!position || position === 'static') return null;
+                        return {
+                            value,
+                            label: lab,
+                        };
+                    })}
+                />
+            </Form.Item>
+            <Form.Item shouldUpdate noStyle>
+                {({getFieldValue}) => {
+                    const position = getFieldValue('position');
+                    if (position === 'absolute' || position === 'fixed') {
 
                         return (
-                            <RectInputsWrapper large style={{height: 110, marginLeft: 60, marginBottom: 8}}>
-                                {directionOptions.map(item => {
-                                    return (
-                                        <Form.Item
-                                            key={item}
-                                            name={item}
-                                            noStyle
-                                            colon={false}
-                                        >
-                                            <UnitInput
-                                                allowClear={false}
-                                                placeholder="auto"
-                                                onClick={event => handleSyncFields({event, form, fields: directionOptions, field: item, onChange: handleChange})}
-                                                onKeyDown={event => handleSyncFields({enter: true, event, form, fields: directionOptions, field: item, onChange: handleChange})}
-                                            />
-                                        </Form.Item>
-                                    );
-                                })}
-                            </RectInputsWrapper>
-                        );
-                    }}
-                </Form.Item>
-                <Form.Item
-                    label="水平移动"
-                    name="translateX"
-                    colon={false}
-                >
-                    <UnitInput placeholder="translateX"/>
-                </Form.Item>
-                <Form.Item
-                    label="垂直移动"
-                    name="translateY"
-                    colon={false}
-                >
-                    <UnitInput placeholder="translateY"/>
-                </Form.Item>
-                <Form.Item
-                    label="层叠顺序"
-                    name="zIndex"
-                    colon={false}
-                >
-                    <InputNumber
-                        style={{width: '100%'}}
-                        step={1}
-                        placeholder="z-index"
-                    />
-                </Form.Item>
-                <Form.Item
-                    label="浮动方向"
-                    name="float"
-                    colon={false}
-                >
-                    <RadioGroup options={floatOptions}/>
-                </Form.Item>
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'space-around',
+                                marginLeft: 60,
+                                marginBottom: 5,
+                            }}>
+                                <QuickPosition
+                                    selectedKey={item => {
+                                        const {value} = item;
+                                        const fieldsValue = quickPositionFields[value];
+                                        const {
+                                            top = 'auto',
+                                            right = 'auto',
+                                            left = 'auto',
+                                            bottom = 'auto',
+                                            translateY,
+                                            translateX,
+                                        } = fieldsValue;
 
-                <Form.Item
-                    label="清除浮动"
-                    name="clear"
-                    colon={false}
-                >
-                    <RadioGroup options={clearOptions}/>
-                </Form.Item>
-            </Form>
+                                        const values = form.getFieldsValue();
+
+                                        if ((
+                                            values.top === top
+                                            && values.right === right
+                                            && values.left === left
+                                            && values.bottom === bottom
+                                            && values.translateY === translateY
+                                            && values.translateX === translateX
+                                        )) {
+                                            return value;
+                                        }
+                                    }}
+                                    onClick={item => {
+                                        const {value} = item;
+                                        const fieldsValue = quickPositionFields[value];
+                                        const {
+                                            top = 'auto',
+                                            right = 'auto',
+                                            left = 'auto',
+                                            bottom = 'auto',
+                                            translateY,
+                                            translateX,
+                                        } = fieldsValue;
+
+                                        const fields = {
+                                            top,
+                                            right,
+                                            left,
+                                            bottom,
+                                            translateY,
+                                            translateX,
+                                        };
+
+                                        form.setFieldsValue(fields);
+
+                                        handleChange();
+                                    }}/>
+                            </div>
+                        );
+                    }
+                }}
+            </Form.Item>
+            <Form.Item shouldUpdate noStyle>
+                {({getFieldValue}) => {
+                    const position = getFieldValue('position');
+
+                    if (!position || position === 'static') return null;
+
+                    return (
+                        <RectInputsWrapper large style={{height: 110, marginLeft: 60, marginBottom: 8}}>
+                            {directionOptions.map(item => {
+                                return (
+                                    <Form.Item
+                                        key={item}
+                                        name={item}
+                                        noStyle
+                                        colon={false}
+                                    >
+                                        <UnitInput
+                                            allowClear={false}
+                                            placeholder="auto"
+                                            onClick={event => handleSyncFields({event, form, fields: directionOptions, field: item, onChange: handleChange})}
+                                            onKeyDown={event => handleSyncFields({enter: true, event, form, fields: directionOptions, field: item, onChange: handleChange})}
+                                        />
+                                    </Form.Item>
+                                );
+                            })}
+                        </RectInputsWrapper>
+                    );
+                }}
+            </Form.Item>
+            <Form.Item
+                label="水平移动"
+                name="translateX"
+                colon={false}
+            >
+                <UnitInput placeholder="translateX"/>
+            </Form.Item>
+            <Form.Item
+                label="垂直移动"
+                name="translateY"
+                colon={false}
+            >
+                <UnitInput placeholder="translateY"/>
+            </Form.Item>
+            <Form.Item
+                label="层叠顺序"
+                name="zIndex"
+                colon={false}
+            >
+                <InputNumber
+                    style={{width: '100%'}}
+                    step={1}
+                    placeholder="z-index"
+                />
+            </Form.Item>
+            <Form.Item
+                label="浮动方向"
+                name="float"
+                colon={false}
+            >
+                <RadioGroup options={floatOptions}/>
+            </Form.Item>
+
+            <Form.Item
+                label="清除浮动"
+                name="clear"
+                colon={false}
+            >
+                <RadioGroup options={clearOptions}/>
+            </Form.Item>
         </div>
     );
 });
+
+
+// style 对象 转换为form数据
+Position.styleToFormValues = (style) => {
+    const {transform} = style;
+    if (!transform) return style;
+
+    const [, translateY] = (/translateY\(([^)]+)\)/.exec(transform) || []);
+    const [, translateX] = (/translateX\(([^)]+)\)/.exec(transform) || []);
+
+    style.translateY = translateY;
+    style.translateX = translateX;
+    return style;
+};
+
+// form中数据转换为style对象
+Position.formValuesToStyle = (changedValues, allValues) => {
+    const {translateY, translateX, position} = allValues;
+
+    if (position === 'static') {
+        ['top', 'right', 'bottom', 'left'].forEach(key => allValues[key] = undefined);
+    }
+
+    let {transform} = allValues;
+
+    if (!transform) transform = '';
+
+    const setTransform = (key, value) => {
+        const re = new RegExp(`${key}([^)]+)`);
+
+        if (value) {
+            if (transform.includes(key)) {
+                transform = transform.replace(re, `${key}(${value})`);
+            } else {
+                transform = `${transform} ${key}(${value})`;
+            }
+        } else {
+            transform = transform.replace(re, '');
+        }
+        // 去前后空格
+        transform = transform.trim();
+        // 多个空格转为单个空格
+        transform = transform.replace(/\s{2,}/g, ' ');
+        Reflect.deleteProperty(allValues, key);
+    };
+
+    setTransform('translateY', translateY);
+    setTransform('translateX', translateX);
+
+    allValues.transform = transform;
+
+    return allValues;
+};
+
+export default Position;

@@ -8,9 +8,9 @@ import {SelectedNode, StyleCodeEditor} from 'src/pages/drag-page/components';
 import {scrollElement} from 'src/pages/drag-page/util';
 import Layout from './layout';
 import Font from './font';
-// import Position from './position';
-// import Background from './background';
-// import Border from './border';
+import Position from './position';
+import Background from './background';
+import Border from './border';
 import s from './style.less';
 
 const {Panel} = Collapse;
@@ -19,9 +19,9 @@ const {Panel} = Collapse;
 const panes = [
     {key: 'layout', title: '布局', icon: <Icon type="icon-layout"/>, Component: Layout},
     {key: 'font', title: '文字', icon: <Icon type="icon-font"/>, Component: Font},
-    // {key: 'position', title: '定位', icon: <Icon type="icon-position"/>, Component: Position},
-    // {key: 'background', title: '背景', icon: <Icon type="icon-background"/>, Component: Background},
-    // {key: 'border', title: '边框', icon: <Icon type="icon-border"/>, Component: Border},
+    {key: 'position', title: '定位', icon: <Icon type="icon-position"/>, Component: Position},
+    {key: 'background', title: '背景', icon: <Icon type="icon-background"/>, Component: Background},
+    {key: 'border', title: '边框', icon: <Icon type="icon-border"/>, Component: Border},
 ];
 
 export default React.memo(config({
