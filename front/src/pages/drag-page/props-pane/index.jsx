@@ -5,7 +5,6 @@ import {useHeight} from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
 import {Icon} from 'src/components';
 import {isNode} from 'src/pages/drag-page/util/node-util';
-import {useNodeChange} from 'src/pages/drag-page/util';
 import {DragBar} from 'src/pages/drag-page/components';
 import Style from './style';
 import Props from './props';
@@ -46,8 +45,6 @@ export default React.memo(config({
         selectedNode,
         action: {dragPage: dragPageAction},
     } = props;
-
-    useNodeChange(selectedNode);
 
     const rootRef = useRef(null);
 

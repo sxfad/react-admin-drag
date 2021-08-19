@@ -4,10 +4,9 @@ import {useDebounceFn} from 'ahooks';
 import config from 'src/commons/config-hoc';
 import {getComponentConfig} from 'src/pages/drag-page/component-config';
 import {PropsFormEditor, PropsCodeEditor} from 'src/pages/drag-page/components';
-import {useNodeChange} from 'src/pages/drag-page/util';
 import {isNode} from 'src/pages/drag-page/util/node-util';
 
-export default config({
+export default React.memo(config({
     connect: state => {
         return {
             selectedNode: state.dragPage.selectedNode,
@@ -23,6 +22,7 @@ export default config({
         onCodeCancel,
         action: {dragPage: dragPageAction},
     } = props;
+    console.log('ComponentProps');
 
     // 相关属性节点
     const propsNodes = selectedNode?.props ? Object.entries(selectedNode?.props)
@@ -33,8 +33,6 @@ export default config({
 
     // 相关包裹节点
     const wrapperNodes = selectedNode?.wrapper || [];
-
-    const selectedNodeRefresh = useNodeChange(selectedNode);
 
     const rootRef = useRef(null);
     const [editNode, setEditNode] = useState(null);
@@ -90,7 +88,7 @@ export default config({
     // 编辑当前选中节点
     useEffect(() => {
         setEditNode(selectedNode);
-    }, [selectedNode, selectedNodeRefresh]);
+    }, [selectedNode]);
 
     // 将属性面板滚动到顶部，并隐藏滚动条
     useEffect(() => {
@@ -188,4 +186,4 @@ export default config({
             )}
         </div>
     );
-});
+}));
