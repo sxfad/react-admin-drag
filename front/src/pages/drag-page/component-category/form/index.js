@@ -107,11 +107,6 @@ const formChildren = [
     },
 ];
 
-const formProps = {
-    onFinish: 'values => alert(JSON.stringify(values))',
-    // onValuesChange: '(changeValues, allValues) => console.log(allValues)',
-};
-
 export default [
     {
         title: '表单',
@@ -125,8 +120,7 @@ export default [
                     componentName: 'Form',
                     props: {
                         layout: 'inline',
-                        name: 'inlineForm',
-                        ...formProps,
+                        // name: 'inlineForm',
                     },
                     children: formChildren,
                 },
@@ -137,8 +131,7 @@ export default [
                 config: {
                     componentName: 'Form',
                     props: {
-                        name: 'form',
-                        ...formProps,
+                        // name: 'form',
                     },
                     children: formChildren.map((item, index) => {
                         const isLast = formChildren.length - 1 === index;

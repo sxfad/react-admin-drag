@@ -1,6 +1,22 @@
 import {colFields} from '../common/Col';
+import {getFieldUUID} from 'src/pages/drag-page/util';
 
 export default {
+    hooks: {
+        beforeAdd: options => {
+            const {node} = options;
+            const uid = getFieldUUID();
+            const handleSubmit = `handleSubmit__${uid}`;
+            node.__config = {
+                pageFunction: {
+                    [handleSubmit]: `values => {alert(JSON.stringify(values))}`,
+                },
+            };
+
+            if (!node.props) node.props = {};
+            node.props.onFinish = `func.${handleSubmit}`;
+        },
+    },
     fields: [
         {label: '显示冒号', category: '选项', field: 'colon', type: 'boolean', defaultValue: true, version: '', desc: '配置 Form.Item 的 colon 的默认值。表示是否显示 label 后面的冒号 (只有在属性 layout 为 horizontal 时有效)'},
         {
