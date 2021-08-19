@@ -42,6 +42,8 @@ export default {
         propsPaneWidth: 400,
         // 属性面板激活key
         propsPaneActiveKey: 'props',
+        // 刷新属性面板
+        refreshPropsPane: {},
 
         // 当前选中节点
         selectedNode: null,
@@ -164,6 +166,17 @@ export default {
 
         return {
             pageState: {...pageState, ...data},
+        };
+    },
+
+    /**
+     * 刷新属性面板
+     * @param node
+     * @param state
+     */
+    refreshPropsPane(node) {
+        return {
+            refreshPropsPane: {},
         };
     },
 

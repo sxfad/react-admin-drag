@@ -35,6 +35,7 @@ export default React.memo(config({
             propsPaneWidth: state.dragPage.propsPaneWidth,
             propsPaneExpended: state.dragPage.propsPaneExpended,
             selectedNode: state.dragPage.selectedNode,
+            refreshPropsPane: state.dragPage.refreshPropsPane,
         };
     },
 })(function PropsPane(props) {

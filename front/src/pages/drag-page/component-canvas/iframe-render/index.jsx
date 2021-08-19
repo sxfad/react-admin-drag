@@ -1,15 +1,16 @@
-import React, { useRef, useCallback, useEffect, useMemo } from 'react';
+import React, {useRef, useCallback, useEffect, useMemo} from 'react';
 import ReactDOM from 'react-dom';
 import config from 'src/commons/config-hoc';
 import s from './style.less';
-import { ConfigProvider } from 'antd';
+import {ConfigProvider} from 'antd';
 import zhCN from 'antd/lib/locale-provider/zh_CN';
-import { NodeRender } from 'src/pages/drag-page/components';
+import {NodeRender} from 'src/pages/drag-page/components';
 import ActionDelegation from './action-delegation';
 import DragGuide from './drag-guide';
-import { usePageConfigChange } from 'src/pages/drag-page/util';
-import { loopNode } from 'src/pages/drag-page/util/node-util';
-import { isEqual } from 'lodash';
+import EditableAction from './editable-action';
+import {usePageConfigChange} from 'src/pages/drag-page/util';
+import {loopNode} from 'src/pages/drag-page/util/node-util';
+import {isEqual} from 'lodash';
 
 export default React.memo(config({
     connect: state => {
@@ -68,7 +69,7 @@ export default React.memo(config({
         propsPaneWidth,
         componentPaneExpended,
         propsPaneExpended,
-        action: { dragPage: dragPageAction },
+        action: {dragPage: dragPageAction},
     } = props;
 
     const pageConfigRefresh = usePageConfigChange();
@@ -105,7 +106,7 @@ export default React.memo(config({
         const canvasDocument = iframeRef.current.contentDocument;
         const pageRenderRoot = canvasDocument.getElementById('page-render-container');
 
-        dragPageAction.setFields({ canvasDocument, pageRenderRoot });
+        dragPageAction.setFields({canvasDocument, pageRenderRoot});
     }, [dragPageAction]);
 
     useEffect(() => {
@@ -167,6 +168,8 @@ export default React.memo(config({
             </ConfigProvider>,
             pageRenderEle,
         );
+        // 触发一次更新，否则 首次渲染 editable-action 无效
+        dragPageAction.updateNode(pageConfig);
     }, [
         pageRenderRoot,
         isPreview,
@@ -174,6 +177,7 @@ export default React.memo(config({
         pageState,
         pageFunction,
         pageVariable,
+        dragPageAction,
     ]);
 
     // 提取 pageState，pageStateDefault，pageFunction， pageVariable
@@ -183,7 +187,7 @@ export default React.memo(config({
         let nextPageFunction = {};
         let nextPageVariable = {};
         loopNode(pageConfig, node => {
-            const { __config } = node;
+            const {__config} = node;
             if (!__config) return;
 
             const {
@@ -274,6 +278,11 @@ export default React.memo(config({
                 selectedNode={selectedNode}
                 targetNode={targetNode}
                 targetHoverPosition={targetHoverPosition}
+            />
+            <EditableAction
+                pageConfig={pageConfig}
+                canvasDocument={canvasDocument}
+                dragPageAction={dragPageAction}
             />
         </>
     );

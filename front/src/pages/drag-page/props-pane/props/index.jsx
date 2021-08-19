@@ -11,6 +11,7 @@ export default React.memo(config({
         return {
             selectedNode: state.dragPage.selectedNode,
             propsPaneWidth: state.dragPage.propsPaneWidth,
+            refreshPropsPane: state.dragPage.refreshPropsPane,
         };
     },
 })(function ComponentProps(props) {
@@ -123,7 +124,7 @@ export default React.memo(config({
                         <section id={`fieldEditor_${TextNode?.id}`}>
                             <PropsFormEditor
                                 tip="文本内容："
-                                node={TextNode}
+                                node={{...TextNode}}
                                 onCodeEdit={() => handleEdit(TextNode)}
                                 onChange={(...args) => handleChange(TextNode, ...args)}
                             />
@@ -132,7 +133,7 @@ export default React.memo(config({
 
                     <section id={`fieldEditor_${selectedNode?.id}`}>
                         <PropsFormEditor
-                            node={selectedNode}
+                            node={{...selectedNode}}
                             onCodeEdit={() => handleEdit(selectedNode)}
                             onChange={(...args) => handleChange(selectedNode, ...args)}
                         />
@@ -152,7 +153,7 @@ export default React.memo(config({
                                             onClick={() => handleDeleteWrapper(index)}
                                         >删除</Button>
                                     )}
-                                    node={node}
+                                    node={{...node}}
                                     onCodeEdit={() => handleEdit(node)}
                                     onChange={(...args) => handleChange(node, ...args)}
                                 />
@@ -175,7 +176,7 @@ export default React.memo(config({
                                             onClick={() => handleDeleteProps(key)}
                                         >删除</Button>
                                     )}
-                                    node={node}
+                                    node={{...node}}
                                     onCodeEdit={() => handleEdit(node)}
                                     onChange={(...args) => handleChange(node, ...args)}
                                 />

@@ -30,6 +30,7 @@ export default React.memo(config({
             selectedNode: state.dragPage.selectedNode,
             canvasDocument: state.dragPage.canvasDocument,
             propsPaneWidth: state.dragPage.propsPaneWidth,
+            refreshPropsPane: state.dragPage.refreshPropsPane,
         };
     },
 })(function ComponentStyle(props) {
@@ -38,12 +39,14 @@ export default React.memo(config({
         selectedNode,
         canvasDocument,
         propsPaneWidth,
+        refreshPropsPane,
         action: {dragPage: dragPageAction},
     } = props;
 
     const [form] = Form.useForm();
     const [codeVisible, setCodeVisible] = useState(false);
-    const selectedNodeStyle = useMemo(() => ({...selectedNode?.props?.style}), [selectedNode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const selectedNodeStyle = useMemo(() => ({...selectedNode?.props?.style}), [selectedNode, refreshPropsPane]);
     const componentId = selectedNode?.id;
     const [activeKey, setActiveKey] = useState(panes.map(item => item.key));
     const boxRef = useRef(null);

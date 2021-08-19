@@ -65,15 +65,15 @@ export default config({
         if (!selectedNodeId) return;
 
         // Backspace Delete 键也删除 要区分是否有输入框获取焦点
-        if (['Delete', 'Backspace'].includes(key) && !isInputActive()) {
-            dragPageAction.deleteNodeById(selectedNodeId);
-        }
+        // if (['Delete', 'Backspace'].includes(key) && !isInputActive()) {
+        //     dragPageAction.deleteNodeById(selectedNodeId);
+        // }
 
         // command(ctrl) + d 删除选中节点
         if (metaOrCtrl && key === 'd') {
             dragPageAction.deleteNodeById(selectedNodeId);
         }
-    }, [selectedNode, dragPageAction, isInputActive]);
+    }, [selectedNode, dragPageAction/*, isInputActive*/]);
 
     // 选中节点 另存为：command(ctrl) + shift + s
     const handleSelectedNodeSaveAs = useCallback(e => {
