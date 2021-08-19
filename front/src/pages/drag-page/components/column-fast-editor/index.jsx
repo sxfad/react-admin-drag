@@ -9,7 +9,7 @@ export default function ColumnFastEditor(props) {
     const [visible, setVisible] = useState(false);
     const [value, setValue] = useState('');
     const editRef = useRef(null);
-    const [height] = useHeight(editRef, 170);
+    const [height] = useHeight(editRef, 250);
 
     function handleClick(e) {
         const columns = node?.props?.columns || [];

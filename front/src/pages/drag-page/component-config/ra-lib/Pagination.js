@@ -35,7 +35,7 @@ export default {
         },
     },
     fields: [
-        {label: '每页条数', field: 'pageSize', type: 'number', version: '', desc: '每页条数'},
+        // {label: '每页条数', field: 'pageSize', type: 'number', version: '', desc: '每页条数'},
         {label: '跳转至某页', field: 'showQuickJumper', type: 'boolean', defaultValue: false, version: '', desc: '是否可以快速跳转至某页'},
         {
             label: '尺寸', field: 'size', type: 'radio-group', defaultValue: 'default', version: '',
@@ -45,8 +45,8 @@ export default {
             ],
             desc: '当为 small 时，是小尺寸分页',
         },
-        {label: '数据总数', field: 'total', type: 'number', defaultValue: '0', version: '', desc: '数据总数'},
-        {label: '显示数据总量', field: 'showTotal', type: 'string', version: '', desc: '用于显示数据总量和当前数据顺序'},
+        // {label: '数据总数', field: 'total', type: 'number', defaultValue: '0', version: '', desc: '数据总数'},
+        // {label: '显示数据总量', field: 'showTotal', type: 'string', version: '', desc: '用于显示数据总量和当前数据顺序'},
     ],
 };
 

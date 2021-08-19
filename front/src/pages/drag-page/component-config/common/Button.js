@@ -27,7 +27,7 @@ export default {
         {
             label: '按钮形状', field: 'shape', type: 'radio-group', version: '',
             options: [
-                {value: 'circle', label: '原型'},
+                {value: 'circle', label: '原形'},
                 {value: 'round', label: '圆角'},
             ],
             desc: '设置按钮形状',
