@@ -108,18 +108,6 @@ export default {
 
     setFields: fields => ({...fields}),
 
-    // 组件另存为
-    saveSelectedNodeAs() {
-        // TODO
-        console.log('saveSelectedNodeAs');
-    },
-
-    // 保存页面配置到服务端
-    savePageConfig() {
-        // TODO
-        console.log('savePageConfig');
-    },
-
     // 撤销
     undo() {
         // TODO

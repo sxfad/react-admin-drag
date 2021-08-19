@@ -29,6 +29,9 @@ export default React.memo(config({
         viewMode,
         selectedNode,
         action: {dragPage: dragPageAction},
+        onSave,
+        onSaveAs,
+        onSaveCode,
     } = props;
 
     const [visible, setVisible] = useState(false);
@@ -89,7 +92,14 @@ export default React.memo(config({
                 key: 'save',
                 icon: <SaveOutlined/>,
                 label: `保存(${isMac ? '⌘' : 'ctrl'}+s)`,
-                onClick: () => dragPageAction.savePageConfig(),
+                onClick: () => onSave && onSave(),
+            },
+            {
+                key: 'saveAs',
+                icon: <CloudServerOutlined/>,
+                label: '另存为',
+                disabled: !selectedNode,
+                onClick: () => onSaveAs && onSaveAs(selectedNode),
             },
             {
                 key: 'delete',
@@ -97,13 +107,6 @@ export default React.memo(config({
                 label: `删除(${isMac ? '⌘' : 'ctrl'}+d)`,
                 disabled: !selectedNode,
                 onClick: () => dragPageAction.deleteNodeById(selectedNode?.id),
-            },
-            {
-                key: 'saveAs',
-                icon: <CloudServerOutlined/>,
-                label: '另存为',
-                disabled: !selectedNode,
-                onClick: () => dragPageAction.saveComponentAs(selectedNode),
             },
             {
                 key: 'divider',
@@ -115,7 +118,7 @@ export default React.memo(config({
                 onClick: () => setVisible(true),
             },
         ];
-    }, [dragPageAction, selectedNode]);
+    }, [dragPageAction, selectedNode, onSave, onSaveAs]);
     return (
         <div className={s.root}>
             <div className={s.left}>
@@ -162,7 +165,7 @@ export default React.memo(config({
                 visible={visible}
                 onCancel={() => setVisible(false)}
             />
-            <SourceCode/>
+            <SourceCode onSave={onSaveCode}/>
         </div>
     );
 }));

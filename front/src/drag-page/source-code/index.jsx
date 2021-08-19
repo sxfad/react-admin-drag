@@ -24,6 +24,7 @@ export default config({
         pageFunction,
         pageVariable,
         action: {dragPage: dragPageAction},
+        onSave,
     } = props;
 
     const code = useMemo(() => {
@@ -56,6 +57,7 @@ export default config({
                     otherHeight={25}
                     title="源码"
                     value={code}
+                    onSave={onSave}
                     onClose={() => dragPageAction.setFields({pageCodeVisible: false})}
                 />
             </Modal>

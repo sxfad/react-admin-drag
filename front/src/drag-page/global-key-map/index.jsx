@@ -35,6 +35,8 @@ export default config({
         selectedNode,
         canvasDocument,
         action: {dragPage: dragPageAction},
+        onSave,
+        onSaveAs,
     } = props;
 
     const isAllInputActive = useCallback(() => {
@@ -75,9 +77,9 @@ export default config({
         if (metaOrCtrl && shiftKey && key === 's') {
             e.stopPropagation();
             e.preventDefault();
-            dragPageAction.saveSelectedNodeAs();
+            onSaveAs && onSaveAs(selectedNode);
         }
-    }, [selectedNode, dragPageAction]);
+    }, [selectedNode, onSaveAs]);
 
     // 选中节点 复制：command(ctrl) + c
     const handleSelectedNodeCopy = useCallback(e => {
@@ -142,9 +144,9 @@ export default config({
         if (metaOrCtrl && key === 's' && !shiftKey) {
             e.stopPropagation();
             e.preventDefault();
-            dragPageAction.savePageConfig();
+            onSave && onSave();
         }
-    }, [dragPageAction]);
+    }, [onSave]);
 
     // 撤销 command(ctrl) + z
     const handleUndo = useCallback(e => {

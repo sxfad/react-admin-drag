@@ -15,6 +15,12 @@ export default config({
     connect: true,
 })(function DragPage(props) {
     const {
+        onSave, // 保存
+        onSaveAs, // 另存为
+        onSaveCode, // 保存源码
+    } = props;
+
+    const {
         action: {dragPage: dragPageAction},
     } = props;
     const mainRef = useRef(null);
@@ -31,9 +37,16 @@ export default config({
 
     return (
         <div className={s.root}>
-            <GlobalKeyMap/>
+            <GlobalKeyMap
+                onSave={onSave}
+                onSaveAs={onSaveAs}
+            />
             <div className={s.top}>
-                <Toolbar/>
+                <Toolbar
+                    onSave={onSave}
+                    onSaveAs={onSaveAs}
+                    onSaveCode={onSaveCode}
+                />
             </div>
             <div ref={mainRef} className={s.main} style={{flex: `0 0 ${height}px`, height}}>
                 <div className={s.left}>

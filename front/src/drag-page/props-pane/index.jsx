@@ -5,20 +5,13 @@ import {useHeight} from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
 import {Icon} from 'src/components';
 import {isNode} from 'src/drag-page/util/node-util';
-import {DragBar} from 'src/drag-page/components';
+import {DragBar, ComingSoon} from 'src/drag-page/components';
 import Style from './style';
 import Props from './props';
 import s from './style.less';
 
 const {TabPane} = Tabs;
 
-const ComingSoon = () => {
-    return (
-        <div style={{marginTop: 100, textAlign: 'center'}}>
-            敬请期待
-        </div>
-    );
-};
 // 所有可用面板配置
 export const panes = [
     {key: 'props', title: '属性', icon: <Icon type="icon-props"/>, Component: Props},

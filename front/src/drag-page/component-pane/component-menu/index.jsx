@@ -1,16 +1,17 @@
+import React from 'react';
 import Container from '../container';
 import Header from '../header';
 import Content from '../content';
-import React from 'react';
+import {ComingSoon} from 'src/drag-page/components';
 
 function ComponentMenu(props) {
-    const { icon, title } = props;
+    const {icon, title} = props;
 
     return (
         <Container>
-            <Header icon={icon} title={title} />
+            <Header icon={icon} title={title}/>
             <Content>
-                <div style={{ height: 1000, background: 'gray' }}>11</div>
+                <ComingSoon/>
             </Content>
         </Container>
     );

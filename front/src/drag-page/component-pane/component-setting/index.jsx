@@ -2,6 +2,7 @@ import Container from '../container';
 import Header from '../header';
 import Content from '../content';
 import React from 'react';
+import {ComingSoon} from 'src/drag-page/components';
 
 function ComponentSetting(props) {
     const { icon, title } = props;
@@ -10,7 +11,7 @@ function ComponentSetting(props) {
         <Container>
             <Header icon={icon} title={title} />
             <Content>
-                <div style={{ height: 1000, background: 'rebeccapurple' }}>11</div>
+                <ComingSoon/>
             </Content>
         </Container>
     );
