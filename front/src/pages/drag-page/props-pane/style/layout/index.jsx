@@ -56,32 +56,11 @@ const paddingFields = [
     'paddingLeft',
 ];
 
-
-export default React.memo(function Layout(props) {
-    const {canvasDocument, componentId, value, onChange = () => undefined} = props;
-    const [form] = Form.useForm();
+const Layout = React.memo(function Layout(props) {
+    const {canvasDocument, componentId, form} = props;
     const [parentIsFlexBox, setParentIsFlexBox] = useState(false);
 
-    const handleChange = useCallback((changedValues, allValues) => {
-        const {display} = allValues;
-
-        if (display !== 'flex' && display !== 'inline-flex') {
-            allValues.flexDirection = undefined;
-            allValues.justifyContent = undefined;
-            allValues.alignItems = undefined;
-            allValues.flexWrap = undefined;
-        }
-
-        // 同步表单数据
-        form.setFieldsValue(allValues);
-        onChange(allValues);
-    }, [form, onChange]);
-
-    useEffect(() => {
-        // 先重置，否则会有字段不清空情况
-        form.resetFields();
-        form.setFieldsValue(value);
-    }, [form, value]);
+    const handleChange = useCallback(() => form.submit(), [form]);
 
     // 判断父级是否是flex 布局
     useEffect(() => {
@@ -96,59 +75,71 @@ export default React.memo(function Layout(props) {
 
     return (
         <div className={s.root}>
-            <Form
-                form={form}
-                onValuesChange={handleChange}
-                name="layout"
+            <Form.Item
+                label="布局模式"
+                name="display"
+                colon={false}
             >
-                <Form.Item
-                    label="布局模式"
-                    name="display"
-                    colon={false}
-                >
-                    <RadioGroup options={displayOptions}/>
-                </Form.Item>
-                <Form.Item shouldUpdate noStyle>
-                    {({getFieldValue}) => {
-                        const display = getFieldValue('display');
-                        if (display !== 'flex' && display !== 'inline-flex') return null;
+                <RadioGroup options={displayOptions}/>
+            </Form.Item>
+            <Form.Item shouldUpdate noStyle>
+                {({getFieldValue}) => {
+                    const display = getFieldValue('display');
+                    if (display !== 'flex' && display !== 'inline-flex') return null;
 
-                        return (
-                            <>
-                                <Form.Item
-                                    label="主轴方向"
-                                    name="flexDirection"
-                                    colon={false}
-                                >
-                                    <RadioGroup options={flexDirectionOptions}/>
-                                </Form.Item>
-                                <Form.Item
-                                    label="主轴对齐"
-                                    name="justifyContent"
-                                    colon={false}
-                                >
-                                    <RadioGroup options={justifyContentOptions}/>
-                                </Form.Item>
-                                <Form.Item
-                                    label="辅轴对齐"
-                                    name="alignItems"
-                                    colon={false}
-                                >
-                                    <RadioGroup options={alignItemsOptions}/>
-                                </Form.Item>
-                                <Form.Item
-                                    label="换行方式"
-                                    name="flexWrap"
-                                    colon={false}
-                                >
-                                    <RadioGroup options={flexWrapOptions}/>
-                                </Form.Item>
-                            </>
-                        );
-                    }}
-                </Form.Item>
-                <RectInputsWrapper tip="margin" style={{height: 180, marginBottom: 8}}>
-                    {marginFields.map(item => (
+                    return (
+                        <>
+                            <Form.Item
+                                label="主轴方向"
+                                name="flexDirection"
+                                colon={false}
+                            >
+                                <RadioGroup options={flexDirectionOptions}/>
+                            </Form.Item>
+                            <Form.Item
+                                label="主轴对齐"
+                                name="justifyContent"
+                                colon={false}
+                            >
+                                <RadioGroup options={justifyContentOptions}/>
+                            </Form.Item>
+                            <Form.Item
+                                label="辅轴对齐"
+                                name="alignItems"
+                                colon={false}
+                            >
+                                <RadioGroup options={alignItemsOptions}/>
+                            </Form.Item>
+                            <Form.Item
+                                label="换行方式"
+                                name="flexWrap"
+                                colon={false}
+                            >
+                                <RadioGroup options={flexWrapOptions}/>
+                            </Form.Item>
+                        </>
+                    );
+                }}
+            </Form.Item>
+            <RectInputsWrapper tip="margin" style={{height: 180, marginBottom: 8}}>
+                {marginFields.map(item => (
+                    <Form.Item
+                        key={item}
+                        name={item}
+                        noStyle
+                        colon={false}
+                    >
+                        <UnitInput
+                            allowClear={false}
+                            placeholder="0"
+                            style={{userSelect: 'none'}}
+                            onClick={event => handleSyncFields({event, form, fields: marginFields, field: item, onChange: handleChange})}
+                            onKeyDown={event => handleSyncFields({enter: true, event, form, fields: marginFields, field: item, onChange: handleChange})}
+                        />
+                    </Form.Item>
+                ))}
+                <RectInputsWrapper tip="padding" inner>
+                    {paddingFields.map(item => (
                         <Form.Item
                             key={item}
                             name={item}
@@ -159,80 +150,83 @@ export default React.memo(function Layout(props) {
                                 allowClear={false}
                                 placeholder="0"
                                 style={{userSelect: 'none'}}
-                                onClick={event => handleSyncFields({event, form, fields: marginFields, field: item, onChange: handleChange})}
-                                onKeyDown={event => handleSyncFields({enter: true, event, form, fields: marginFields, field: item, onChange: handleChange})}
+                                onClick={event => handleSyncFields({event, form, fields: paddingFields, field: item, onChange: handleChange})}
+                                onKeyDown={event => handleSyncFields({enter: true, event, form, fields: paddingFields, field: item, onChange: handleChange})}
                             />
                         </Form.Item>
                     ))}
-                    <RectInputsWrapper tip="padding" inner>
-                        {paddingFields.map(item => (
-                            <Form.Item
-                                key={item}
-                                name={item}
-                                noStyle
-                                colon={false}
-                            >
-                                <UnitInput
-                                    allowClear={false}
-                                    placeholder="0"
-                                    style={{userSelect: 'none'}}
-                                    onClick={event => handleSyncFields({event, form, fields: paddingFields, field: item, onChange: handleChange})}
-                                    onKeyDown={event => handleSyncFields({enter: true, event, form, fields: paddingFields, field: item, onChange: handleChange})}
-                                />
-                            </Form.Item>
-                        ))}
-                        <div className={s.innerInput}>
-                            <Form.Item
-                                label="宽"
-                                name="width"
-                                colon={false}
-                            >
-                                <UnitInput
-                                    style={{width: 60, marginRight: 8}}
-                                    allowClear={false}
-                                    placeholder="width"
-                                />
-                            </Form.Item>
-                            <Form.Item
-                                label="高"
-                                name="height"
-                                colon={false}
-                            >
-                                <UnitInput
-                                    style={{width: 60}}
-                                    allowClear={false}
-                                    placeholder="height"
-                                />
-                            </Form.Item>
-                        </div>
-                    </RectInputsWrapper>
+                    <div className={s.innerInput}>
+                        <Form.Item
+                            label="宽"
+                            name="width"
+                            colon={false}
+                        >
+                            <UnitInput
+                                style={{width: 60, marginRight: 8}}
+                                allowClear={false}
+                                placeholder="width"
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="高"
+                            name="height"
+                            colon={false}
+                        >
+                            <UnitInput
+                                style={{width: 60}}
+                                allowClear={false}
+                                placeholder="height"
+                            />
+                        </Form.Item>
+                    </div>
                 </RectInputsWrapper>
-                {parentIsFlexBox ? (
-                    <>
-                        <Form.Item
-                            label="放大比例"
-                            name="flexGrow"
-                            colon={false}
-                        >
-                            <InputNumber style={{width: '100%'}} placeholder="flex-grow" min={0} step={1}/>
-                        </Form.Item>
-                        <Form.Item
-                            label="缩小比例"
-                            name="flexShrink"
-                            colon={false}
-                        >
-                            <InputNumber style={{width: '100%'}} placeholder="flex-shrink" min={0} step={1}/>
-                        </Form.Item>
-                        <Form.Item
-                            label="基础空间"
-                            name="flexBasis"
-                            colon={false}
-                        >
-                            <UnitInput placeholder="flex-basis"/>
-                        </Form.Item>
-                    </>
-                ) : null}
-            </Form>
+            </RectInputsWrapper>
+            {parentIsFlexBox ? (
+                <>
+                    <Form.Item
+                        label="放大比例"
+                        name="flexGrow"
+                        colon={false}
+                    >
+                        <InputNumber style={{width: '100%'}} placeholder="flex-grow" min={0} step={1}/>
+                    </Form.Item>
+                    <Form.Item
+                        label="缩小比例"
+                        name="flexShrink"
+                        colon={false}
+                    >
+                        <InputNumber style={{width: '100%'}} placeholder="flex-shrink" min={0} step={1}/>
+                    </Form.Item>
+                    <Form.Item
+                        label="基础空间"
+                        name="flexBasis"
+                        colon={false}
+                    >
+                        <UnitInput placeholder="flex-basis"/>
+                    </Form.Item>
+                </>
+            ) : null}
         </div>
     );
 });
+
+
+// style 对象 转换为form数据
+Layout.styleToFormValues = (style) => style;
+
+// form中数据转换为style对象
+Layout.formValuesToStyle = (changedValues, allValues) => {
+    const {display} = allValues;
+
+    // 如果不是flex布局，将相关属性设置为空
+    if (display !== 'flex' && display !== 'inline-flex') {
+        allValues.flexDirection = undefined;
+        allValues.justifyContent = undefined;
+        allValues.alignItems = undefined;
+        allValues.flexWrap = undefined;
+    }
+
+    return allValues;
+};
+
+export default Layout;
