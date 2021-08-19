@@ -105,7 +105,6 @@ export default [
                     componentName: 'Modal',
                     props: {
                         title: '弹框标题',
-                        maskClosable: false,
                         bodyStyle: {
                             padding: 0,
                         },
