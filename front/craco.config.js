@@ -20,6 +20,7 @@ const NODE_MODULES_PATH = path.join(ROOT_PATH, 'node_modules');
 const PAGES_PATH = path.join(SRC_PATH, 'pages');
 const BUILD_PATH = path.join(ROOT_PATH, process.env.BUILD_PATH || 'build');
 const CSS_MODULE_LOCAL_IDENT_NAME = '[local]_[hash:base64:5]';
+const generator = require('../generator');
 
 // Don't open the browser during development
 // process.env.BROWSER = 'none';
@@ -84,6 +85,11 @@ module.exports = {
     devServer: (devServerConfig, {env, paths, proxy, allowedHost}) => {
         if (!devServerConfig.headers) devServerConfig.headers = {};
         devServerConfig.headers['Access-Control-Allow-Origin'] = '*';
+
+        devServerConfig.before = function(app) {
+            generator(app);
+        };
+
         return devServerConfig;
     },
     webpack: {
