@@ -7,6 +7,7 @@ export default config({
     path: '/drag-page',
     side: false,
     header: false,
+    auth: false,
     connect: state => {
         return {
             pageConfig: state.dragPage.pageConfig,

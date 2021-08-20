@@ -51,6 +51,7 @@ export async function bootstrap(props) {
 }
 
 export async function mount(props) {
+    console.log(123, props);
     setMainApp(props.mainApp);
     render(props);
 }
