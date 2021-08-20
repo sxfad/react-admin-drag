@@ -10,6 +10,7 @@
         "build:analyzer": "cross-env ANALYZER=true yarn build",
         "build:time": "cross-env ANALYZER_TIME=true yarn build",
         "build:prev": "cross-env REACT_APP_PREVIEW=true REACT_APP_MOCK=true REACT_APP_HASH_ROUTER=true REACT_APP_BASE_NAME=/react-admin/build/ PUBLIC_URL=/react-admin/build/ BUILD_PATH=docs/build yarn build",
+        "build:dll": "rimraf dll && webpack --config webpack.dll.config.js",
         "rancher": "cross-env GIT_URL=https://gitee.com/sxfad/react-admin.git ra-rancher",
         "test": "craco test",
         "docs": "docsify serve -p 3301",
@@ -25,12 +26,14 @@
         "@babel/plugin-proposal-optional-chaining": "^7.13.12",
         "@craco/craco": "^6.1.1",
         "@loadable/component": "^5.14.1",
+        "@monaco-editor/react": "^4.2.2",
         "@ra-lib/admin": "^0.0.64",
         "@ra-lib/rancher-deploy": "^1.0.6",
         "@testing-library/jest-dom": "^5.11.4",
         "@testing-library/react": "^11.1.0",
         "@testing-library/user-event": "^12.1.10",
         "PubSub": "^4.0.0",
+        "add-asset-html-webpack-plugin": "^3.2.0",
         "ahooks": "^2.10.2",
         "antd": "^4.16.2",
         "axios": "^0.21.1",
@@ -54,7 +57,6 @@
         "eslint-plugin-react": "^7.20.3",
         "eslint-plugin-react-hooks": "^4.0.8",
         "eslint-plugin-testing-library": "^3.9.0",
-        "express": "^4.17.1",
         "inflection": "^1.13.1",
         "json5": "^2.2.0",
         "jsonpath": "^1.1.1",
@@ -62,7 +64,6 @@
         "lodash": "^4.17.21",
         "mockjs": "^1.1.0",
         "moment": "^2.29.1",
-        "monaco-editor-webpack-plugin": "^4.1.1",
         "nodemon": "^2.0.7",
         "nprogress": "^0.2.0",
         "path-to-regexp": "^6.2.0",
@@ -77,7 +78,6 @@
         "react-dom": "^17.0.2",
         "react-helmet": "^6.1.0",
         "react-markdown": "^7.0.0",
-        "react-monaco-editor": "^0.44.0",
         "react-redux": "^7.2.3",
         "react-router-dom": "^5.2.0",
         "react-scripts": "4.0.3",
@@ -133,5 +133,8 @@
     },
     "lint-staged": {
         "front/**/*.{js,jsx,ts,tsx}": "eslint --max-warnings 0 --fix"
+    },
+    "devDependencies": {
+        "webpack-cli": "^4.8.0"
     }
 }

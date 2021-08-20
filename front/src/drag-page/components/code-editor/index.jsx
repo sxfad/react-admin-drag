@@ -1,20 +1,24 @@
-import React, {useRef, useEffect, useState, useCallback} from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import {Button} from 'antd';
+import { Button } from 'antd';
 import {
     DesktopOutlined,
     FullscreenExitOutlined,
     FullscreenOutlined,
 } from '@ant-design/icons';
-import MonacoEditor from 'react-monaco-editor';
+import MonacoEditor from '@monaco-editor/react';
 import prettier from 'prettier/standalone';
 import parserPostCss from 'prettier/parser-postcss';
-import {useHeight} from '@ra-lib/admin';
-import {isMac, OTHER_HEIGHT} from 'src/drag-page/util';
+import { useHeight } from '@ra-lib/admin';
+import { isMac, OTHER_HEIGHT } from 'src/drag-page/util';
+import loader from '@monaco-editor/loader';
 import s from './style.less';
-
-// vs code 的快捷键配置
 import keyboardShortcuts from './keyboard-shortcuts.json';
+
+const PUBLIC_URL = process.env.PUBLIC_URL || '';
+// you can change the source of the monaco files
+// 设置monaco相关资源使用本地
+loader.config({ paths: { vs: `${PUBLIC_URL}/editor/monaco-editor@0.27.0/min/vs` } });
 
 function bindKeyWithAction(editor, monaco) {
     const keyMap = {
@@ -39,7 +43,7 @@ function bindKeyWithAction(editor, monaco) {
 
     keyboardShortcuts.filter(item => !item.command.startsWith('-'))
         .forEach(item => {
-            const {key, command: actionID} = item;
+            const { key, command: actionID } = item;
             // 空 隔开多个快捷键，取第一个
             const keyCodes = key.split(' ')[0].split('+').map(k => {
                 let kk = keyMap[k];
@@ -78,8 +82,8 @@ function CodeEditor(props) {
     } = props;
 
     const mainRef = useRef(null);
-    const monacoRef = useRef(null);
-    const editorRef = useRef(null);
+    const [monaco, setMonaco] = useState(null);
+    const [editor, setEditor] = useState(null);
     const [errors, setErrors] = useState([]);
     const [code, setCode] = useState('');
     const [fullScreen, setFullScreen] = useState(false);
@@ -95,17 +99,17 @@ function CodeEditor(props) {
     // 格式化
     const handleFormat = useCallback(() => {
         if (language === 'css') {
-            const formattedCss = prettier.format(code, {parser: 'css', plugins: [parserPostCss]});
+            const formattedCss = prettier.format(code, { parser: 'css', plugins: [parserPostCss] });
             setCode(formattedCss);
             return;
         }
-        editorRef.current.getAction(['editor.action.formatDocument'])._run();
-    }, [language, code]);
+        editor.getAction(['editor.action.formatDocument'])._run();
+    }, [editor, language, code]);
 
     // 编辑器渲染完成之后
-    const editorDidMount = useCallback((editor, monaco) => {
-        monacoRef.current = monaco;
-        editorRef.current = editor;
+    const handleEditorDidMount = useCallback((editor, monaco) => {
+        setMonaco(monaco);
+        setEditor(editor);
         editor.focus();
 
         // 取消选中，打开Editor 时，内容会被全部选中
@@ -123,8 +127,8 @@ function CodeEditor(props) {
 
         setFullScreen(nextFullScreen);
         // 全屏切换时，不失去焦点
-        editorRef.current.focus();
-    }, [fullScreen]);
+        editor.focus();
+    }, [editor, fullScreen]);
 
     // 关闭事件，如果是全屏状态，退出全屏，否则直接关闭
     const handleClose = useCallback(() => {
@@ -142,7 +146,7 @@ function CodeEditor(props) {
     // value 或 language改变，重新设置code
     useEffect(() => {
         if (language === 'css') {
-            const formattedCss = prettier.format(value, {parser: 'css', plugins: [parserPostCss]});
+            const formattedCss = prettier.format(value, { parser: 'css', plugins: [parserPostCss] });
             setCode(formattedCss);
             return;
         }
@@ -151,34 +155,35 @@ function CodeEditor(props) {
 
     // 保存、关闭或退出全屏、格式化等快捷键
     useEffect(() => {
-        const monaco = monacoRef.current;
+        if (!editor) return;
 
         // 保存 ctrl(⌘) + s
-        editorRef.current.addCommand(
+        editor.addCommand(
             monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
             () => handleSave(code),
         );
 
         // 关闭或退出全屏 esc
-        editorRef.current.addCommand(
+        editor.addCommand(
             monaco.KeyCode.Escape,
             () => handleClose(),
         );
 
         // 格式化 ctrl(⌘) + shift + f
-        editorRef.current.addCommand(
+        editor.addCommand(
             monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_F,
             () => handleFormat(),
         );
-    }, [code, handleSave, handleClose, handleFormat]);
+    }, [monaco, editor, code, handleSave, handleClose, handleFormat]);
 
     // 检测错误
     useEffect(() => {
+        if (!monaco?.editor || !editor) return;
         // 300ms检测一次
         const si = setInterval(() => {
             // 获取当前窗口错误标记
-            let errors = monacoRef.current.editor.getModelMarkers({
-                resource: editorRef.current.getModel().uri,
+            let errors = monaco.editor.getModelMarkers({
+                resource: editor.getModel().uri,
             });
             // 严重程度 Hint = 1, Info = 2, Warning = 4, Error = 8
             errors = errors.filter(item => item.severity > 4);
@@ -195,7 +200,7 @@ function CodeEditor(props) {
             clearInterval(si);
             clearTimeout(st);
         };
-    }, [code]);
+    }, [monaco, editor, code]);
 
     // 编辑器配置，参考：https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.ieditorconstructionoptions.html
     const options = {
@@ -208,14 +213,14 @@ function CodeEditor(props) {
     };
 
     return (
-        <div className={{[s.fullScreen]: fullScreen}}>
+        <div className={{ [s.fullScreen]: fullScreen }}>
             <div className={s.header}>
                 <div className={s.title}>
-                    <DesktopOutlined style={{marginRight: 4}}/> {title}
+                    <DesktopOutlined style={{ marginRight: 4 }} /> {title}
                 </div>
                 <div className={s.tool}>
                     <span onClick={handleFullScreen}>
-                        {fullScreen ? <FullscreenExitOutlined/> : <FullscreenOutlined/>}
+                        {fullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
                     </span>
                 </div>
             </div>
@@ -230,12 +235,12 @@ function CodeEditor(props) {
                         value={code}
                         options={options}
                         onChange={handleChange}
-                        editorDidMount={editorDidMount}
+                        onMount={handleEditorDidMount}
                     />
                 </main>
                 <footer>
                     <Button
-                        style={{marginRight: 8}}
+                        style={{ marginRight: 8 }}
                         onClick={handleFormat}
                     >
                         格式化({isMac ? '⌘' : 'ctrl'}+shift+f)
@@ -243,14 +248,14 @@ function CodeEditor(props) {
                     {onSave ? (
                         errors?.length ? (
                             <Button
-                                style={{marginRight: 8}}
+                                style={{ marginRight: 8 }}
                                 type="danger"
                             >
                                 有语法错误
                             </Button>
                         ) : (
                             <Button
-                                style={{marginRight: 8}}
+                                style={{ marginRight: 8 }}
                                 className="codeEditorSave"
                                 type="primary"
                                 onClick={() => handleSave(code)}

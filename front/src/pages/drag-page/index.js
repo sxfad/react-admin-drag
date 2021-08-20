@@ -5,8 +5,7 @@ import {useCallback} from 'react';
 
 export default config({
     path: '/drag-page',
-    side: false,
-    header: false,
+    layout: false,
     auth: false,
     connect: state => {
         return {

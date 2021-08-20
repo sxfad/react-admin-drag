@@ -5,13 +5,14 @@ const path = require('path');
 const ROOT_PATH = process.cwd();
 const req = name => require(path.join(ROOT_PATH, 'node_modules', name));
 
+const webpack = req('webpack');
+const AddAssetHtmlPlugin = req('add-asset-html-webpack-plugin');
 const {BundleAnalyzerPlugin} = req('webpack-bundle-analyzer');
 const WebpackBar = req('webpackbar');
 const CracoAntDesignPlugin = req('craco-antd');
 const CracoLessPlugin = req('craco-less'); // include in craco-antd
 const MiniCssExtractPlugin = req('mini-css-extract-plugin');
 const FilterWarningsPlugin = require('webpack-filter-warnings-plugin');
-const MonacoWebpackPlugin = req('monaco-editor-webpack-plugin');
 
 const packageName = require(path.join(ROOT_PATH, 'package.json')).name;
 
@@ -108,6 +109,14 @@ module.exports = {
             src: SRC_PATH,
         },
         plugins: [
+            new webpack.DllReferencePlugin({
+                manifest: require(path.join(__dirname, 'dll', 'vendor-manifest.json')),
+            }),
+            new AddAssetHtmlPlugin({
+                filepath: path.resolve(__dirname, './dll/*.dll.js'),
+                publicPath: (process.env.PUBLIC_URL || '') + '/static/js',
+                outputPath: path.join(process.env.BUILD_PATH || '', 'static', 'js'),
+            }),
             /*
             暂时先忽略
             ./node_modules/prettier/parser-typescript.js
@@ -116,10 +125,6 @@ module.exports = {
             * */
             new FilterWarningsPlugin({
                 exclude: /Critical dependency: the request of a dependency is an expression/,
-            }),
-            new MonacoWebpackPlugin({
-                // available options are documented at https://github.com/Microsoft/monaco-editor-webpack-plugin#options
-                languages: ['javascript', 'typescript', 'json', 'html', 'css'],
             }),
             new WebpackBar({profile: true}),
             ...(process.env.ANALYZER === 'true' ?
