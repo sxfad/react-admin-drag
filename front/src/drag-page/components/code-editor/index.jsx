@@ -18,7 +18,7 @@ import keyboardShortcuts from './keyboard-shortcuts.json';
 const PUBLIC_URL = process.env.PUBLIC_URL || '';
 // you can change the source of the monaco files
 // 设置monaco相关资源使用本地
-loader.config({ paths: { vs: `${PUBLIC_URL}/editor/monaco-editor@0.27.0/min/vs` } });
+loader.config({ paths: { vs: `${PUBLIC_URL}/monaco-editor@0.27.0/min/vs` } });
 
 function bindKeyWithAction(editor, monaco) {
     const keyMap = {
