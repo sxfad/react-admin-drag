@@ -4,7 +4,7 @@ import DragPage from 'src/drag-page';
 import {useCallback} from 'react';
 
 export default config({
-    path: '/ra-generator',
+    path: '/dev-ra-gen',
     side: false,
     header: false,
     auth: false,
@@ -14,6 +14,7 @@ export default config({
         };
     },
 })(function(props) {
+    console.log(123);
     const {pageConfig} = props;
     const handleSave = useCallback(() => {
         console.log('保存', pageConfig);

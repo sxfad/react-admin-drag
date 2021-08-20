@@ -114,8 +114,8 @@ module.exports = {
             }),
             new AddAssetHtmlPlugin({
                 filepath: path.resolve(__dirname, './dll/*.dll.js'),
-                publicPath: (process.env.PUBLIC_URL || '') + '/static/js',
-                outputPath: path.join(process.env.BUILD_PATH || '', 'static', 'js'),
+                publicPath: (process.env.PUBLIC_URL || '/') + 'static/js',
+                outputPath: path.join('static', 'js'),
             }),
             /*
             暂时先忽略

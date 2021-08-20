@@ -45,24 +45,4 @@ module.exports = {
             name: '[name]_[hash]',
         }),
     ],
-    module: {
-        rules: [
-            {
-                test: /\.css$/,
-                use: [
-                    {
-                        loader: 'css-loader',
-                    },
-                ],
-            },
-            {
-                test: /\.(ttf)$/,
-                use: [
-                    {
-                        loader: 'url-loader',
-                    },
-                ],
-            },
-        ],
-    },
 };
