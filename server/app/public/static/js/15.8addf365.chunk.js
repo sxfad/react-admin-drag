@@ -1,2 +1,0 @@
-(this["webpackJsonp_react-admin-drag"]=this["webpackJsonp_react-admin-drag"]||[]).push([[15],{948:function(e,t,c){"use strict";c.r(t);c(1e3);var s=c(1025),a=(c(380),c(67)),j=(c(1002),c(1024)),i=c(14),n=c(168),r=c(10);t.default=Object(n.a)({path:"/test"})((function(e){return Object(r.jsxs)(i.m,{children:[Object(r.jsx)("div",{children:Object(r.jsx)(j.a,{})}),Object(r.jsx)("div",{children:Object(r.jsx)(a.a,{})}),Object(r.jsx)("div",{children:Object(r.jsx)(s.a,{})})]})}))}}]);
-//# sourceMappingURL=15.8addf365.chunk.js.map
