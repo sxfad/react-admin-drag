@@ -1,7 +1,7 @@
-import {PageContent} from '@ra-lib/admin';
+import { PageContent } from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
 import DragPage from 'src/drag-page';
-import {useCallback} from 'react';
+import { useCallback } from 'react';
 
 export default config({
     path: '/dev-ra-gen',
@@ -14,8 +14,11 @@ export default config({
         };
     },
 })(function(props) {
-    console.log(123);
-    const {pageConfig} = props;
+    const { pageConfig } = props;
+    const { data } = props.ajax.useGet('/ra-gen/sb', null, []);
+
+    console.log('/ra-gen/sb', data);
+
     const handleSave = useCallback(() => {
         console.log('保存', pageConfig);
 
@@ -27,7 +30,7 @@ export default config({
         console.log('源码保存', code, errors);
     }, []);
     return (
-        <PageContent style={{padding: 0, margin: 0}}>
+        <PageContent style={{ padding: 0, margin: 0 }}>
             <DragPage
                 onSave={handleSave}
                 onSaveAs={handleSaveAs}

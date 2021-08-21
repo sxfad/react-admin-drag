@@ -1,6 +1,6 @@
-import React, {useEffect, useCallback, useState} from 'react';
-import {getComponentDisplayName} from 'src/drag-page/component-config';
-import {getElementInfo, useNodeChange, usePageConfigChange} from 'src/drag-page/util';
+import React, { useEffect, useCallback, useState } from 'react';
+import { getComponentDisplayName } from 'src/drag-page/component-config';
+import { getElementInfo, useNodeChange, usePageConfigChange } from 'src/drag-page/util';
 import s from './style.less';
 
 // 改变背景颜色，不同投放类型，对应不同的样色
@@ -37,16 +37,17 @@ export default React.memo(function DragGuide(props) {
     const draggingNodeRefresh = useNodeChange(draggingNode);
 
     const showGuideBg = useCallback((targetNode) => {
-        if (!canvasDocument || !targetNode) return;
+        if (!canvasDocument) return;
 
         const guideBgEle = canvasDocument.getElementById('drop-guide-bg');
-        const guideNameEle = canvasDocument.getElementById('drop-guide-name');
 
-        const targetElement = canvasDocument.querySelector(`.id_${targetNode?.id}`);
-        if (!targetElement) {
+        if (!targetNode) {
             guideBgEle.classList.remove(s.guideBgActive);
             return;
         }
+
+        const guideNameEle = canvasDocument.getElementById('drop-guide-name');
+        const targetElement = canvasDocument.querySelector(`.id_${targetNode?.id}`);
 
         const targetElementSize = getElementInfo(targetElement, {
             documentElement: canvasDocument.documentElement,
@@ -64,7 +65,7 @@ export default React.memo(function DragGuide(props) {
         guideNameEle.setAttribute('data-component-display-name', displayName);
         guideBgEle.classList.add(s.guideBgActive);
 
-        const {top, left, width, height} = targetElementSize;
+        const { top, left, width, height } = targetElementSize;
 
         guideBgEle.style.top = `${top + 1}px`;
         guideBgEle.style.left = `${left + 1}px`;
@@ -109,7 +110,7 @@ export default React.memo(function DragGuide(props) {
         });
 
 
-        const {top, left, width, height} = targetElementSize;
+        const { top, left, width, height } = targetElementSize;
         guideLineEle.classList.add(s.guideLineActive);
         guideLineEle.classList.remove(s.gLeft);
         guideLineEle.classList.remove(s.gRight);
@@ -126,11 +127,11 @@ export default React.memo(function DragGuide(props) {
         // 设置提示线条样式
         const lineSize = 2;
         let guideLineStyle = ({
-            left: {left: left - lineSize * 2, top, width: lineSize, height},
-            right: {left: left + width + lineSize, top, width: lineSize, height},
-            top: {left, top: top - lineSize * 2, width, height: lineSize},
-            bottom: {left, top: top + height + lineSize, width, height: lineSize},
-            center: {left, top: top + height / 2, width, height: lineSize},
+            left: { left: left - lineSize * 2, top, width: lineSize, height },
+            right: { left: left + width + lineSize, top, width: lineSize, height },
+            top: { left, top: top - lineSize * 2, width, height: lineSize },
+            bottom: { left, top: top + height + lineSize, width, height: lineSize },
+            center: { left, top: top + height / 2, width, height: lineSize },
         })[targetHoverPosition];
 
         Object.entries(guideLineStyle).forEach(([key, value]) => {

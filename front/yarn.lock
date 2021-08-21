@@ -1667,29 +1667,29 @@
   resolved "https://registry.npmjs.org/@polka/url/-/url-1.0.0-next.12.tgz#431ec342a7195622f86688bbda82e3166ce8cb28"
   integrity sha512-6RglhutqrGFMO1MNUXp95RBuYIuc8wTnMAV5MUhLmjTOy78ncwOw7RgeQ/HeymkKXRhZd0s2DNrM1rL7unk3MQ==
 
-"@ra-lib/admin@^0.0.64":
-  version "0.0.64"
-  resolved "https://registry.npmjs.org/@ra-lib/admin/-/admin-0.0.64.tgz#0284a67ef8e0295c533a75c97ef92ef9c7a6b97b"
-  integrity sha512-Jfo8GaT9cnhTCIg5ogr7XkwC9rHCgdaGChSYoOiyJ8Qbdmdp05G/ZFqeqj1UDRQxh+qiqxClli2A0uRlk/HfPQ==
+"@ra-lib/admin@^0.0.72":
+  version "0.0.72"
+  resolved "https://registry.npmjs.org/@ra-lib/admin/-/admin-0.0.72.tgz#73208f2296276ae18fe94909e6057bcd11afafff"
+  integrity sha512-nm2MkGP6BmiDrRorbaauCRr8xhGsJ7bUPqYJbLc9DwypaQjsC6IMOmYQYbLmJ1Yr8pwVHYRxeF3bzGrCu88r4w==
   dependencies:
-    "@ra-lib/ajax" "^0.1.21"
-    "@ra-lib/babel-plugin-attribute-wrapper" "^0.0.8"
+    "@ra-lib/ajax" "^0.1.22"
+    "@ra-lib/babel-plugin-attribute-wrapper" "^0.0.12"
     "@ra-lib/components" "^0.1.74"
     "@ra-lib/config-loader" "^0.1.6"
     "@ra-lib/hoc" "^0.1.6"
     "@ra-lib/hooks" "^0.1.8"
-    "@ra-lib/model" "^0.1.6"
+    "@ra-lib/model" "^0.1.7"
     "@ra-lib/util" "^0.1.21"
 
-"@ra-lib/ajax@^0.1.21":
-  version "0.1.21"
-  resolved "https://registry.npmjs.org/@ra-lib/ajax/-/ajax-0.1.21.tgz#4d3e037490c22a7015df2d4aed1aa1ad5f7c8543"
-  integrity sha512-vi3YYt+roJ9Br6Me5CvZCx8q3XpyfmlXQpmey1i2A6xjA21XIQyA+RFdkoJkvcqorgvc/ThIformMlbyzqRGBw==
+"@ra-lib/ajax@^0.1.22":
+  version "0.1.22"
+  resolved "https://registry.npmjs.org/@ra-lib/ajax/-/ajax-0.1.22.tgz#8986fd142e3ff684dee3a931f3106dabcef0c954"
+  integrity sha512-x9EkemI302Nd2D9MRz/gDq06n8WVyWk/XxglvSdyGG9XNhAZqYMYg6vNzmwBuCBNU7Ayw7G55DPH9Afi2dExaQ==
 
-"@ra-lib/babel-plugin-attribute-wrapper@^0.0.8":
-  version "0.0.8"
-  resolved "https://registry.npmjs.org/@ra-lib/babel-plugin-attribute-wrapper/-/babel-plugin-attribute-wrapper-0.0.8.tgz#d870e4630f03ba97683e53460e8bce29b412bc10"
-  integrity sha512-BLSuuwQUB5cH0Uiti2/jSowgVxSKqTpVxQQGJhM0/C/DZNGosXN9QQaNCQnTO+/C8drvjWALFZChJ3iqKwfrYg==
+"@ra-lib/babel-plugin-attribute-wrapper@^0.0.12":
+  version "0.0.12"
+  resolved "https://registry.npmjs.org/@ra-lib/babel-plugin-attribute-wrapper/-/babel-plugin-attribute-wrapper-0.0.12.tgz#d92ecfc24cb8bf6cb40e06c16b6f36691617e66a"
+  integrity sha512-yg8jPqSTYw9AROWYkSRPoFwMQDibs0MKMISCaCWrFr3lPQlU57YksTTsi/PIEZ7mcr12x9mVB9hYP5chs5l5ww==
 
 "@ra-lib/components@^0.1.74":
   version "0.1.74"
@@ -1711,10 +1711,10 @@
   resolved "https://registry.npmjs.org/@ra-lib/hooks/-/hooks-0.1.8.tgz#d386ecd6ef297d0ea501f5570967bf9f1f55d935"
   integrity sha512-ue67jnIxzc+0/e7dV+UUvGJirYjgnMjC8IDLv58HKDAyCYm/nDBrSjWrgwqJBA9HLCZRpQg2EtIVeZUHt060zg==
 
-"@ra-lib/model@^0.1.6":
-  version "0.1.6"
-  resolved "https://registry.npmjs.org/@ra-lib/model/-/model-0.1.6.tgz#64bb4b6932befdafc72d4cc44890ce36e0183b4b"
-  integrity sha512-fud0mDorlaGKDBEqifPMM/RyzTX61Hw6Y3gAqcMKVl5bHjk5PA3+OQhspRAe97F78XRW/1Oil0f7/Efsi9Sh7Q==
+"@ra-lib/model@^0.1.7":
+  version "0.1.7"
+  resolved "https://registry.npmjs.org/@ra-lib/model/-/model-0.1.7.tgz#36f0eb2e4141d1ae471f704de34602ca62ce4849"
+  integrity sha512-RZ/PN5BckCc/bRPQ+aRTAbnTmGPXL8OdkLN7CIY7SL4KnjAsxnxyLxIy5lVDuj7jI2nquVqvPBMbTu4pF2DzPQ==
 
 "@ra-lib/rancher-deploy@^1.0.6":
   version "1.0.6"
