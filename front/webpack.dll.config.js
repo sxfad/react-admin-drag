@@ -26,10 +26,11 @@ module.exports = {
             '@loadable/component',
             'antd',
             '@ant-design/icons',
-            'prettier',
+            'prettier/standalone',
+            'prettier/parser-postcss',
+            'prettier/parser-babel',
             'qiankun',
             '@monaco-editor/react',
-            // 'react-monaco-editor', // 无法使用
         ],
     },
     // devtool: '#source-map',

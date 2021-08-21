@@ -5,6 +5,7 @@
     "scripts": {
         "dev": "cross-env PORT=3051 NODE_ENV=development craco start",
         "start": "nodemon -w craco.config.js -w ./src/theme.less -w ./src/setupProxy.js --exec \"yarn dev\"",
+        "build:test": "craco build",
         "build": "cross-env PUBLIC_URL=/public/ BUILD_PATH=../server/app/public craco build",
         "build:gen": "cross-env PUBLIC_URL=/ra-gen/ BUILD_PATH=../generator/public craco build",
         "build:analyzer": "cross-env ANALYZER=true yarn build",
