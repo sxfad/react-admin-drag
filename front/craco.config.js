@@ -87,9 +87,9 @@ module.exports = {
         if (!devServerConfig.headers) devServerConfig.headers = {};
         devServerConfig.headers['Access-Control-Allow-Origin'] = '*';
 
-        devServerConfig.before = function(app) {
-            generator(app);
-        };
+        // devServerConfig.before = function(app) {
+        //     generator(app);
+        // };
 
         return devServerConfig;
     },

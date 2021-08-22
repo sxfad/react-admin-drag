@@ -1,26 +1,36 @@
-// import {Redirect} from 'react-router-dom';
-import {Button} from 'antd';
 import {PageContent} from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
-import styles from './style.less';
+import DragPage from 'src/drag-page';
+import {useCallback} from 'react';
 
 export default config({
     path: '/',
-    title: '首页',
-})(function Home(props) {
+    layout: false,
+    auth: false,
+    connect: state => {
+        return {
+            pageConfig: state.dragPage.pageConfig,
+        };
+    },
+})(function(props) {
+    const {pageConfig} = props;
+    const handleSave = useCallback(() => {
+        console.log('保存', pageConfig);
 
-    // 如果其他页面作为首页，直接重定向，config中不要设置title，否则tab页中会多个首页
-    // return <Redirect to="/users"/>;
-
+    }, [pageConfig]);
+    const handleSaveAs = useCallback((selectedNode) => {
+        console.log('另存为', selectedNode);
+    }, []);
+    const handleSaveCode = useCallback((code, errors) => {
+        console.log('源码保存', code, errors);
+    }, []);
     return (
-        <PageContent className={styles.root}>
-            <h1>首页</h1>
-            {process.env.REACT_APP_MOCK ? (
-                <Button onClick={async () => {
-                    await props.ajax.post('/initDB', null, {successTip: '数据库重置成功！'});
-                    setTimeout(() => window.location.reload(), 2000);
-                }}>重置数据库</Button>
-            ) : null}
+        <PageContent style={{padding: 0, margin: 0}}>
+            <DragPage
+                onSave={handleSave}
+                onSaveAs={handleSaveAs}
+                onSaveCode={handleSaveCode}
+            />
         </PageContent>
     );
 });

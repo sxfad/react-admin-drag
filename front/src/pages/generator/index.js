@@ -15,9 +15,9 @@ export default config({
     },
 })(function(props) {
     const { pageConfig } = props;
-    const { data } = props.ajax.useGet('/ra-gen/sb', null, []);
+    const { data } = props.ajax.useGet('/ra-gen/menus', null, []);
 
-    console.log('/ra-gen/sb', data);
+    console.log('/ra-gen/menus', data);
 
     const handleSave = useCallback(() => {
         console.log('保存', pageConfig);

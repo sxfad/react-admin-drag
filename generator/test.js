@@ -2,6 +2,7 @@ const express = require('express');
 const gen = require('./index');
 const app = express();
 const port = 3300;
+
 gen(app);
 
 app.listen(port, () => {

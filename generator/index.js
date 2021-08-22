@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-const fs = require('fs');
 const path = require('path');
 const express = require('express');
+const router = require('./router');
 
 module.exports = function(app) {
   // 生成器静态文件目录
@@ -11,11 +11,7 @@ module.exports = function(app) {
   app.get('/dev-ra-gen', function(req, res) {
     res.setHeader('Content-Type', 'text/html');
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
-
-    // res.json({custom: 'response333'});
   });
 
-  app.get('/api/ra-gen/sb', function(req, res) {
-    res.json({ custom: 'response333' });
-  });
+  router.forEach(item => app.use('/api/ra-gen', item));
 };

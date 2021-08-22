@@ -4,8 +4,8 @@ export default function ComingSoon(props) {
 
     return (
         <div style={{padding: 16}}>
-            开发中
-            <Skeleton active/>
+            敬请期待
+            <Skeleton/>
         </div>
     );
 }
