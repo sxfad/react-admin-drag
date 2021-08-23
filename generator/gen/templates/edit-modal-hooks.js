@@ -49,7 +49,7 @@ export default config({
         }
 
         onOk && onOk();
-    }, [loading, isEdit, update, save]);
+    }, [loading, isEdit, update, save, onOk]);
 
     const layout = {
         labelCol: {flex: '100px'},

@@ -2,7 +2,7 @@ import {PageContent} from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
 import {Tabs} from 'antd';
 import DragPage from './DragPage';
-import Swagger from 'src/gen';
+import TemplateGen from 'src/template-gen';
 
 const {TabPane} = Tabs;
 
@@ -19,7 +19,7 @@ export default config({
                         <DragPage/>
                     </TabPane>
                     <TabPane tab="模版生成CRUD" key="swagger">
-                        <Swagger/>
+                        <TemplateGen/>
                     </TabPane>
                 </Tabs>
             </PageContent>

@@ -50,7 +50,7 @@ module.exports = function(config) {
     const operatorDelete = operators && operators.find(item => item.text === '删除');
 
     return `import React, {useCallback, useState, useMemo} from 'react';
-${tools || queries || hasBatchDelete ? `import {${(queries || tools) ? 'Button, ' : ''}${queries ? 'Form' : ''}} from 'antd';` : DELETE_THIS_LINE}
+${tools || queries || hasBatchDelete ? `import {${(queries || tools) ? 'Button, ' : ''}${queries ? 'Form' : ''}, Space} from 'antd';` : DELETE_THIS_LINE}
 ${columns.find(renderTime) ? `import moment from 'moment';` : DELETE_THIS_LINE}
 import config from 'src/commons/config-hoc';
 import {
@@ -148,6 +148,7 @@ export default config({
         await deleteRecord(record?.id);
         ${queries ? 'refreshSearch()' : ''};
     }, [loading, deleteRecord, refreshSearch]);` : DELETE_THIS_LINE}
+    
     ${hasBatchDelete ? `const handleBatchDelete = useCallback(async () => {
         if(loading) return;
         await batchDeleteConfirm(selectedRowKeys.length);
@@ -184,21 +185,24 @@ export default config({
                             {value: '2', label: '选项2'},
                         ]}` : DELETE_THIS_LINE}
                     />`).join('\n                    ')}
-                    <FormItem layout>
-                        <Button type="primary" htmlType="submit">查询</Button>
-                        <Button onClick={() => form.resetFields()}>重置</Button>
-                        ${tools ? `${tools.find(item => item.text === '添加') ? `<Button type="primary" onClick={() => ${isModalEdit ? `setVisible(true) || setId(null)` : `props.history.push('${base.path}/_/edit/:id')`}}>添加</Button>` : DELETE_THIS_LINE}
-                        ${tools.find(item => item.text === '删除') ? `<Button danger ${table.selectable ? 'disabled={disabledDelete} ' : ''}onClick={handleBatchDelete}>删除</Button>` : DELETE_THIS_LINE}
-                        ${tools.filter(item => !['添加', '删除'].includes(item.text)).length ? tools.filter(item => !['添加', '删除'].includes(item.text)).map(item => `<Button type="primary" onClick={${item.handle}}>${item.text}</Button>`).join('\n                         ') : DELETE_THIS_LINE}` : DELETE_THIS_LINE}
+                    <FormItem>
+                        <Space>
+                            <Button type="primary" htmlType="submit">查询</Button>
+                            <Button onClick={() => form.resetFields()}>重置</Button>
+                            ${tools ? `${tools.find(item => item.text === '添加') ? `<Button type="primary" onClick={() => ${isModalEdit ? `setVisible(true) || setRecord(null)` : `props.history.push('${base.path}/_/edit/:id')`}}>添加</Button>` : DELETE_THIS_LINE}
+                            ${tools.find(item => item.text === '删除') ? `<Button danger ${table.selectable ? 'disabled={disabledDelete} ' : ''}onClick={handleBatchDelete}>删除</Button>` : DELETE_THIS_LINE}
+                            ${tools.filter(item => !['添加', '删除'].includes(item.text)).length ? tools.filter(item => !['添加', '删除'].includes(item.text)).map(item => `<Button type="primary" onClick={${item.handle}}>${item.text}</Button>`).join('\n                         ') : DELETE_THIS_LINE}` : DELETE_THIS_LINE}
+                        </Space>
                     </FormItem>
                 </Form>
             </QueryBar>` : DELETE_THIS_LINE}
             ${(!queries && tools) ? `<ToolBar>
-                ${tools ? `${tools.find(item => item.text === '添加') ? `<Button type="primary" onClick={() => ${isModalEdit ? `setVisible(true) || setId(null)` : `props.history.push('${base.path}/_/edit/:id')`}}>添加</Button>` : DELETE_THIS_LINE}
+                ${tools ? `${tools.find(item => item.text === '添加') ? `<Button type="primary" onClick={() => ${isModalEdit ? `setVisible(true) || setRecord(null)` : `props.history.push('${base.path}/_/edit/:id')`}}>添加</Button>` : DELETE_THIS_LINE}
                 ${tools.find(item => item.text === '删除') ? `<Button danger ${table.selectable ? 'disabled={disabledDelete} ' : ''}onClick={handleBatchDelete}>删除</Button>` : DELETE_THIS_LINE}
                 ${tools.filter(item => !['添加', '删除'].includes(item.text)).length ? tools.filter(item => !['添加', '删除'].includes(item.text)).map(item => `<Button type="primary" onClick={${item.handle}}>${item.text}</Button>`).join('\n                 ') : DELETE_THIS_LINE}` : DELETE_THIS_LINE}
             </ToolBar>` : DELETE_THIS_LINE}
             <Table
+                fitHeight
                 ${table.serialNumber ? 'serialNumber' : DELETE_THIS_LINE}
                 ${table.selectable ? `rowSelection={{
                     selectedRowKeys,
