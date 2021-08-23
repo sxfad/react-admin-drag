@@ -86,9 +86,7 @@ export default config({
     }, [conditions${table.pagination ? ', pageNum, pageSize' : ''}]);` : DELETE_THIS_LINE}
     
     ${queries ? `// 使用现有查询条件，重新发起请求
-    const refreshSearch = useMemo(() => {
-        setConditions(form.getFieldsValue());
-    }, [form]);` : DELETE_THIS_LINE}
+    const refreshSearch = useCallback(() => setConditions(form.getFieldsValue()), [form]);` : DELETE_THIS_LINE}
     
     // 获取列表
     const {

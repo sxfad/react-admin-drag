@@ -16,8 +16,8 @@ export default config({
     path: '/department_users',
 })((props) => {
     const [loading, setLoading] = useState(false);
-    const [ pageNum, setPageNum ] = useState(1);
-    const [ pageSize, setPageSize ] = useState(20);
+    const [pageNum, setPageNum] = useState(1);
+    const [pageSize, setPageSize] = useState(20);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [visible, setVisible] = useState(false);
     const [record, setRecord] = useState(null);
@@ -33,9 +33,7 @@ export default config({
     }, [conditions, pageNum, pageSize]);
     
     // 使用现有查询条件，重新发起请求
-    const refreshSearch = useMemo(() => {
-        setConditions(form.getFieldsValue());
-    }, [form]);
+    const refreshSearch = useCallback(() => setConditions(form.getFieldsValue()), [form]);
     
     // 获取列表
     const {
