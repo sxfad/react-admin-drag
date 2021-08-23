@@ -19,7 +19,7 @@ router.get('/dirs', async (req, res) => {
 
     let children;
     const files = fs.readdirSync(filePath);
-    if (files?.length) {
+    if (files && files.length) {
       children = files.map(item => loop(filePath, item)).filter(item => !!item);
     }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { getFieldOption, getFieldUUID } from 'src/drag-page/util';
+import {getFieldOption, getFieldUUID} from 'src/drag-page/util';
 
 export default {
     dropAccept: 'Table.Column',

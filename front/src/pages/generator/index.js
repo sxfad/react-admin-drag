@@ -1,8 +1,8 @@
-import { PageContent } from '@ra-lib/admin';
+import {PageContent} from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
 import DragPage from 'src/drag-page';
-import { useCallback, useState } from 'react';
-import { message, Button, Modal, Cascader, Input, Form, Space } from 'antd';
+import {useCallback, useState} from 'react';
+import {message, Button, Modal, Cascader, Input, Form, Space} from 'antd';
 
 export default config({
     path: '/dev-ra-gen',
@@ -15,10 +15,10 @@ export default config({
         };
     },
 })(function(props) {
-        const { pageConfig } = props;
-        const { run: checkFile } = props.ajax.useGet('/ra-gen/check-file');
-        const { run: saveFile } = props.ajax.usePost('/ra-gen/file', null, { successTip: '文件保存成功！' });
-        const { run: fetchDirs } = props.ajax.useGet('/ra-gen/dirs');
+        const {pageConfig} = props;
+        const {run: checkFile} = props.ajax.useGet('/ra-gen/check-file');
+        const {run: saveFile} = props.ajax.usePost('/ra-gen/file', null, {successTip: '文件保存成功！'});
+        const {run: fetchDirs} = props.ajax.useGet('/ra-gen/dirs');
         const [visible, setVisible] = useState(false);
         const [dirs, setDirs] = useState([]);
         const [code, setCode] = useState('');
@@ -35,7 +35,7 @@ export default config({
         }, []);
 
         const handleSubmit = useCallback(async (replace) => {
-            const { filePath, dir } = await form.validateFields();
+            const {filePath, dir} = await form.validateFields();
             const _dir = [...dir].pop();
 
             const createFile = async () => {
@@ -49,10 +49,11 @@ export default config({
 
             if (replace) return await createFile();
 
-            const fileExist = await checkFile({ dir: _dir, filePath });
+            const fileExist = await checkFile({dir: _dir, filePath});
             if (fileExist) return Modal.confirm({
                 title: '温馨提示',
                 content: '文件已存在，是否覆盖？',
+                zIndex: 9999,
                 onOk: createFile,
             });
 
@@ -72,7 +73,7 @@ export default config({
             form.setFieldsValue(JSON.parse(window.localStorage.getItem('dev-gen-dir') || '{}'));
         }, [fetchDirs, form]);
         return (
-            <PageContent style={{ padding: 0, margin: 0 }}>
+            <PageContent style={{padding: 0, margin: 0}}>
                 <DragPage
                     onSave={handleSave}
                     onSaveAs={handleSaveAs}
@@ -82,6 +83,7 @@ export default config({
                     visible={visible}
                     title="选择文件路径"
                     width={450}
+                    zIndex={1999}
                     onCancel={() => setVisible(false)}
                     footer={(
                         <Space>
@@ -114,24 +116,24 @@ export default config({
                     >
                         <Space>
                             <Form.Item
-                                labelCol={{ space: 12 }}
+                                labelCol={{space: 12}}
                                 name="dir"
-                                rules={[{ required: true, message: '请选择目录！' }]}
+                                rules={[{required: true, message: '请选择目录！'}]}
                             >
                                 <Cascader
-                                    style={{ width: 192 }}
+                                    style={{width: 192}}
                                     options={dirs}
                                     placeholder="请选择目录"
                                     changeOnSelect
                                 />
                             </Form.Item>
                             <Form.Item
-                                labelCol={{ space: 12 }}
+                                labelCol={{space: 12}}
                                 name="filePath"
-                                rules={[{ required: true, message: '请输入文件名！' }]}
+                                rules={[{required: true, message: '请输入文件名！'}]}
                             >
                                 <Input
-                                    style={{ width: 200 }}
+                                    style={{width: 200}}
                                     placeholder="请输入文件名，目录以/分割"
                                 />
                             </Form.Item>

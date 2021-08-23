@@ -23,7 +23,6 @@ export default React.memo(config({
         onCodeCancel,
         action: {dragPage: dragPageAction},
     } = props;
-    console.log('ComponentProps');
 
     // 相关属性节点
     const propsNodes = selectedNode?.props ? Object.entries(selectedNode?.props)
@@ -42,6 +41,14 @@ export default React.memo(config({
         if (!node?.componentName) return;
 
         if (!node?.props) node.props = {};
+
+        Object.entries(allValues)
+            .forEach(([key, value]) => {
+                if (value?.changeChildren) {
+                    node.children = value.children;
+                    Reflect.deleteProperty(value, key);
+                }
+            });
 
         node.props = replace ? allValues : {
             ...node.props,

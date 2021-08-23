@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useCallback} from 'react';
 import {Button, Modal, Input, Alert} from 'antd';
 import {useHeight} from '@ra-lib/admin';
 import {v4 as uuid} from 'uuid';
@@ -12,7 +12,7 @@ export default function FormItemFastEditor(props) {
     const editRef = useRef(null);
     const [height] = useHeight(editRef, 130);
 
-    function handleClick(e) {
+    const handleClick = useCallback(() => {
         const itemNodes = findNodesByName(node, 'Form.Item') || [];
         const values = itemNodes.map(item => {
             const {label} = item?.props || {};
@@ -25,15 +25,14 @@ export default function FormItemFastEditor(props) {
 
         setValue(values.join('\n'));
         setVisible(true);
-    }
+    }, [node]);
 
-    function handleChange(e) {
-        const {value} = e.target;
-        setValue(value);
-    }
-
-    function handleOk() {
-        if (!value) return;
+    const handleOk = useCallback(() => {
+        if (!value) {
+            onChange({changeChildren: true, children: []});
+            setVisible(false);
+            return;
+        }
         let values = value.split('\n')
             .map(val => {
                 // 多个空格替换成一个
@@ -76,13 +75,15 @@ export default function FormItemFastEditor(props) {
                 };
             });
 
-        node.children = [
-            ...newItems,
-            ...otherItems,
-        ];
-        onChange(Date.now());
+        onChange({
+            changeChildren: true,
+            children: [
+                ...newItems,
+                ...otherItems,
+            ],
+        });
         setVisible(false);
-    }
+    }, [onChange, value, node.children]);
 
     return (
         <div ref={editRef}>
@@ -103,7 +104,7 @@ export default function FormItemFastEditor(props) {
                 <Input.TextArea
                     style={{height, marginTop: 16}}
                     value={value}
-                    onChange={handleChange}
+                    onChange={e => setValue(e.target.value)}
                     rows={10}
                 />
             </Modal>

@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useCallback} from 'react';
 import {Button, Modal, Input, Alert} from 'antd';
 import {useHeight} from '@ra-lib/admin';
 import {v4 as uuid} from 'uuid';
@@ -11,7 +11,7 @@ export default function ColumnFastEditor(props) {
     const editRef = useRef(null);
     const [height] = useHeight(editRef, 250);
 
-    function handleClick(e) {
+    const handleClick = useCallback(() => {
         const columns = node?.props?.columns || [];
         const iframeDocument = document.getElementById('dnd-iframe').contentDocument;
         const titles = columns.map(item => {
@@ -24,15 +24,15 @@ export default function ColumnFastEditor(props) {
 
         setValue(titles.join('\n'));
         setVisible(true);
-    }
+    }, [node?.props?.columns]);
 
-    function handleChange(e) {
-        const {value} = e.target;
-        setValue(value);
-    }
+    const handleOk = useCallback(() => {
+        if (!value) {
+            onChange({changeChildren: true, children: []});
+            setVisible(false);
+            return;
+        }
 
-    function handleOk() {
-        if (!value) return;
         let values = value.split('\n')
             .map(val => {
                 // 多个空格替换成一个
@@ -48,7 +48,7 @@ export default function ColumnFastEditor(props) {
             values = values[0].split(' ');
         }
 
-        node.children = values
+        const children = values
             .map((v, index) => {
                 let [title, ...content] = v.split(' ');
                 let render;
@@ -94,7 +94,6 @@ export default function ColumnFastEditor(props) {
                     };
                 }
 
-
                 return {
                     componentName: 'Table.Column',
                     id: uuid(),
@@ -105,9 +104,9 @@ export default function ColumnFastEditor(props) {
                     },
                 };
             });
-        onChange(Date.now());
+        onChange({changeChildren: true, children});
         setVisible(false);
-    }
+    }, [onChange, value]);
 
     return (
         <div ref={editRef}>
@@ -136,7 +135,7 @@ export default function ColumnFastEditor(props) {
                 <Input.TextArea
                     style={{height, marginTop: 16}}
                     value={value}
-                    onChange={handleChange}
+                    onChange={e => setValue(e.target.value)}
                     rows={10}
                 />
             </Modal>

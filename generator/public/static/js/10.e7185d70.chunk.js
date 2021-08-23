@@ -1,2 +1,0 @@
-(this["webpackJsonp_react-admin-drag"]=this["webpackJsonp_react-admin-drag"]||[]).push([[10],{2486:function(t,e,a){"use strict";a.r(e);var r=a(26),i=a(1);e.default=Object(r.a)({path:"/test"})((function(t){return Object(i.jsx)("iframe",{style:{width:"100%",height:400},title:"123",src:"/dev-ra-gen",frameBorder:"0"})}))}}]);
-//# sourceMappingURL=10.e7185d70.chunk.js.map
