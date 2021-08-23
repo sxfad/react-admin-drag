@@ -79,6 +79,7 @@ function CodeEditor(props) {
         onSave,
         onClose,
         readOnly,
+        showHeader,
     } = props;
 
     const mainRef = useRef(null);
@@ -214,16 +215,18 @@ function CodeEditor(props) {
 
     return (
         <div className={{ [s.fullScreen]: fullScreen }}>
-            <div className={s.header}>
-                <div className={s.title}>
-                    <DesktopOutlined style={{ marginRight: 4 }} /> {title}
-                </div>
-                <div className={s.tool}>
+            {showHeader ? (
+                <div className={s.header}>
+                    <div className={s.title}>
+                        <DesktopOutlined style={{ marginRight: 4 }} /> {title}
+                    </div>
+                    <div className={s.tool}>
                     <span onClick={handleFullScreen}>
                         {fullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
                     </span>
+                    </div>
                 </div>
-            </div>
+            ) : null}
 
             <div className={s.root} ref={mainRef}>
                 <main>
@@ -285,9 +288,11 @@ CodeEditor.propTypes = {
     onClose: PropTypes.func,
     editorWidth: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     readOnly: PropTypes.bool,
+    showHeader: PropTypes.bool,
 };
 
 CodeEditor.defaultProps = {
+    showHeader: true,
     language: 'javascript',
     editorWidth: '100%',
     onChange: () => undefined,

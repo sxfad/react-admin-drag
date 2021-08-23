@@ -5,7 +5,7 @@ require('express-async-errors');
 const bodyParser = require('body-parser');
 const router = require('./router');
 
-module.exports = function(app) {
+module.exports = function(app, { apiPrefix = '/api' } = {}) {
   // 生成器静态文件目录
   app.use('/ra-gen/', express.static(path.join(__dirname, 'public')));
 
@@ -19,5 +19,5 @@ module.exports = function(app) {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
   });
 
-  router.forEach(item => app.use('/api/ra-gen', item));
+  router.forEach(item => app.use(apiPrefix + '/ra-gen', item));
 };

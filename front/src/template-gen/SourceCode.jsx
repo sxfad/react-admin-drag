@@ -1,10 +1,11 @@
-import React from "react"
-import Prism from "prismjs"
+import React from 'react';
+import Prism from 'prismjs';
+import { CodeEditor } from 'src/drag-page/components';
 
 export default class SourceCode extends React.Component {
     constructor(props) {
-        super(props)
-        this.ref = React.createRef()
+        super(props);
+        this.ref = React.createRef();
     }
 
     state = {
@@ -12,14 +13,14 @@ export default class SourceCode extends React.Component {
     };
 
     componentDidMount() {
-        this.highlight()
+        this.highlight();
 
         this.setHeight();
         window.addEventListener('resize', this.setHeight);
     }
 
     componentDidUpdate() {
-        this.highlight()
+        this.highlight();
     }
 
     setHeight = () => {
@@ -27,7 +28,7 @@ export default class SourceCode extends React.Component {
         console.log(winHeight);
         const height = winHeight - 286;
 
-        this.setState({containerHeight: height});
+        this.setState({ containerHeight: height });
     };
 
     componentWillUnmount() {
@@ -37,29 +38,21 @@ export default class SourceCode extends React.Component {
     highlight = () => {
         console.log(this.ref);
         if (this.ref && this.ref.current) {
-            Prism.highlightElement(this.ref.current)
+            Prism.highlightElement(this.ref.current);
         }
     };
 
     render() {
-        const {code, plugins, language, width = '100%'} = this.props;
-        const {containerHeight} = this.state;
+        const { code } = this.props;
+        const { containerHeight } = this.state;
         return (
-            <div ref={node => this.container = node}>
-                <pre
-                    style={{
-                        width,
-                        margin: 0,
-                        height: containerHeight,
-                        borderRadius: 0,
-                    }}
-                    className={!plugins ? "" : plugins.join(" ")}
-                >
-                    <code ref={this.ref} className={`language-${language}`}>
-                      {code}
-                    </code>
-                </pre>
+            <div ref={node => this.container = node} style={{ height: containerHeight }}>
+                <CodeEditor
+                    showHeader={false}
+                    value={code}
+                    readOnly
+                />
             </div>
-        )
+        );
     }
 }

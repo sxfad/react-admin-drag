@@ -668,7 +668,6 @@ export default class UserCenter extends Component {
             <PageContent loading={loading || deleting} style={{padding: 0, margin: 0}}>
                 <QueryBar style={{marginLeft: 0, marginRight: 0, paddingLeft: 0}}>
                     <Form
-                        layout={'inline'}
                         ref={form => this.form = form}
                         initialValues={{type: 'mysql', method: 'get', userName: 'admin', password: '123456'}}
                     >
@@ -700,6 +699,8 @@ export default class UserCenter extends Component {
                                                     name="dbUrl"
                                                     placeholder="mysql://username:password@host:port/database"
                                                     onChange={this.handleDbUrlChange}
+                                                    required={true}
+                                                    rules={[{required: true, message: '请输入数据库地址！'}]}
                                                 />
                                                 <FormItem
                                                     {...formProps}
@@ -710,6 +711,8 @@ export default class UserCenter extends Component {
                                                     name="tableName"
                                                     onChange={this.handleTableNameChange}
                                                     options={tables.map(item => ({value: item.tableName, label: `${item.tableName} ${item.comment}`}))}
+                                                    required={true}
+                                                    rules={[{required: true, message: '请选择数据库表!'}]}
                                                 />
                                             </Space>
                                         );
@@ -724,6 +727,8 @@ export default class UserCenter extends Component {
                                                     name="swaggerUrl"
                                                     placeholder="http(s)://host:port/path"
                                                     onChange={this.handleSwaggerChange}
+                                                    required={true}
+                                                    rules={[{required: true, message: '请输入接口地址！'}]}
                                                 />
                                                 <FormItem
                                                     {...formProps}
@@ -737,6 +742,7 @@ export default class UserCenter extends Component {
                                                         {value: 'put', label: 'PUT'},
                                                     ]}
                                                     onChange={this.handleSwaggerChange}
+                                                    rules={[{required: true, message: '请选择接口方法！'}]}
                                                 />
                                                 <FormItem
                                                     {...formProps}
@@ -762,8 +768,9 @@ export default class UserCenter extends Component {
                                                 label="模块名"
                                                 name="moduleName"
                                                 placeholder="比如：user-center"
-                                                rules={[{required: true, message: '请输入模块名！'}]}
                                                 onChange={this.handleModuleNameChange}
+                                                required={true}
+                                                rules={[{required: true, message: '请输入模块名！'}]}
                                             />
                                         );
                                     }

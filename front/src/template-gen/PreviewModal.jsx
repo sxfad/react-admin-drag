@@ -10,14 +10,11 @@ const {TabPane} = Tabs;
     modal: {
         title: '代码预览',
         width: '70%',
+        top: 50,
     },
 })
 export default class index extends Component {
     state = {};
-
-    componentDidMount() {
-
-    }
 
     render() {
         const {previewCode, onCancel} = this.props;
@@ -25,9 +22,9 @@ export default class index extends Component {
             <ModalContent
                 surplusSpace
                 footer={<Button onClick={onCancel}>关闭</Button>}
-                bodyStyle={{padding: '0 0 0 16px'}}
+                bodyStyle={{padding: 0}}
             >
-                <Tabs>
+                <Tabs tabBarStyle={{margin: '0 16px'}}>
                     {previewCode.map(item => {
                         const {config: {fileTypeName}, code} = item;
                         return (

@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
-import {Form, Button, Modal, Space} from 'antd';
-import {ExclamationCircleOutlined} from '@ant-design/icons';
-import {FormItem, Table, tableEditable, QueryBar} from '@ra-lib/admin';
+import React, { Component } from 'react';
+import { Form, Button, Modal, Space } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { FormItem, Table, tableEditable, QueryBar } from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
-import {PageContent} from '@ra-lib/admin';
+import { PageContent } from '@ra-lib/admin';
 import {
     DB_URL_STORE_KEY,
     renderTags,
@@ -26,7 +26,7 @@ const renderContent = (value, record) => {
 };
 
 
-@config({ajax: true})
+@config({ ajax: true })
 export default class Fast extends Component {
     state = {
         loading: false,
@@ -35,15 +35,15 @@ export default class Fast extends Component {
     };
 
     columns = [
-        {title: '表名', dataIndex: 'tableName', width: 200},
-        {title: '数据库注释', dataIndex: 'comment', width: 200},
+        { title: '表名', dataIndex: 'tableName', width: 200 },
+        { title: '数据库注释', dataIndex: 'comment', width: 200 },
         {
-            title: <span style={{paddingLeft: 10}}>中文名</span>, dataIndex: 'chinese', width: 250,
+            title: <span style={{ paddingLeft: 10 }}>中文名</span>, dataIndex: 'chinese', width: 250,
             formProps: (record, index) => {
                 return {
                     label: ' ',
                     colon: false,
-                    style: {width: 200},
+                    style: { width: 200 },
                     required: true,
                     tabIndex: index + 1, // index * 2 + 1
                     onBlur: (e) => {
@@ -54,14 +54,14 @@ export default class Fast extends Component {
             render: renderContent,
         },
         {
-            title: <span style={{paddingLeft: 10}}>列名</span>, dataIndex: 'field', width: 250,
+            title: <span style={{ paddingLeft: 10 }}>列名</span>, dataIndex: 'field', width: 250,
             formProps: (record, index) => {
                 if (record.isTable) return null;
 
                 return {
                     label: ' ',
                     colon: false,
-                    style: {width: 200},
+                    style: { width: 200 },
                     required: true,
                     tabIndex: index + 100, // index * 2 + 2
                     onBlur: (e) => {
@@ -71,9 +71,9 @@ export default class Fast extends Component {
             },
             render: (value, record) => {
                 if (record.isTable) {
-                    const tags = renderTags(record, () => this.setState({dataSource: [...this.state.dataSource]}));
+                    const tags = renderTags(record, () => this.setState({ dataSource: [...this.state.dataSource] }));
                     return {
-                        children: <div style={{textAlign: 'right'}}>{tags}</div>,
+                        children: <div style={{ textAlign: 'right' }}>{tags}</div>,
                         props: {
                             colSpan: 3,
                         },
@@ -85,10 +85,10 @@ export default class Fast extends Component {
         {
             title: '选项', dataIndex: 'options',
             render: (value, record) => {
-                const children = renderFieldTags(record, () => this.setState({dataSource: [...this.state.dataSource]}));
+                const children = renderFieldTags(record, () => this.setState({ dataSource: [...this.state.dataSource] }));
                 return {
                     children,
-                    props: {colSpan: record.isTable ? 0 : 1},
+                    props: { colSpan: record.isTable ? 0 : 1 },
                 };
             },
         },
@@ -98,21 +98,21 @@ export default class Fast extends Component {
     componentDidMount() {
         const dbUrl = window.localStorage.getItem(DB_URL_STORE_KEY) || '';
         if (dbUrl) {
-            this.form.setFieldsValue({dbUrl});
+            this.form.setFieldsValue({ dbUrl });
             // 初始化查询
             this.form.submit();
         }
     }
 
     handleSubmit = (values) => {
-        this.setState({loading: true});
+        this.setState({ loading: true });
         this.props.ajax.get('/ra-gen/tables', values)
             .then(res => {
-                const {dataSource, selectedRowKeys} = getTables(res);
+                const { dataSource, selectedRowKeys } = getTables(res);
 
-                this.setState({dataSource, selectedRowKeys});
+                this.setState({ dataSource, selectedRowKeys });
             })
-            .finally(() => this.setState({loading: false}));
+            .finally(() => this.setState({ loading: false }));
     };
 
     handleDbUrlChange = (e) => {
@@ -124,11 +124,11 @@ export default class Fast extends Component {
 
     handleGen = () => {
         Modal.confirm({
-            icon: <ExclamationCircleOutlined/>,
+            icon: <ExclamationCircleOutlined />,
             title: '同名文件将被覆盖，是否继续？',
             content: '代码文件直接生成到项目目录中，会引起webpack的热更新，当前页面有可能会重新加载。',
             onOk: () => {
-                const {selectedRowKeys, dataSource} = this.state;
+                const { selectedRowKeys, dataSource } = this.state;
                 const tables = dataSource.filter(item => selectedRowKeys.includes(item.id));
                 const result = tables.map(item => {
                     const children = item.children
@@ -152,26 +152,25 @@ export default class Fast extends Component {
                 const params = {
                     tables: result,
                 };
-                this.setState({loading: true});
-                this.props.ajax.post('/ra-gen/tables', params, {successTip: '生成成功！'})
+                this.setState({ loading: true });
+                this.props.ajax.post('/ra-gen/tables', params, { successTip: '生成成功！' })
                     .then(res => {
                         console.log(res);
                     })
-                    .finally(() => this.setState({loading: false}));
+                    .finally(() => this.setState({ loading: false }));
             },
         });
     };
 
     render() {
-        const {dataSource, selectedRowKeys, loading} = this.state;
+        const { dataSource, selectedRowKeys, loading } = this.state;
 
         return (
-            <PageContent style={{padding: 0, margin: 0}} loading={loading}>
-                <QueryBar style={{marginLeft: 0, marginRight: 0}}>
+            <PageContent style={{ padding: 0, margin: 0 }} loading={loading}>
+                <QueryBar style={{ marginLeft: 0, marginRight: 0 }}>
                     <Form
                         ref={form => this.form = form}
                         onFinish={this.handleSubmit}
-                        layout={'inline'}
                     >
                         <Space>
                             <FormItem
@@ -180,7 +179,8 @@ export default class Fast extends Component {
                                 placeholder="mysql://username:password@host:port/database"
                                 required
                                 onChange={this.handleDbUrlChange}
-                                style={{width: 400}}
+                                style={{ width: 400 }}
+                                rules={[{ required: true, message: '请输入数据库地址！' }]}
                             />
                             <FormItem>
                                 <Space>
@@ -196,7 +196,7 @@ export default class Fast extends Component {
                     fitHeight
                     rowSelection={{
                         selectedRowKeys,
-                        onChange: selectedRowKeys => this.setState({selectedRowKeys}),
+                        onChange: selectedRowKeys => this.setState({ selectedRowKeys }),
                         renderCell: (checked, record, index, originNode) => record.isTable ? originNode : null,
                     }}
                     dataSource={dataSource}
