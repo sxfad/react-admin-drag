@@ -5,7 +5,6 @@ import {
     formatMenus,
     getContainerId,
 } from '@ra-lib/admin';
-import {IS_SUB} from 'src/config';
 
 export default {
     /**
@@ -16,8 +15,6 @@ export default {
         // 登录页面，不加载
         if (isLoginPage()) return [];
 
-        // 作为子应用，不加载
-        if (IS_SUB) return [];
         //
         // // 获取服务端数据，并做缓存，防止多次调用接口
         // return this.getMenuData.__CACHE = this.getMenuData.__CACHE
@@ -61,7 +58,6 @@ export default {
         if (isLoginPage()) return [];
 
         // 作为子应用，不加载
-        if (IS_SUB) return [];
         return [];
         //
         // const loginUser = getLoginUser();

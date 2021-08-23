@@ -106,7 +106,7 @@ export default class Fast extends Component {
 
     handleSubmit = (values) => {
         this.setState({loading: true});
-        this.props.ajax.get('/gen/tables', values, {baseURL: '/'})
+        this.props.ajax.get('/ra-gen/tables', values)
             .then(res => {
                 const {dataSource, selectedRowKeys} = getTables(res);
 
@@ -153,7 +153,7 @@ export default class Fast extends Component {
                     tables: result,
                 };
                 this.setState({loading: true});
-                this.props.ajax.post('/gen/tables', params, {baseURL: '/', successTip: '生成成功！'})
+                this.props.ajax.post('/ra-gen/tables', params, {successTip: '生成成功！'})
                     .then(res => {
                         console.log(res);
                     })

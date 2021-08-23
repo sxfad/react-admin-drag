@@ -78,7 +78,7 @@ export default config({
                     visible={visible}
                     title="选择文件路径"
                     width={450}
-                    zIndex={1999}
+                    zIndex={1001}
                     onCancel={() => setVisible(false)}
                     footer={(
                         <Space>

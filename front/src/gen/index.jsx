@@ -8,7 +8,6 @@ import s from './style.less';
 const {TabPane} = Tabs;
 
 export default function Gen() {
-
     const [activeKey, setActiveKey] = useState('single');
 
     return (

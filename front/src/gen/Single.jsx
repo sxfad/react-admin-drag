@@ -261,7 +261,7 @@ export default class UserCenter extends Component {
         if (!dbUrl) return;
 
         this.setState({loading: true});
-        this.props.ajax.get('/gen/tables', {dbUrl}, {baseURL: '/'})
+        this.props.ajax.get('/ra-gen/tables', {dbUrl})
             .then(res => {
                 const {dataSource} = getTables(res);
                 this.setState({tables: dataSource}, () => {
@@ -298,7 +298,7 @@ export default class UserCenter extends Component {
         };
 
         this.setState({loading: true});
-        this.props.ajax.get('/gen/swagger', params, {baseURL: '/'})
+        this.props.ajax.get('/ra-gen/swagger', params)
             .then(res => {
                 const {moduleName: tableName, queries, columns, forms} = res;
 
@@ -567,7 +567,7 @@ export default class UserCenter extends Component {
         const params = await this.getParams(true);
 
         this.setState({loading: true});
-        this.props.ajax.post('/gen/tables', params, {baseURL: '/', successTip: '生成成功！'})
+        this.props.ajax.post('/ra-gen/tables', params, {successTip: '生成成功！'})
             .finally(() => this.setState({loading: false}));
     };
 
@@ -575,7 +575,7 @@ export default class UserCenter extends Component {
         const params = await this.getParams();
 
         this.setState({loading: true});
-        this.props.ajax.post('/gen/preview', params, {baseURL: '/'})
+        this.props.ajax.post('/ra-gen/preview', params)
             .then(res => {
                 this.setState({previewVisible: true, previewCode: res});
             })
