@@ -16,7 +16,6 @@ import config from 'src/commons/config-hoc';
 import {isMac} from 'src/drag-page/util';
 import {Help} from 'src/drag-page/components';
 import SourceCode from '../source-code';
-import theme from 'src/theme.less'
 import s from './style.less';
 
 export default React.memo(config({
@@ -58,12 +57,13 @@ export default React.memo(config({
     const showLabel = false;
     const tools = useMemo(() => {
         return [
-            {
-                key: 'contentEditable',
-                icon: <EditOutlined style={contentEditable ? {color: theme.primaryColor} : undefined} />,
-                label: '直接编辑文字',
-                onClick: () => dragPageAction.setFields({contentEditable: !contentEditable}),
-            },
+            viewMode === 'layout' ?
+                {
+                    key: 'contentEditable',
+                    icon: <EditOutlined/>,
+                    label: '直接编辑文字',
+                    onClick: () => dragPageAction.setFields({contentEditable: !contentEditable}),
+                } : null,
             {
                 key: 'layout',
                 icon: <FormOutlined/>,
@@ -127,8 +127,8 @@ export default React.memo(config({
                 label: '帮助',
                 onClick: () => setVisible(true),
             },
-        ];
-    }, [dragPageAction, contentEditable, selectedNode, onSave, onSaveAs]);
+        ].filter(item => !!item);
+    }, [dragPageAction, contentEditable, viewMode, selectedNode, onSave, onSaveAs]);
     return (
         <div className={s.root}>
             <div className={s.left}>
@@ -142,7 +142,7 @@ export default React.memo(config({
                         return <div key={index} className={s.divider}/>;
                     }
 
-                    const isActive = key === viewMode;
+                    const isActive = key === viewMode || (key === 'contentEditable' && contentEditable);
 
                     if (disabled) onClick = undefined;
 
