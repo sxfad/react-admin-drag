@@ -11,12 +11,7 @@ import * as raLibComponent from '@ra-lib/admin';
 import * as components from 'src/drag-page/customer-components';
 import * as antdComponent from 'antd/es';
 import * as antdIcon from '@ant-design/icons';
-import newImage from './drap-images/new.svg';
-import componentImage from './drap-images/component.png';
-import replaceImage from './drap-images/replace.svg';
-import propsImage from './drap-images/props.svg';
-import wrapperImage from './drap-images/wrapper.svg';
-import moveImage from './drap-images/move.svg';
+import componentImage from './component.png';
 import {v4 as uuid} from 'uuid';
 import PubSub from 'PubSub';
 import {useEffect, useState, createElement} from 'react';
@@ -509,16 +504,6 @@ export function useNodeChange(node) {
     return refresh;
 }
 
-
-const dragImages = {
-    replace: replaceImage,
-    props: propsImage,
-    wrapper: wrapperImage,
-    new: newImage,
-    move: moveImage,
-    component: componentImage,
-};
-
 export async function getImageUrlByClipboard(e) {
     return new Promise((resolve, reject) => {
         const items = e.clipboardData && e.clipboardData.items;
@@ -761,9 +746,9 @@ export function getIdByElement(element) {
  */
 const img = new Image();
 // img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQYV2NgAAIAAAUAAarVyFEAAAAASUVORK5CYII=';
-img.src = dragImages.component;
+img.src = componentImage;
 
-export function setDragImage(e, dropType) {
+export function setDragImage(e) {
     e.dataTransfer.setDragImage(img, -20, 16);
 }
 

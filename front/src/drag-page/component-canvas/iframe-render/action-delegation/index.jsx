@@ -213,7 +213,6 @@ export default React.memo(function DragDelegation(props) {
             };
 
             e.dataTransfer.dropEffect = cursors[dropType] || cursors[type] || 'auto';
-            setDragImage(e, dropType || type);
         };
 
         const onOver = e => {
