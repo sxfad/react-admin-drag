@@ -1,20 +1,20 @@
-import React, {useCallback, useState, useMemo} from 'react';
-import {Button, Form} from 'antd';
-import config from 'src/commons/config-hoc';
+import {useCallback, useState, useMemo} from 'react';
 import {
     PageContent,
-    batchDeleteConfirm,
+    Table,
     QueryBar,
     FormItem,
-    Table,
     Operator,
     Pagination,
+    batchDeleteConfirm
 } from '@ra-lib/admin';
+import {Button, Form, Space} from 'antd';
+import config from 'src/commons/config-hoc';
 import EditModal from './EditModal';
 
 export default config({
     path: '/department_users',
-})((props) => {
+})(function DepartmentUser (props){
     const [loading, setLoading] = useState(false);
     const [pageNum, setPageNum] = useState(1);
     const [pageSize, setPageSize] = useState(20);
@@ -24,6 +24,7 @@ export default config({
     const [conditions, setConditions] = useState();
     const [form] = Form.useForm();
 
+    // 查询参数
     const params = useMemo(() => {
         return {
             ...conditions,
@@ -91,6 +92,7 @@ export default config({
         await deleteRecord(record?.id);
         refreshSearch();
     }, [loading, deleteRecord, refreshSearch]);
+    
     const handleBatchDelete = useCallback(async () => {
         if(loading) return;
         await batchDeleteConfirm(selectedRowKeys.length);
@@ -124,15 +126,18 @@ export default config({
                         label="是否是领导"
                         name="isLeader"
                     />
-                    <FormItem layout>
-                        <Button type="primary" htmlType="submit">查询</Button>
-                        <Button onClick={() => form.resetFields()}>重置</Button>
-                        <Button type="primary" onClick={() => setVisible(true) || setId(null)}>添加</Button>
-                        <Button danger disabled={disabledDelete} onClick={handleBatchDelete}>删除</Button>
+                    <FormItem>
+                        <Space>
+                            <Button type="primary" htmlType="submit">查询</Button>
+                            <Button onClick={() => form.resetFields()}>重置</Button>
+                            <Button type="primary" onClick={() => setVisible(true) || setRecord(null)}>添加</Button>
+                            <Button danger disabled={disabledDelete} onClick={handleBatchDelete}>删除</Button>
+                        </Space>
                     </FormItem>
                 </Form>
             </QueryBar>
             <Table
+                fitHeight
                 serialNumber
                 rowSelection={{
                     selectedRowKeys,

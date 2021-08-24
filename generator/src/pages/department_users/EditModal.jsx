@@ -1,11 +1,11 @@
-import React, {useState, useCallback} from 'react';
+import {useState, useCallback} from 'react';
 import {Form} from 'antd';
 import {FormItem, ModalContent} from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
 
 export default config({
     modal: props => props.isEdit ? '修改' : '添加',
-})(props => {
+})(function DepartmentUserEditModal(props){
     const {isEdit, record, onOk} = props;
     const [loading, setLoading] = useState(false);
     const [form] = Form.useForm();
@@ -36,7 +36,7 @@ export default config({
         }
 
         onOk && onOk();
-    }, [loading, isEdit, update, save]);
+    }, [loading, isEdit, update, save, onOk]);
 
     const layout = {
         labelCol: {flex: '100px'},
