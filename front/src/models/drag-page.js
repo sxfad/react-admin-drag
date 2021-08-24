@@ -211,6 +211,7 @@ export default {
      * @param state
      */
     insertNode({draggingNode: _draggingNode, targetNode, targetHoverPosition}, state) {
+        if (!_draggingNode) return;
         const {pageConfig, selectedNode} = state;
         let {config: draggingNode, dropType, propsToSet} = _draggingNode;
         let nextSelectedNode = null;

@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import {useThrottleFn} from 'ahooks';
 import config from 'src/commons/config-hoc';
-import {getTargetNode} from 'src/drag-page/util';
+import {getTargetNode, setDragImage} from 'src/drag-page/util';
 
 import s from './style.less';
 import {LinkPoint} from 'src/drag-page/components';
@@ -76,6 +76,7 @@ export default config({
             config: nodeData,
             type: 'move',
         });
+        setDragImage(e);
     }, [dragPageAction, draggable, nodeData]);
 
     const THROTTLE_TIME = 100;
