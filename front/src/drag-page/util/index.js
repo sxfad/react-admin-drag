@@ -46,7 +46,6 @@ export function getFieldUUID() {
     return uuid().replaceAll('-', '_');
 }
 
-
 /**
  * 获取字段对应关系
  */
@@ -126,7 +125,6 @@ export function deletePageStateField(pageState, data) {
     return pageState;
 }
 
-
 /**
  * 删除pageFunction中数据
  * @param pageFunction
@@ -146,7 +144,6 @@ export function deletePageFunctionField(pageFunction, data) {
 
     return pageFunction;
 }
-
 
 /**
  * 删除pageVariable中数据
@@ -341,7 +338,6 @@ function findLinkTargetComponentIds(options) {
 
     return result;
 }
-
 
 // 获取关联元素位置
 export function findLinkTargetsPosition(options) {
@@ -925,11 +921,11 @@ export function getElementInfo(element, options = {}) {
     let hoverPosition;
 
     if (options?.hoverPosition) {
-        let {documentElement, pageY, pageX, horizontal, simple} = options;
-        const {scrollTop, scrollLeft} = documentElement;
+        let {/*documentElement, */pageY, pageX, horizontal, simple} = options;
+        // const {scrollTop, scrollLeft} = documentElement;
 
-        pageY = pageY - scrollTop;
-        pageX = pageX - scrollLeft;
+        // pageY = pageY - scrollTop;
+        // pageX = pageX - scrollLeft;
         // 水平
         let horizontalTriggerSize = TRIGGER_SIZE;
         if (width < TRIGGER_SIZE * 3) horizontalTriggerSize = width / 3;

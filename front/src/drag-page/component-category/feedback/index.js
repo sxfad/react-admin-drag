@@ -247,7 +247,7 @@ export default [
                 config: {
                     componentName: 'ModalInfo',
                     props: {
-                        title: '信息提示',
+                        title: '温馨提示',
                         content: '这个是信息内容！',
                     },
                 },

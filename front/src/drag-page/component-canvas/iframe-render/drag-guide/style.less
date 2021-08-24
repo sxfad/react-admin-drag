@@ -1,7 +1,8 @@
 @guide-color: rgb(0, 180, 0);
 @select-guide-color: red;
-@guide-size: 2px;
+@guide-size: 1px;
 @large-size: 15px;
+@z-index: 999;
 
 .dragging {
     filter: blur(2px);
@@ -35,7 +36,7 @@
         transform-origin: 0 0;
         transform: scale(.8);
         opacity: .5;
-        z-index: 9999;
+        z-index: @z-index;
     }
 }
 
@@ -60,10 +61,10 @@
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 9999;
+    z-index: @z-index;
     background: rgba(0, 255, 0, 0.05);
     pointer-events: none;
-    outline: 1px solid @guide-color;
+    outline: 1px dashed @guide-color;
     overflow: hidden;
     font-size: 18px;
     color: @guide-color;
@@ -75,7 +76,7 @@
     pointer-events: none;
     height: @guide-size;
     align-items: center;
-    z-index: 9999;
+    z-index: @z-index;
 
     &:before,
     &:after {
@@ -107,7 +108,7 @@
         &:after {
             content: "";
             flex: 1 1;
-            border-bottom: @guide-size solid @guide-color;
+            border-bottom: @guide-size dashed @guide-color;
             margin: auto;
         }
     }
@@ -137,7 +138,7 @@
 
             &:before,
             &:after {
-                border-left: @guide-size solid @guide-color;
+                border-left: @guide-size dashed @guide-color;
             }
         }
     }
