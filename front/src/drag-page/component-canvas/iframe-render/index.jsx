@@ -40,6 +40,7 @@ export default React.memo(config({
             componentPaneWidth: state.dragPage.componentPaneWidth,
             propsPaneExpended: state.dragPage.propsPaneExpended,
             propsPaneWidth: state.dragPage.propsPaneWidth,
+            contentEditable: state.dragPage.contentEditable,
         };
     },
 })(function IframeRender(props) {
@@ -69,6 +70,7 @@ export default React.memo(config({
         propsPaneWidth,
         componentPaneExpended,
         propsPaneExpended,
+        contentEditable,
         action: {dragPage: dragPageAction},
     } = props;
 
@@ -279,11 +281,13 @@ export default React.memo(config({
                 targetNode={targetNode}
                 targetHoverPosition={targetHoverPosition}
             />
-            <EditableAction
-                pageConfig={pageConfig}
-                canvasDocument={canvasDocument}
-                dragPageAction={dragPageAction}
-            />
+            {contentEditable ? (
+                <EditableAction
+                    pageConfig={pageConfig}
+                    canvasDocument={canvasDocument}
+                    dragPageAction={dragPageAction}
+                />
+            ) : null}
         </>
     );
 }));

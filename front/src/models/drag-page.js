@@ -67,6 +67,8 @@ export default {
         // 分类滚动方式，无论是否可见都强制滚动
         categoryScrollType: 'byClick',
 
+        // 页面文字是否可以直接编辑
+        contentEditable: false,
         // 页面尺寸
         pageWidth: 'auto',
         pageHeight: '100%',
@@ -100,6 +102,7 @@ export default {
         'componentPaneWidth',
         'componentPaneActiveKey',
         'componentPaneExpended',
+        'contentEditable',
 
         'propsPaneActiveKey',
         'propsPaneWidth',
