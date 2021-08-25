@@ -5,8 +5,8 @@ import {
     SaveOutlined,
     DeleteOutlined,
     CloudServerOutlined,
-    SwapLeftOutlined,
-    SwapRightOutlined,
+    UndoOutlined,
+    RedoOutlined,
     QuestionCircleOutlined,
     EditOutlined,
 } from '@ant-design/icons';
@@ -81,13 +81,13 @@ export default React.memo(config({
             },
             {
                 key: 'undo',
-                icon: <SwapLeftOutlined/>,
-                label: '上一步',
+                icon: <UndoOutlined/>,
+                label: `撤销(${isMac ? '⌘' : 'ctrl'}+z)`,
             },
             {
                 key: 'redo',
-                icon: <SwapRightOutlined/>,
-                label: '下一步',
+                icon: <RedoOutlined/>,
+                label: `重做(${isMac ? '⌘' : 'ctrl'}+shift+z)`,
             },
             {
                 key: 'divider',
@@ -107,7 +107,7 @@ export default React.memo(config({
             {
                 key: 'saveAs',
                 icon: <CloudServerOutlined/>,
-                label: '另存为',
+                label: `另存为(${isMac ? '⌘' : 'ctrl'}+shift+s)`,
                 disabled: !selectedNode,
                 onClick: () => onSaveAs && onSaveAs(selectedNode),
             },
