@@ -1,6 +1,6 @@
-import base from '../../base';
-import common from '../common';
-import dataShow from '../../data-show';
+import base from '../base';
+import common from '../module/common';
+import dataShow from '../data-show';
 
 const pageContentConfig = base.find(item => item.subTitle === 'PageContent').children[0].config;
 const queryBarConfig = common.find(item => item.subTitle === 'QueryBar').children[0].config;
@@ -11,11 +11,12 @@ const paginationConfig = common[2].children[0].config;
 
 export default [
     {
-        title: '常用页面',
-        subTitle: 'Page',
+        title: '列表页',
+        subTitle: 'ListPage',
         children: [
             {
-                title: '列表页',
+                title: '标准列表页',
+                renderPreview: false,
                 config: {
                     componentName: 'PageContent',
                     children: [
@@ -27,18 +28,6 @@ export default [
                                 tableConfig,
                                 paginationConfig,
                             ],
-                        },
-                    ],
-                },
-            },
-            {
-                title: '两列表单',
-                config: {
-                    componentName: 'PageContent',
-                    children: [
-                        {
-                            componentName: 'Text',
-                            props: { text: 'TODO' },
                         },
                     ],
                 },

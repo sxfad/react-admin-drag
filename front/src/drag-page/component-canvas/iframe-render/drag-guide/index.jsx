@@ -48,6 +48,7 @@ export default React.memo(function DragGuide(props) {
 
         const guideNameEle = canvasDocument.getElementById('drop-guide-name');
         const targetElement = canvasDocument.querySelector(`.id_${targetNode?.id}`);
+        if (!targetElement) return;
 
         const targetElementSize = getElementInfo(targetElement, {
             documentElement: canvasDocument.documentElement,

@@ -9,9 +9,11 @@ import feedback from './feedback';
 import other from './other';
 import icon from './icon';
 import baseModule from './module';
+import page from './page';
 
 
 export default [
+    { title: '常用页面', children: page },
     { title: '常用模块', children: baseModule },
     { title: '默认', children: base },
     { title: '通用', children: common },

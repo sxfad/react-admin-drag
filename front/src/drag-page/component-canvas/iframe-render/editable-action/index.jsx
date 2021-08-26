@@ -1,9 +1,9 @@
-import {useCallback, useEffect} from 'react';
-import {getComponentConfig} from 'src/drag-page/component-config';
-import {debounce} from 'lodash';
-import {v4 as uuid} from 'uuid';
-import {/*isNode,*/ loopNode} from 'src/drag-page/util/node-util';
-import {usePageConfigChange} from 'src/drag-page/util';
+import { useCallback, useEffect } from 'react';
+import { getComponentConfig } from 'src/drag-page/component-config';
+import { debounce } from 'lodash';
+import { v4 as uuid } from 'uuid';
+import {/*isNode,*/ loopNode } from 'src/drag-page/util/node-util';
+import { usePageConfigChange } from 'src/drag-page/util';
 // import {getTextFromClipboard} from 'src/drag-page/util';
 
 export default function EditableAction(props) {
@@ -17,17 +17,17 @@ export default function EditableAction(props) {
 
     const loop = useCallback(cb => loopNode(pageConfig, node => {
         const className = `id_${node.id}`;
-        const {editableContents} = getComponentConfig(node.componentName) || {};
+        const { editableContents } = getComponentConfig(node.componentName) || {};
 
         // 如果节点没有配置可编辑信息，直接返回
         if (!editableContents?.length) return;
 
         editableContents.forEach(item => {
-            let {selector} = item;
+            let { selector } = item;
 
             let elementsSelector = `.${className}`;
             if (typeof selector === 'function') {
-                elementsSelector = selector({node, pageConfig});
+                elementsSelector = selector({ node, pageConfig });
             }
             if (typeof selector === 'string') {
                 elementsSelector = `.${className} ${selector}`;
@@ -41,7 +41,7 @@ export default function EditableAction(props) {
             Array.from(elements)
                 // 过滤出有村文本节点的 dom 元素
                 .filter(ele => Array.from(ele.childNodes).some(node => node.nodeType === Node.TEXT_NODE))
-                .forEach((ele, index) => cb({elements, ele, index, node, item}));
+                .forEach((ele, index) => cb({ elements, ele, index, node, item }));
         });
     }), [canvasDocument, pageConfig]);
 
@@ -51,8 +51,8 @@ export default function EditableAction(props) {
         const actions = {};
 
         let tabIndex = 1000;
-        loop(({elements, ele, index, node, item}) => {
-            let {onInput, onBlur, onClick, propsField} = item;
+        loop(({ elements, ele, index, node, item }) => {
+            let { onInput, onBlur, onClick, propsField } = item;
             tabIndex++;
 
             let handleInput = () => undefined;
@@ -83,7 +83,7 @@ export default function EditableAction(props) {
             const prevOutline = window.getComputedStyle(ele).outline;
             const prevStyleOutline = ele.style.outline;
 
-            const options = {index, node, pageConfig, dragPageAction, canvasDocument};
+            const options = { index, node, pageConfig, dragPageAction, canvasDocument };
 
             function handleClick(e) {
                 e.preventDefault();
@@ -107,6 +107,9 @@ export default function EditableAction(props) {
                     contentWindow.getSelection().removeAllRanges();
                     contentWindow.getSelection().addRange(range);
                 }
+
+                // 解决tab失去焦点问题，这里并没有触发死循环，上一个handleFocus已经被卸载了?
+                setTimeout(() => e.target.focus());
             }
 
             let changed = false;
@@ -117,7 +120,7 @@ export default function EditableAction(props) {
                     handleInput(e);
                 }
                 changed = true;
-            }, 300);
+            }, 100);
 
             function handleBlur(e) {
                 ele.style.outline = prevStyleOutline;
@@ -171,7 +174,7 @@ export default function EditableAction(props) {
             actions[actionKey] = eventMap;
         });
         return () => {
-            loop(({ele}) => {
+            loop(({ ele }) => {
                 // ele.style.userModify = '';
                 ele.removeAttribute('contenteditable');
                 ele.removeAttribute('tabindex');

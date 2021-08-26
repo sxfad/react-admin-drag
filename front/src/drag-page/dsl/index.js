@@ -217,6 +217,11 @@ export default function schemaToCode(options = {}) {
             } else {
                 Object.entries(obj)
                     .forEach(([key, value]) => {
+                        if (key === 'key' || key.startsWith('_')) {
+                            Reflect.deleteProperty(obj, key);
+                            return;
+                        }
+
                         if (typeof value === 'object' && !isNode(value)) {
                             if (key === 'style') {
                                 const style = parseStyle(value);
@@ -239,11 +244,6 @@ export default function schemaToCode(options = {}) {
         loop(props, (obj, key, value) => {
             const fieldOption = getFieldOption(node, key) || {};
             const {functionType, defaultValue} = fieldOption;
-
-            if (key === 'key' || key.startsWith('_')) {
-                Reflect.deleteProperty(obj, key);
-                return;
-            }
 
             // 删除默认值
             if (JSON.stringify(defaultValue) === JSON.stringify(value)) {
