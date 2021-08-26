@@ -349,6 +349,7 @@ export default [
                 config: {
                     componentName: 'Table',
                     props: {
+                        fitHeight: true,
                         pagination: false,
                         dataSource: Array.from({length: 5}).map((item, index) => {
                             return {id: '' + index, name: '张三', age: 25};

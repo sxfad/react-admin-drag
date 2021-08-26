@@ -5,7 +5,7 @@ import parserBabel from 'prettier/parser-babel';
 import inflection from 'inflection';
 import {getComponentConfig} from 'src/drag-page/component-config';
 import {isNode, loopNode} from 'src/drag-page/util/node-util';
-import { getComponent, getFieldOption, getFieldsMap, getFieldUUID } from 'src/drag-page/util';
+import {getComponent, getFieldOption, getFieldsMap, getFieldUUID} from 'src/drag-page/util';
 
 export default function schemaToCode(options = {}) {
     let {
@@ -513,19 +513,21 @@ function getFunctionCode(options) {
     // 替换state
     Object.keys(pageState).forEach(key => {
         const field = stateFieldsMap[key];
-        jsxStr = jsxStr.replace(`"state.${key}"`, `{${field}}`);
+        jsxStr = jsxStr.replaceAll(`="state.${key}"`, `={${field}}`);
+        jsxStr = jsxStr.replaceAll(`:'state.${key}'`, `:${field}`);
     });
 
     // 替换function
     Object.keys(pageFunction).forEach(key => {
         const field = functionFieldsMap[key];
-        jsxStr = jsxStr.replace(`"func.${key}"`, `{${field}}`);
+        jsxStr = jsxStr.replaceAll(`="func.${key}"`, `={${field}}`);
+        jsxStr = jsxStr.replaceAll(`:'func.${key}'`, `:${field}`);
     });
 
     // 替换variable
     Object.keys(pageVariable).forEach(key => {
         const field = variableFieldsMap[key];
-        jsxStr = jsxStr.replace(`"variable.${key}"`, `{${field}}`);
+        jsxStr = jsxStr.replaceAll(`"variable.${key}"`, `{${field}}`);
     });
 
     const reactHooks = [];
