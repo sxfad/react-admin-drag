@@ -89,26 +89,27 @@ export const defaultConfig = {
     //     },
     // },
     // hooks: {
-        // beforeSchemaEdit // scheme 源码编辑之前出发
+    // beforeSchemaEdit // scheme 源码编辑之前出发
 
-        // 渲染相关:：参数 {dragPageState, dragPageAction, node, NodeRender, renderProps}
-        // beforeRender // 渲染之前触发，返回false不渲染
-        // afterRender // 渲染之后触发
+    // 渲染相关:：参数 {dragPageState, dragPageAction, node, NodeRender, renderProps}
+    // beforeRender // 渲染之前触发，返回false不渲染
+    // afterRender // 渲染之后触发
+    // renderChildren // 自定义渲染子组件
 
-        // 加入 pageConfig相关：参数 {dragPageState, node, parentNode, childNode}
-        // beforeAdd, // 返回false， 不添加
-        // afterAdd,
-        // beforeAddChildren // 返回false，不允许添加
-        // afterAddChildren
+    // 加入 pageConfig相关：参数 {dragPageState, node, parentNode, childNode}
+    // beforeAdd, // 返回false， 不添加
+    // afterAdd,
+    // beforeAddChildren // 返回false，不允许添加
+    // afterAddChildren
 
-        // 删除相关：参数 {dragPageState, node, parentNode, childNode}
-        // beforeDelete,  // 返回false，不删除
-        // afterDelete,
-        // beforeDeleteChildren // 返回false，不允许删除
-        // afterDeleteChildren
+    // 删除相关：参数 {dragPageState, node, parentNode, childNode}
+    // beforeDelete,  // 返回false，不删除
+    // afterDelete,
+    // beforeDeleteChildren // 返回false，不允许删除
+    // afterDeleteChildren
 
-        // 修改
-        // afterPropsChange {dragPageAction, node,}
+    // 修改
+    // afterPropsChange {dragPageAction, node,}
     // },
     // // 组件属性配置信息
     // fields: [
@@ -244,7 +245,6 @@ export function getComponentDisplayName(node, render) {
 
     return name;
 }
-
 
 
 export default result;

@@ -226,6 +226,17 @@ export default [
                     ],
                 },
             },
+            {
+                title: '描述列表项',
+                renderPreview: true,
+                config: {
+                    componentName: 'Descriptions.Item',
+                    props: {label: '标签'},
+                    children: [
+                        {componentName: 'Text', props: {text: '内容'}},
+                    ],
+                },
+            },
         ],
     },
     {

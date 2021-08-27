@@ -65,6 +65,7 @@ const NodeRender = React.memo(function(renderNodeProps) {
         hooks: {
             beforeRender,
             afterRender,
+            renderChildren,
         } = {},
     } = componentConfig;
 
@@ -170,28 +171,33 @@ const NodeRender = React.memo(function(renderNodeProps) {
 
     const component = getComponent(config).component;
 
-    let childrenEle = null;
-    if (children?.length > 1) {
-        childrenEle = children.map(childConfig => (
-            <NodeRender
-                key={childConfig.id}
-                {...renderProps}
-                isPreview={isPreview || childrenDraggable === false}
-                config={childConfig}
-            />
-        ));
-    }
-    if (children?.length === 1) {
-        const childConfig = children[0];
-        childrenEle = (
-            <NodeRender
-                key={childConfig.id}
-                {...renderProps}
-                isPreview={isPreview || childrenDraggable === false}
-                config={childConfig}
-            />
-        );
-    }
+    let childrenEle = (() => {
+        if (renderChildren) return renderChildren(hooksArgs);
+
+        if (children?.length > 1) {
+            return children.map(childConfig => (
+                <NodeRender
+                    key={childConfig.id}
+                    {...renderProps}
+                    isPreview={isPreview || childrenDraggable === false}
+                    config={childConfig}
+                />
+            ));
+        }
+        if (children?.length === 1) {
+            const childConfig = children[0];
+            return (
+                <NodeRender
+                    key={childConfig.id}
+                    {...renderProps}
+                    isPreview={isPreview || childrenDraggable === false}
+                    config={childConfig}
+                />
+            );
+        }
+
+        return null;
+    })();
 
     // 组件样式，将组件id拼接到样式中，有些组件无法自定义属性，统一通过样式标记
     const cls = [props.className, `id_${id}`, className].filter(item => !!item).join(' ');
