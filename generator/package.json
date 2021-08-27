@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "publish": "lerna publish",
     "start": "nodemon --exec \"node test.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,6 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "express": "^4.17.1",
+    "lerna": "^4.0.0",
     "nodemon": "^2.0.12"
   },
   "dependencies": {
