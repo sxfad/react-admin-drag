@@ -4,7 +4,7 @@ import {
     findParentNodeById,
     insertAfter,
     insertBefore,
-    insertChildren,
+    insertChildren, loopNode,
     replaceNode,
     setNodeId,
 } from 'src/drag-page/util/node-util';
@@ -287,21 +287,15 @@ export default {
      * @param state
      */
     insertNode({ draggingNode: _draggingNode, targetNode, targetHoverPosition }, state) {
-        if (!_draggingNode) return;
         const { pageConfig, selectedNode } = state;
+
+        // 拖拽节点不存在，直接返回
+        if (!_draggingNode) return;
+        // 目标节点不存在，直接返回
+        if (!targetNode && pageConfig.componentName !== 'DragHolder') return;
         let { config: draggingNode, dropType, propsToSet } = _draggingNode;
-        let nextSelectedNode = null;
-        // 根节点为站位符时，直接替换
-        if (pageConfig.componentName === 'DragHolder') {
-            return {
-                pageConfig: draggingNode,
-                selectedNode: draggingNode,
-            };
-        }
 
-        if (!targetNode) return null;
         const targetNodeConfig = getComponentConfig(targetNode?.componentName);
-
         const targetParentNode = findParentNodeById(pageConfig, targetNode?.id);
         const targetParentNodeConfig = getComponentConfig(targetParentNode?.componentName);
 
@@ -327,6 +321,19 @@ export default {
         beforeAddState = beforeAdd({ dragPageState: state, node: draggingNode, parentNode: draggingParentNode });
         if (beforeAddState === false) return null;
 
+        // 所有的子节点都触发 beforeAdd
+        loopNode(draggingNode, node => {
+            const nodeConfig = getComponentConfig(node?.componentName);
+            const parentNode = findParentNodeById(draggingNode, node?.id);
+            const {
+                beforeAdd = () => undefined,
+            } = (nodeConfig?.hooks || {});
+
+            beforeAdd({ dragPageState: state, node, parentNode });
+        });
+
+        let nextSelectedNode = null;
+
         const {
             beforeAddChildren: parentBeforeAddChildren = () => undefined,
             afterAddChildren: parentAfterAddChildren = () => undefined,
@@ -338,6 +345,14 @@ export default {
         // 节点上propsToSet优先
         if (draggingNode.propsToSet) {
             propsToSet = draggingNode.propsToSet;
+        }
+
+        // 根节点为站位符时，直接替换
+        if (pageConfig.componentName === 'DragHolder') {
+            return {
+                pageConfig: draggingNode,
+                selectedNode: draggingNode,
+            };
         }
 
         // 设置属性 state func node等都有可能
@@ -362,6 +377,7 @@ export default {
             ]);
         }
 
+        // 作为包裹
         if (dropType === 'wrapper') {
             // 移除拖动节点
             deleteNodeById(pageConfig, draggingNode?.id);
@@ -381,6 +397,7 @@ export default {
             ]);
         }
 
+        // 替换目标节点
         if (dropType === 'replace') {
             // 保留wrapper
             draggingNode.wrapper = targetNode.wrapper;
@@ -482,6 +499,17 @@ export default {
         }
 
         afterAddState = afterAdd({ dragPageState: state, node: draggingNode, parentNode: draggingParentNode });
+
+        // 所有的子节点都触发 beforeAdd
+        loopNode(draggingNode, node => {
+            const nodeConfig = getComponentConfig(node?.componentName);
+            const parentNode = findParentNodeById(draggingNode, node?.id);
+            const {
+                afterAdd = () => undefined,
+            } = (nodeConfig?.hooks || {});
+
+            afterAdd({ dragPageState: state, node, parentNode });
+        });
 
         return {
             // 选中刚拖拽的节点

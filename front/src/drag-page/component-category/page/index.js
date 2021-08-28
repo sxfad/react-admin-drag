@@ -19,17 +19,12 @@ export default [
                 title: '标准列表页',
                 image: ListPageImage,
                 config: {
-                    componentName: 'PageContent',
+                    ...pageContentConfig,
                     children: [
-                        {
-                            ...pageContentConfig,
-                            children: [
-                                queryBarConfig,
-                                toolBarConfig,
-                                tableConfig,
-                                paginationConfig,
-                            ],
-                        },
+                        queryBarConfig,
+                        toolBarConfig,
+                        tableConfig,
+                        paginationConfig,
                     ],
                 },
             },
