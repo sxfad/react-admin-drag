@@ -109,7 +109,7 @@ export default function EditableAction(props) {
                 }
 
                 // 解决tab失去焦点问题，这里并没有触发死循环，上一个handleFocus已经被卸载了?
-                setTimeout(() => e.target.focus());
+                setTimeout(() => e.target.focus(), 100);
             }
 
             let changed = false;
