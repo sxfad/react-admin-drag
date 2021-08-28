@@ -24,6 +24,8 @@ export default React.memo(config({
             viewMode: state.dragPage.viewMode,
             selectedNode: state.dragPage.selectedNode,
             contentEditable: state.dragPage.contentEditable,
+            pageConfigHistory: state.dragPage.pageConfigHistory,
+            historyCursor: state.dragPage.historyCursor,
         };
     },
 })(function Toolbar(props) {
@@ -31,6 +33,8 @@ export default React.memo(config({
         viewMode,
         selectedNode,
         contentEditable,
+        pageConfigHistory,
+        historyCursor,
         action: {dragPage: dragPageAction},
         onSave,
         onSaveAs,
@@ -56,6 +60,10 @@ export default React.memo(config({
 
     const showLabel = false;
     const tools = useMemo(() => {
+
+        const disabledUndo = !pageConfigHistory?.length || historyCursor <= 0;
+        const disabledRedo = !pageConfigHistory?.length || historyCursor >= pageConfigHistory?.length - 1;
+
         return [
             viewMode === 'layout' ?
                 {
@@ -83,11 +91,15 @@ export default React.memo(config({
                 key: 'undo',
                 icon: <UndoOutlined/>,
                 label: `撤销(${isMac ? '⌘' : 'ctrl'}+z)`,
+                disabled: disabledUndo,
+                onClick: () => dragPageAction.undo(),
             },
             {
                 key: 'redo',
                 icon: <RedoOutlined/>,
                 label: `重做(${isMac ? '⌘' : 'ctrl'}+shift+z)`,
+                disabled: disabledRedo,
+                onClick: () => dragPageAction.redo(),
             },
             {
                 key: 'divider',
@@ -128,7 +140,16 @@ export default React.memo(config({
                 onClick: () => setVisible(true),
             },
         ].filter(item => !!item);
-    }, [dragPageAction, contentEditable, viewMode, selectedNode, onSave, onSaveAs]);
+    }, [
+        dragPageAction,
+        contentEditable,
+        pageConfigHistory,
+        historyCursor,
+        viewMode,
+        selectedNode,
+        onSave,
+        onSaveAs,
+    ]);
     return (
         <div className={s.root}>
             <div className={s.left}>

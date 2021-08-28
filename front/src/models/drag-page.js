@@ -20,6 +20,9 @@ const rootNode = () => ({
     },
 });
 
+// 历史记录数量
+const LIMIT = 20;
+
 export default {
     state: {
         // 视图模式 布局模式 layout 预览模式 preview
@@ -92,6 +95,12 @@ export default {
         pageFunction: {},
         // 页面中变量 variable.
         pageVariable: {},
+        // 历史记录
+        pageConfigHistory: [],
+        // 历史记录当前位置
+        historyCursor: 0,
+        // 标记是否是撤销重做触发
+        undoRedoFlag: null,
     },
 
     // 同步localStorage
@@ -107,20 +116,84 @@ export default {
         'propsPaneActiveKey',
         'propsPaneWidth',
         'propsPaneExpended',
+
+        'pageConfigHistory',
+        'historyCursor',
     ],
 
     setFields: fields => ({...fields}),
 
     // 撤销
-    undo() {
-        // TODO
-        console.log('undo');
+    undo(_, state) {
+        const {pageConfigHistory, historyCursor, selectedNode} = state;
+        let nextCursor = historyCursor - 1;
+
+        if (nextCursor >= 0 && nextCursor < pageConfigHistory?.length) {
+            const pageConfig = pageConfigHistory[nextCursor];
+            const nextSelectedNode = findNodeById(pageConfig, selectedNode?.id);
+
+            emitUpdateNodes([
+                {
+                    id: pageConfig?.id,
+                    type: 'update',
+                },
+            ]);
+
+            return {
+                pageConfig,
+                selectedNode: nextSelectedNode,
+                historyCursor: nextCursor,
+                undoRedoFlag: {},
+            };
+        }
     },
 
     // 重做
-    redo() {
-        // TODO
-        console.log('redo');
+    redo(_, state) {
+        const {pageConfigHistory, historyCursor, selectedNode} = state;
+        let nextCursor = historyCursor + 1;
+
+        if (nextCursor >= 0 && nextCursor <= pageConfigHistory?.length - 1) {
+            const pageConfig = pageConfigHistory[nextCursor];
+            const nextSelectedNode = findNodeById(pageConfig, selectedNode?.id);
+            emitUpdateNodes([
+                {
+                    id: pageConfig?.id,
+                    type: 'update',
+                },
+            ]);
+            return {
+                pageConfig,
+                selectedNode: nextSelectedNode,
+                historyCursor: nextCursor,
+                undoRedoFlag: {},
+            };
+        }
+    },
+
+    // 历史记录
+    addPageConfigHistory: (pageConfig, state) => {
+        const {historyCursor, pageConfigHistory} = state;
+        const historyConfig = cloneDeep(pageConfig);
+
+        let nextHistory = [];
+
+        if (pageConfigHistory?.length) {
+            nextHistory = pageConfigHistory.slice(0, historyCursor + 1);
+        }
+
+        const lastConfig = nextHistory[nextHistory.length - 1];
+
+        // 一样的数据，不加入
+        if (JSON.stringify(lastConfig) === JSON.stringify(historyConfig)) return;
+
+        nextHistory.push(historyConfig);
+
+        if (nextHistory.length > LIMIT) nextHistory.shift();
+
+        const nextCursor = nextHistory.length - 1;
+
+        return {pageConfigHistory: nextHistory, historyCursor: nextCursor};
     },
 
     setDraggingNode: draggingNode => {

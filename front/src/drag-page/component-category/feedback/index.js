@@ -4,8 +4,14 @@ import ModalErrorImage from './images/ModalError.png';
 import ModalInfoImage from './images/ModalInfo.png';
 import ModalSuccessImage from './images/ModalSuccess.png';
 import ModalWarningImage from './images/ModalWarning.png';
-import NotificationImage from './images/Notification.png';
-import MessageImage from './images/Message.png';
+import NotificationSuccessImage from './images/NotificationSuccess.png';
+import NotificationErrorImage from './images/NotificationError.jpg';
+import NotificationInfoImage from './images/NotificationInfo.jpg';
+import NotificationWarningImage from './images/NotificationWarning.jpg';
+import MessageSuccessImage from './images/MessageSuccess.png';
+import MessageErrorImage from './images/MessageError.jpg';
+import MessageInfoImage from './images/MessageInfo.jpg';
+import MessageWarningImage from './images/MessageWarning.jpg';
 import PopconfirmImage from './images/Popconfirm.png';
 import DrawerImage from './images/Drawer.png';
 
@@ -15,11 +21,48 @@ export default [
         subTitle: 'Alert',
         children: [
             {
+                title: '成功提示',
+                renderPreview: true,
+                config: {
+                    componentName: 'Alert',
+                    props: {
+                        type: 'success',
+                        message: '提示标题',
+                        description: '提示详细描述',
+                    },
+                },
+            },
+            {
+                title: '信息提示',
+                renderPreview: true,
+                config: {
+                    componentName: 'Alert',
+                    props: {
+                        type: 'info',
+                        message: '提示标题',
+                        description: '提示详细描述',
+                    },
+                },
+            },
+            {
                 title: '警告提示',
                 renderPreview: true,
                 config: {
                     componentName: 'Alert',
                     props: {
+                        type: 'warning',
+                        message: '提示标题',
+                        description: '提示详细描述',
+                    },
+                },
+            },
+            {
+                title: '失败提示',
+                renderPreview: true,
+                config: {
+                    componentName: 'Alert',
+                    props: {
+                        type: 'error',
                         message: '提示标题',
                         description: '提示详细描述',
                     },
@@ -33,7 +76,6 @@ export default [
         children: [
             {
                 title: '抽屉',
-                renderPreview: false,
                 image: DrawerImage,
                 config: {
                     componentName: 'Drawer',
@@ -50,7 +92,7 @@ export default [
         children: [
             {
                 title: '成功全局提示',
-                image: MessageImage,
+                image: MessageSuccessImage,
                 config: {
                     componentName: 'Message',
                     props: {
@@ -61,7 +103,7 @@ export default [
             },
             {
                 title: '错误全局提示',
-                image: MessageImage,
+                image: MessageErrorImage,
                 config: {
                     componentName: 'Message',
                     props: {
@@ -72,7 +114,7 @@ export default [
             },
             {
                 title: '信息全局提示',
-                image: MessageImage,
+                image: MessageInfoImage,
                 config: {
                     componentName: 'Message',
                     props: {
@@ -83,7 +125,7 @@ export default [
             },
             {
                 title: '警告全局提示',
-                image: MessageImage,
+                image: MessageWarningImage,
                 config: {
                     componentName: 'Message',
                     props: {
@@ -124,7 +166,7 @@ export default [
                                 {
                                     componentName: 'DragHolder',
                                     props: {
-                                        style: { height: 200 },
+                                        style: {height: 200},
                                     },
                                 },
                             ],
@@ -170,7 +212,7 @@ export default [
             {
                 title: '弹框底部',
                 renderPreview: true,
-                previewProps: { style: { width: '100%' } },
+                previewProps: {style: {width: '100%'}},
                 previewZoom: .68,
                 config: {
                     componentName: 'ModalFooter',
@@ -271,7 +313,7 @@ export default [
         children: [
             {
                 title: '成功通知',
-                image: NotificationImage,
+                image: NotificationSuccessImage,
                 config: {
                     componentName: 'Notification',
                     props: {
@@ -283,7 +325,7 @@ export default [
             },
             {
                 title: '失败通知',
-                image: NotificationImage,
+                image: NotificationErrorImage,
                 config: {
                     componentName: 'Notification',
                     props: {
@@ -295,7 +337,7 @@ export default [
             },
             {
                 title: '消息通知',
-                image: NotificationImage,
+                image: NotificationInfoImage,
                 config: {
                     componentName: 'Notification',
                     props: {
@@ -307,7 +349,7 @@ export default [
             },
             {
                 title: '警告通知',
-                image: NotificationImage,
+                image: NotificationWarningImage,
                 config: {
                     componentName: 'Notification',
                     props: {

@@ -77,6 +77,7 @@ export default React.memo(config({
 
         console.log('props', JSON.stringify(node.props, null, 4));
         dragPageAction.updateNode(node);
+        dragPageAction.updateParentNode(node); // 有些组件需要更新父级，比如：Descriptions.Item
     }, {wait: 300, leading: true});
 
     function handleDeleteWrapper(index) {

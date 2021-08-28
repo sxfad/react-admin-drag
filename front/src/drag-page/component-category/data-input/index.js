@@ -372,7 +372,7 @@ export default [
             {
                 title: '穿梭框',
                 renderPreview: true,
-                previewZoom: .28,
+                previewZoom: .45,
                 config: {
                     componentName: 'Transfer',
                 },

@@ -1,6 +1,7 @@
 import base from '../base';
 import common from '../module/common';
 import dataShow from '../data-show';
+import ListPageImage from './ListPage.jpg';
 
 const pageContentConfig = base.find(item => item.subTitle === 'PageContent').children[0].config;
 const queryBarConfig = common.find(item => item.subTitle === 'QueryBar').children[0].config;
@@ -16,7 +17,7 @@ export default [
         children: [
             {
                 title: '标准列表页',
-                renderPreview: false,
+                image: ListPageImage,
                 config: {
                     componentName: 'PageContent',
                     children: [

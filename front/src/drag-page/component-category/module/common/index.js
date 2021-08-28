@@ -1,4 +1,5 @@
 import from from '../../form';
+import PaginationImage from './Pagination.jpg';
 
 export default [
     {
@@ -85,7 +86,7 @@ export default [
         children: [
             {
                 title: '分页',
-                renderPreview: false,
+                image: PaginationImage,
                 config: {
                     componentName: 'Pagination',
                     props: {

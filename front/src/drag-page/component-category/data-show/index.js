@@ -4,6 +4,9 @@ import TabsImage from './Tabs.png';
 import CarouselImage from './Carousel.png';
 import AvatarImage from './Avatar.jpeg';
 import ImageImage from './Image.png';
+import DescriptionsImage from './Descriptions.jpg';
+import DescriptionsItemImage from './DescriptionsItem.jpg';
+import TableImage from './Table.jpg';
 
 export default [
     {
@@ -209,26 +212,23 @@ export default [
         children: [
             {
                 title: '描述列表',
-                renderPreview: true,
+                image: DescriptionsImage,
                 config: {
                     componentName: 'Descriptions',
-                    children: [
-                        {
+                    props: {bordered: true},
+                    children: Array.from({length: 8}).map((_, index) => {
+                        const num = index + 1;
+                        return {
                             componentName: 'Descriptions.Item',
-                            props: {label: '标签1'},
-                            children: [{componentName: 'Text', props: {text: '内容1'}}],
-                        },
-                        {
-                            componentName: 'Descriptions.Item',
-                            props: {label: '标签2'},
-                            children: [{componentName: 'Text', props: {text: '内容2'}}],
-                        },
-                    ],
+                            props: {label: '标签' + num},
+                            children: [{componentName: 'Text', props: {text: '内容' + num}}],
+                        };
+                    }),
                 },
             },
             {
                 title: '描述列表项',
-                renderPreview: true,
+                image: DescriptionsItemImage,
                 config: {
                     componentName: 'Descriptions.Item',
                     props: {label: '标签'},
@@ -354,13 +354,10 @@ export default [
         children: [
             {
                 title: '表格',
-                renderPreview: true,
-                previewZoom: .8,
-                previewProps: {style: {width: '100%'}},
+                image: TableImage,
                 config: {
                     componentName: 'Table',
                     props: {
-                        fitHeight: true,
                         pagination: false,
                         dataSource: Array.from({length: 5}).map((item, index) => {
                             return {id: '' + index, name: '张三', age: 25};

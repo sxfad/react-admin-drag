@@ -52,19 +52,19 @@ export default [
             },
         ],
     },
-    {
-        title: '下拉菜单',
-        subTitle: 'Dropdown',
-        children: [
-            {
-                title: '下拉菜单',
-                renderPreview: false,
-                config: {
-                    componentName: 'Dropdown',
-                },
-            },
-        ],
-    },
+    // {
+    //     title: '下拉菜单',
+    //     subTitle: 'Dropdown',
+    //     children: [
+    //         {
+    //             title: '下拉菜单',
+    //             renderPreview: false,
+    //             config: {
+    //                 componentName: 'Dropdown',
+    //             },
+    //         },
+    //     ],
+    // },
     {
         title: '导航菜单',
         subTitle: 'Menu',
