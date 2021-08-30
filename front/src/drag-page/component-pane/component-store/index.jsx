@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
-import { Empty, Input, Select } from 'antd';
-import { useDebounceFn } from 'ahooks';
+import React, {useMemo, useState} from 'react';
+import {Empty, Input} from 'antd';
+import {useDebounceFn} from 'ahooks';
 import Container from '../container';
 import Header from '../header';
 import Content from '../content';
@@ -8,14 +8,13 @@ import config from 'src/commons/config-hoc';
 import Category from './cagetory';
 import Components from './components';
 import s from './style.less';
-import { filterTree } from 'src/drag-page/util';
+import {filterTree} from 'src/drag-page/util';
 import DragDelegation from './drag-delegation';
 
 const ComponentStore = config({
     connect: state => {
         return {
             stores: state.dragPage.stores,
-            selectedStoreId: state.dragPage.selectedStoreId,
             selectedSubCategoryId: state.dragPage.selectedSubCategoryId,
         };
     },
@@ -24,9 +23,7 @@ const ComponentStore = config({
         icon,
         title,
         stores,
-        selectedStoreId,
         selectedSubCategoryId,
-        action: { dragPage: dragPageAction },
     } = props;
 
     const [searchValue, setSearchValue] = useState('');
@@ -34,17 +31,17 @@ const ComponentStore = config({
     const dataSource = useMemo(() => {
         if (!stores?.length) return [];
 
-        const option = stores.find(item => item.value === selectedStoreId);
-
-        const all = option?.dataSource || [];
+        // 所有大的分类中组件都显示到组件列表中，不区分最顶级分类
+        // 原下拉选择分类去掉，所有组件查找通过查询
+        const all = stores.map(item => item.children).flat();
 
         if (!searchValue) return all;
 
         return filterTree(
-            option?.dataSource || [],
+            all,
             node => {
-                let { title = '', subTitle = '', config = {} } = node;
-                let { componentName = '' } = config;
+                let {title = '', subTitle = '', config = {}} = node;
+                let {componentName = ''} = config;
 
                 title = title.toLowerCase();
                 subTitle = subTitle.toLowerCase();
@@ -58,22 +55,15 @@ const ComponentStore = config({
                     ;
             },
         );
-    }, [stores, selectedStoreId, searchValue]);
+    }, [stores, searchValue]);
 
-    const storeOptions = useMemo(() => {
-        if (!stores?.length) return [];
-
-        return stores.map(item => ({ value: item.value, label: item.label }));
-
-    }, [stores]);
-
-    const { run: handleSearchChange } = useDebounceFn((e) => {
+    const {run: handleSearchChange} = useDebounceFn((e) => {
         setSearchValue(e.target.value);
-    }, { wait: 300 });
+    }, {wait: 300});
 
     return (
         <Container>
-            <Header icon={icon} title={title} />
+            <Header icon={icon} title={title}/>
             <div className={s.top}>
                 <Input
                     id="search-component"
@@ -82,24 +72,17 @@ const ComponentStore = config({
                     onChange={handleSearchChange}
                     autoComplete="off"
                 />
-                <Select
-                    style={{ width: '100%', marginTop: 4 }}
-                    placeholder="选择组件分类"
-                    options={storeOptions}
-                    value={selectedStoreId}
-                    onChange={selectedStoreId => dragPageAction.setFields({ selectedStoreId })}
-                />
             </div>
 
             <Content>
                 {!dataSource?.length ? (
                     <div className={[s.main, s.mainEmpty]}>
-                        <Empty description="暂无组件" />
+                        <Empty description="暂无组件"/>
                     </div>
                 ) : (
                     <DragDelegation className={s.main}>
-                        <Category dataSource={dataSource} selectedId={selectedSubCategoryId} />
-                        <Components dataSource={dataSource} selectedId={selectedSubCategoryId} />
+                        <Category dataSource={dataSource} selectedId={selectedSubCategoryId}/>
+                        <Components dataSource={dataSource} selectedId={selectedSubCategoryId}/>
                     </DragDelegation>
                 )}
             </Content>
