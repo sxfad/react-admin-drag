@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.js": "/ra-gen/static/js/main.ff434cf7.chunk.js",
-    "main.js.map": "/ra-gen/static/js/main.ff434cf7.chunk.js.map",
-    "runtime-main.js": "/ra-gen/static/js/runtime-main.73b7aad8.js",
-    "runtime-main.js.map": "/ra-gen/static/js/runtime-main.73b7aad8.js.map",
-    "static/css/2.2f294594.chunk.css": "/ra-gen/static/css/2.2f294594.chunk.css",
-    "static/js/2.5e009e2a.chunk.js": "/ra-gen/static/js/2.5e009e2a.chunk.js",
-    "static/js/2.5e009e2a.chunk.js.map": "/ra-gen/static/js/2.5e009e2a.chunk.js.map",
+    "main.js": "/ra-gen/static/js/main.4d55962a.chunk.js",
+    "main.js.map": "/ra-gen/static/js/main.4d55962a.chunk.js.map",
+    "runtime-main.js": "/ra-gen/static/js/runtime-main.0590bd68.js",
+    "runtime-main.js.map": "/ra-gen/static/js/runtime-main.0590bd68.js.map",
+    "static/css/2.1fffe497.chunk.css": "/ra-gen/static/css/2.1fffe497.chunk.css",
+    "static/js/2.fd2e7820.chunk.js": "/ra-gen/static/js/2.fd2e7820.chunk.js",
+    "static/js/2.fd2e7820.chunk.js.map": "/ra-gen/static/js/2.fd2e7820.chunk.js.map",
     "static/js/3.1223b069.chunk.js": "/ra-gen/static/js/3.1223b069.chunk.js",
     "static/js/3.1223b069.chunk.js.map": "/ra-gen/static/js/3.1223b069.chunk.js.map",
     "static/css/4.dc9b8660.chunk.css": "/ra-gen/static/css/4.dc9b8660.chunk.css",
@@ -16,10 +16,10 @@
     "static/js/5.60891455.chunk.js": "/ra-gen/static/js/5.60891455.chunk.js",
     "static/js/5.60891455.chunk.js.map": "/ra-gen/static/js/5.60891455.chunk.js.map",
     "static/css/6.2a777a62.chunk.css": "/ra-gen/static/css/6.2a777a62.chunk.css",
-    "static/js/6.0514b732.chunk.js": "/ra-gen/static/js/6.0514b732.chunk.js",
-    "static/js/6.0514b732.chunk.js.map": "/ra-gen/static/js/6.0514b732.chunk.js.map",
-    "static/js/7.73c54c8e.chunk.js": "/ra-gen/static/js/7.73c54c8e.chunk.js",
-    "static/js/7.73c54c8e.chunk.js.map": "/ra-gen/static/js/7.73c54c8e.chunk.js.map",
+    "static/js/6.ec784c28.chunk.js": "/ra-gen/static/js/6.ec784c28.chunk.js",
+    "static/js/6.ec784c28.chunk.js.map": "/ra-gen/static/js/6.ec784c28.chunk.js.map",
+    "static/js/7.4078cbcc.chunk.js": "/ra-gen/static/js/7.4078cbcc.chunk.js",
+    "static/js/7.4078cbcc.chunk.js.map": "/ra-gen/static/js/7.4078cbcc.chunk.js.map",
     "static/js/8.798bec16.chunk.js": "/ra-gen/static/js/8.798bec16.chunk.js",
     "static/js/8.798bec16.chunk.js.map": "/ra-gen/static/js/8.798bec16.chunk.js.map",
     "static/js/9.4a1c4bbe.chunk.js": "/ra-gen/static/js/9.4a1c4bbe.chunk.js",
@@ -33,11 +33,11 @@
     "static/js/13.1d348e06.chunk.js": "/ra-gen/static/js/13.1d348e06.chunk.js",
     "static/js/13.1d348e06.chunk.js.map": "/ra-gen/static/js/13.1d348e06.chunk.js.map",
     "index.html": "/ra-gen/index.html",
-    "static/css/2.2f294594.chunk.css.map": "/ra-gen/static/css/2.2f294594.chunk.css.map",
+    "static/css/2.1fffe497.chunk.css.map": "/ra-gen/static/css/2.1fffe497.chunk.css.map",
     "static/css/4.dc9b8660.chunk.css.map": "/ra-gen/static/css/4.dc9b8660.chunk.css.map",
     "static/css/5.dc9b8660.chunk.css.map": "/ra-gen/static/css/5.dc9b8660.chunk.css.map",
     "static/css/6.2a777a62.chunk.css.map": "/ra-gen/static/css/6.2a777a62.chunk.css.map",
-    "static/js/2.5e009e2a.chunk.js.LICENSE.txt": "/ra-gen/static/js/2.5e009e2a.chunk.js.LICENSE.txt",
+    "static/js/2.fd2e7820.chunk.js.LICENSE.txt": "/ra-gen/static/js/2.fd2e7820.chunk.js.LICENSE.txt",
     "static/js/vendor_5cc95c36df293e46d5fa.dll.js": "/ra-gen/static/js/vendor_5cc95c36df293e46d5fa.dll.js",
     "static/media/Carousel.0765276c.png": "/ra-gen/static/media/Carousel.0765276c.png",
     "static/media/Descriptions.e219f924.jpg": "/ra-gen/static/media/Descriptions.e219f924.jpg",
@@ -69,9 +69,9 @@
     "static/media/login-bg.jpg": "/ra-gen/static/media/login-bg.3ab1656e.jpg"
   },
   "entrypoints": [
-    "static/js/runtime-main.73b7aad8.js",
-    "static/css/2.2f294594.chunk.css",
-    "static/js/2.5e009e2a.chunk.js",
-    "static/js/main.ff434cf7.chunk.js"
+    "static/js/runtime-main.0590bd68.js",
+    "static/css/2.1fffe497.chunk.css",
+    "static/js/2.fd2e7820.chunk.js",
+    "static/js/main.4d55962a.chunk.js"
   ]
 }
