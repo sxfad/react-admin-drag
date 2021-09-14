@@ -31,14 +31,10 @@ const ComponentStore = config({
     const dataSource = useMemo(() => {
         if (!stores?.length) return [];
 
-        // 所有大的分类中组件都显示到组件列表中，不区分最顶级分类
-        // 原下拉选择分类去掉，所有组件查找通过查询
-        const all = stores.map(item => item.children).flat();
-
-        if (!searchValue) return all;
+        if (!searchValue) return stores;
 
         return filterTree(
-            all,
+            stores,
             node => {
                 let {title = '', subTitle = '', config = {}} = node;
                 let {componentName = ''} = config;

@@ -32,8 +32,7 @@ export default config({
         // 设置组件库分类
         dragPageAction.setFields({
             stores: [
-                {id: 'base', title: '基础组件库', children: baseStore},
-                // {id: 'test', title: '测试合并', children: baseStore2},
+                ...baseStore,
             ],
         });
     }, [dragPageAction]);

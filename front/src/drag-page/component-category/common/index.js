@@ -45,7 +45,7 @@ export default [
         subTitle: 'Grid',
         children: [
             {
-                title: '栅格行',
+                title: '栅格行Row',
                 renderPreview: (
                     <div style={{flex: 1}}>
                         <div style={{flex: 1, margin: 4, height: 10, background: theme.primaryColor}}/>
@@ -57,7 +57,7 @@ export default [
                 },
             },
             {
-                title: '栅格列',
+                title: '栅格列Col',
                 renderPreview: (
                     <div style={{flex: 1, display: 'flex'}}>
                         {Array.from({length: 6}).map((item, index) => {
