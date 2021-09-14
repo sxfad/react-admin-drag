@@ -6,7 +6,7 @@ import ComponentPane from 'src/drag-page/component-pane';
 import PropsPane from 'src/drag-page/props-pane';
 import ComponentCanvas from 'src/drag-page/component-canvas';
 import baseStore from 'src/drag-page/component-category';
-import baseStore2 from 'src/drag-page/component-category/index2';
+// import baseStore2 from 'src/drag-page/component-category/index2';
 import GlobalKeyMap from 'src/drag-page/global-key-map';
 import UndoRedo from 'src/drag-page/undo-redo';
 import s from './style.less';
@@ -33,7 +33,7 @@ export default config({
         dragPageAction.setFields({
             stores: [
                 {id: 'base', title: '基础组件库', children: baseStore},
-                {id: 'test', title: '测试合并', children: baseStore2},
+                // {id: 'test', title: '测试合并', children: baseStore2},
             ],
         });
     }, [dragPageAction]);

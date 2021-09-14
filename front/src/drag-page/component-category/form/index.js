@@ -2,6 +2,7 @@ import React from 'react';
 import {Form, Input} from 'antd';
 import InlineFormImage from './InlineForm.png';
 import FormImage from './Form.png';
+import ColFormImage from './ColForm.jpg';
 
 const formChildren = [
     {
@@ -144,6 +145,222 @@ export default [
 
                         return {...item, props};
                     }),
+                },
+            },
+            {
+                title: '多列表单',
+                image: ColFormImage,
+                config: {
+                    componentName: 'Form',
+                    children: [
+                        {
+                            componentName: 'Row',
+                            children: [
+                                {
+                                    componentName: 'Col',
+                                    props: {
+                                        span: 8,
+                                    },
+                                    children: [
+                                        {
+                                            componentName: 'Form.Item',
+                                            props: {
+                                                label: '姓名',
+                                                name: 'field5',
+                                                labelCol: {
+                                                    flex: '70px',
+                                                },
+                                            },
+                                            children: [
+                                                {
+                                                    componentName: 'Input',
+                                                    props: {
+                                                        placeholder: '请输入',
+                                                    },
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
+                                {
+                                    componentName: 'Col',
+                                    props: {
+                                        span: 8,
+                                    },
+                                    children: [
+                                        {
+                                            componentName: 'Form.Item',
+                                            props: {
+                                                label: '年龄',
+                                                name: 'field6',
+                                                labelCol: {
+                                                    flex: '70px',
+                                                },
+                                            },
+                                            children: [
+                                                {
+                                                    componentName: 'InputNumber',
+                                                    props: {
+                                                        style: {
+                                                            width: '100%',
+                                                        },
+                                                        placeholder: '请输入',
+                                                        min: 0,
+                                                    },
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
+                                {
+                                    componentName: 'Col',
+                                    props: {
+                                        span: 8,
+                                    },
+                                    children: [
+                                        {
+                                            componentName: 'Form.Item',
+                                            props: {
+                                                label: '工作',
+                                                name: 'field7',
+                                                labelCol: {
+                                                    flex: '70px',
+                                                },
+                                            },
+                                            children: [
+                                                {
+                                                    componentName: 'Select',
+                                                    props: {
+                                                        style: {
+                                                            width: '100%',
+                                                        },
+                                                        placeholder: '请选择',
+                                                        options: [
+                                                            {
+                                                                value: '1',
+                                                                label: '选项1',
+                                                            },
+                                                            {
+                                                                value: '2',
+                                                                label: '选项2',
+                                                            },
+                                                        ],
+                                                    },
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
+                                {
+                                    componentName: 'Col',
+                                    props: {
+                                        span: 8,
+                                    },
+                                    children: [
+                                        {
+                                            componentName: 'Form.Item',
+                                            props: {
+                                                label: '入职日期',
+                                                name: 'field11',
+                                                labelCol: {
+                                                    flex: '70px',
+                                                },
+                                            },
+                                            children: [
+                                                {
+                                                    componentName: 'DatePicker',
+                                                    props: {
+                                                        style: {
+                                                            width: '100%',
+                                                        },
+                                                        placeholder: '请选择日期',
+                                                    },
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
+                                {
+                                    componentName: 'Col',
+                                    props: {
+                                        span: 8,
+                                    },
+                                    children: [
+                                        {
+                                            componentName: 'Form.Item',
+                                            props: {
+                                                label: '工作',
+                                                name: 'field9',
+                                                labelCol: {
+                                                    flex: '70px',
+                                                },
+                                            },
+                                            children: [
+                                                {
+                                                    componentName: 'Select',
+                                                    props: {
+                                                        style: {
+                                                            width: '100%',
+                                                        },
+                                                        placeholder: '请选择',
+                                                        options: [
+                                                            {
+                                                                value: '1',
+                                                                label: '选项1',
+                                                            },
+                                                            {
+                                                                value: '2',
+                                                                label: '选项2',
+                                                            },
+                                                        ],
+                                                    },
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
+                                {
+                                    componentName: 'Col',
+                                    props: {
+                                        span: 8,
+                                    },
+                                    children: [
+                                        {
+                                            componentName: 'Form.Item',
+                                            props: {
+                                                label: '工作',
+                                                name: 'field10',
+                                                labelCol: {
+                                                    flex: '70px',
+                                                },
+                                            },
+                                            children: [
+                                                {
+                                                    componentName: 'Select',
+                                                    props: {
+                                                        style: {
+                                                            width: '100%',
+                                                        },
+                                                        placeholder: '请选择',
+                                                        options: [
+                                                            {
+                                                                value: '1',
+                                                                label: '选项1',
+                                                            },
+                                                            {
+                                                                value: '2',
+                                                                label: '选项2',
+                                                            },
+                                                        ],
+                                                    },
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
                 },
             },
             {
