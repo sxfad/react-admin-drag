@@ -29,3 +29,5 @@ export PropsFormEditor from './props-form-editor';
 export ReactNode from './react-node';
 
 export ComingSoon from './coming-soon';
+
+export ColumnEditor from './column-editor';

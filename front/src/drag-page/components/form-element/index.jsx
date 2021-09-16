@@ -11,7 +11,7 @@ import {
     RadioGroup,
     UnitInput,
     ColorInput,
-} from 'src/drag-page/components'
+} from 'src/drag-page/components';
 
 import OptionsEditor from '../options-editor';
 import FooterSwitch from '../footer-switch';
@@ -24,6 +24,7 @@ import ArrayElement from '../array-element';
 import ImageElement from '../image-element';
 import Rule from '../item-rules';
 import ColumnFastEditor from '../column-fast-editor';
+import ColumnEditor from '../column-editor';
 import FormItemFastEditor from '../form-item-fast-editor';
 
 function getPlaceholder(option, props) {
@@ -40,6 +41,9 @@ const elementMap = {
     },
     ColumnFast: options => props => {
         return <ColumnFastEditor {...options} {...props}/>;
+    },
+    ColumnEditor: options => props => {
+        return <ColumnEditor {...options} {...props}/>;
     },
     Rule: () => props => {
         return <Rule {...props}/>;

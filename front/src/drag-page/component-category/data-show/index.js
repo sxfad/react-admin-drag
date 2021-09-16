@@ -363,58 +363,11 @@ export default [
                             return {id: '' + index, name: '张三', age: 25};
                         }),
                         rowKey: 'id',
+                        columns: [
+                            {title: '姓名', dataIndex: 'name'},
+                            {title: '年龄', dataIndex: 'age'},
+                        ],
                     },
-                    children: [ // 与 props.columns 对应
-                        {componentName: 'Table.Column', props: {title: '姓名', dataIndex: 'name', render: {componentName: 'Text', props: {text: '张三'}}}},
-                        {componentName: 'Table.Column', props: {title: '年龄', dataIndex: 'age', render: {componentName: 'Text', props: {text: 22}}}},
-                        {
-                            componentName: 'Table.Column',
-                            props: {
-                                title: '操作',
-                                dataIndex: 'operator',
-                                render: {
-                                    componentName: 'div',
-                                    children: [
-                                        {
-                                            componentName: 'a',
-                                            children: [{
-                                                componentName: 'Text',
-                                                props: {
-                                                    text: '修改',
-                                                },
-                                            }],
-                                        },
-                                        {
-                                            componentName: 'Divider',
-                                            props: {
-                                                type: 'vertical',
-                                            },
-                                        },
-                                        {
-                                            wrapper: [
-                                                {
-                                                    componentName: 'Popconfirm',
-                                                    props: {
-                                                        title: '您确定删除吗？',
-                                                    },
-                                                },
-                                            ],
-                                            componentName: 'a',
-                                            props: {
-                                                style: {color: 'red'},
-                                            },
-                                            children: [{
-                                                componentName: 'Text',
-                                                props: {
-                                                    text: '删除',
-                                                },
-                                            }],
-                                        },
-                                    ],
-                                },
-                            },
-                        },
-                    ],
                 },
             },
         ],

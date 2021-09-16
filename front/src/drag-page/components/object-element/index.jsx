@@ -8,7 +8,6 @@ import s from './style.less';
 import {actions} from 'src/models';
 
 export default function ObjectElement(props) {
-
     let {
         node,
         fields = [],
