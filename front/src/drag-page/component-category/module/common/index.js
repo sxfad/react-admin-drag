@@ -8,11 +8,12 @@ export default [
         children: [
             {
                 title: '查询条件',
-                image: from[0].children[0].image,
+                image: from[0].children[1].image,
+                previewHeight: 100,
                 config: {
                     componentName: 'QueryBar',
                     children: [
-                        from[0].children[0].config,
+                        from[0].children[1].config,
                     ],
                 },
             },

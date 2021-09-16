@@ -9,6 +9,7 @@ import {DragBar, ComingSoon} from 'src/drag-page/components';
 import Style from './style';
 import Props from './props';
 import s from './style.less';
+import {isMac} from 'src/drag-page/util';
 
 const {TabPane} = Tabs;
 
@@ -108,7 +109,10 @@ export default React.memo(config({
                                                         height={paneContainerHeight}
                                                     />
                                                 ) : (
-                                                    <Empty style={{marginTop: 100}} description="未选中节点"/>
+                                                    <Empty
+                                                        style={{marginTop: 100}}
+                                                        description={'请 ' + (isMac ? '⌘' : 'ctrl') + '+ click 选中节点'}
+                                                    />
                                                 )}
                                             </div>
                                         </div>

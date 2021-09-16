@@ -79,7 +79,7 @@ export default {
             desc: '表格大小',
         },
         {label: '自适应高度', field: 'fitHeight', type: 'boolean', defaultValue: false, version: '', desc: '表格自动撑满全屏'},
-        {label: '快速编辑列', field: '__columns', type: 'ColumnFast'},
+        {label: '表格列', field: '__columns', type: 'ColumnFast'},
         {
             label: '表格滚动', field: 'scroll',
             type: {

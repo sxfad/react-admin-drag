@@ -1,7 +1,7 @@
-import {isMac, getFormItemName, getFieldOption} from 'src/drag-page/util';
+import {/*isMac,*/ getFormItemName, getFieldOption} from 'src/drag-page/util';
 import {findParentNodeByName} from 'src/drag-page/util/node-util';
 import {getComponentConfig} from 'src/drag-page/component-config';
-import {colFields, getOnKeyDown} from '../common/Col';
+// import {colFields, getOnKeyDown} from '../common/Col';
 import {formElementTypes} from '@ra-lib/admin';
 import {options as ruleOptions} from 'src/drag-page/components/item-rules';
 
@@ -172,7 +172,7 @@ export default {
 
     fields: [
         // {label: '必填', category: '选项', field: 'required', type: 'boolean', defaultValue: false, version: '', desc: '必填样式设置。如不设置，则会根据校验规则自动生成'},
-        {label: '校验图标', category: '选项', field: 'hasFeedback', type: 'boolean', defaultValue: false, version: '', desc: '配合 validateStatus 属性使用，展示校验状态图标，建议只配合 Input 组件使用'},
+        // {label: '校验图标', category: '选项', field: 'hasFeedback', type: 'boolean', defaultValue: false, version: '', desc: '配合 validateStatus 属性使用，展示校验状态图标，建议只配合 Input 组件使用'},
         {label: '冒号', category: '选项', field: 'colon', type: 'boolean', defaultValue: true, version: '', desc: '配合 label 属性使用，表示是否显示 label 后面的冒号'},
         {label: '无样式', category: '选项', field: 'noStyle', type: 'boolean', defaultValue: false, version: '', desc: '为 true 时不带样式，作为纯字段控件使用'},
 
@@ -181,46 +181,49 @@ export default {
         {label: '校验规则', field: 'rules', type: 'Rule', version: '', desc: '校验规则，设置字段的校验逻辑。点击此处查看示例'},
 
         {label: '提示信息', field: 'tooltip', type: 'string', version: '4.7.0', desc: '配置提示信息'},
-        {
-            label: '标签对齐', field: 'labelAlign', type: 'radio-group', defaultValue: 'right', version: '',
-            options: [
-                {value: 'left', label: '左对齐'},
-                {value: 'right', label: '右对齐'},
-            ],
-            desc: '标签文本对齐方式',
-        },
-        {
-            label: '标签布局', field: 'labelCol',
-            type: {
-                value: 'object',
-                fields: colFields.map(item => {
 
-                    return {
-                        ...item,
-                        onKeyDown: getOnKeyDown(value => ({labelCol: {[item.field]: value}}), 'Form'),
-                    };
-                }),
-            },
-            version: '',
-            placeholder: `labelCol  ${isMac ? '⌘' : 'ctrl'}+Enter 同步所有标签`,
-            title: `标签宽度，${isMac ? '⌘' : 'ctrl'}+Enter 同步同表单下所有标签`,
-        },
-        {
-            label: '控件布局', field: 'wrapperCol',
-            type: {
-                value: 'object',
-                fields: colFields.map(item => {
-
-                    return {
-                        ...item,
-                        onKeyDown: getOnKeyDown(value => ({wrapperCol: {[item.field]: value}}), 'Form'),
-                    };
-                }),
-            },
-            version: '',
-            placeholder: `labelCol  ${isMac ? '⌘' : 'ctrl'}+Enter 同步所有标签`,
-            title: `标签宽度，${isMac ? '⌘' : 'ctrl'}+Enter 同步同表单下所有标签`,
-        },
+        // 所有标签都右对齐
+        // {
+        //     label: '标签对齐', field: 'labelAlign', type: 'radio-group', defaultValue: 'right', version: '',
+        //     options: [
+        //         {value: 'left', label: '左对齐'},
+        //         {value: 'right', label: '右对齐'},
+        //     ],
+        //     desc: '标签文本对齐方式',
+        // },
+        // labelCol wrapperCol 使用父级统一布局
+        // {
+        //     label: '标签布局', field: 'labelCol',
+        //     type: {
+        //         value: 'object',
+        //         fields: colFields.map(item => {
+        //
+        //             return {
+        //                 ...item,
+        //                 onKeyDown: getOnKeyDown(value => ({labelCol: {[item.field]: value}}), 'Form'),
+        //             };
+        //         }),
+        //     },
+        //     version: '',
+        //     placeholder: `labelCol  ${isMac ? '⌘' : 'ctrl'}+Enter 同步所有标签`,
+        //     title: `标签宽度，${isMac ? '⌘' : 'ctrl'}+Enter 同步同表单下所有标签`,
+        // },
+        // {
+        //     label: '控件布局', field: 'wrapperCol',
+        //     type: {
+        //         value: 'object',
+        //         fields: colFields.map(item => {
+        //
+        //             return {
+        //                 ...item,
+        //                 onKeyDown: getOnKeyDown(value => ({wrapperCol: {[item.field]: value}}), 'Form'),
+        //             };
+        //         }),
+        //     },
+        //     version: '',
+        //     placeholder: `labelCol  ${isMac ? '⌘' : 'ctrl'}+Enter 同步所有标签`,
+        //     title: `标签宽度，${isMac ? '⌘' : 'ctrl'}+Enter 同步同表单下所有标签`,
+        // },
     ],
 };
 

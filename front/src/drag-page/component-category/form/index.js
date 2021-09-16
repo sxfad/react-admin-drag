@@ -1,5 +1,3 @@
-import React from 'react';
-import {Form, Input} from 'antd';
 import InlineFormImage from './InlineForm.png';
 import FormImage from './Form.png';
 import ColFormImage from './ColForm.jpg';
@@ -95,6 +93,9 @@ const formChildren = [
                     },
                     {
                         componentName: 'Button',
+                        props: {
+                            htmlType: 'reset',
+                        },
                         children: [
                             {
                                 componentName: 'Text',
@@ -114,14 +115,24 @@ export default [
         subTitle: 'Form',
         children: [
             {
+                title: '表单容器',
+                renderPreview: false,
+                config: {
+                    componentName: 'Form',
+                    props: {
+                        labelCol: {flex: '100px'},
+                    },
+                },
+            },
+            {
                 title: '水平表单',
                 image: InlineFormImage,
-                previewZoom: .7,
+                previewHeight: 100,
+                hidden: true,
                 config: {
                     componentName: 'Form',
                     props: {
                         layout: 'inline',
-                        // name: 'inlineForm',
                     },
                     children: formChildren,
                 },
@@ -132,19 +143,9 @@ export default [
                 config: {
                     componentName: 'Form',
                     props: {
-                        // name: 'form',
+                        labelCol: {flex: '100px'},
                     },
-                    children: formChildren.map((item, index) => {
-                        const isLast = formChildren.length - 1 === index;
-                        const props = {...(item.props || {})};
-                        if (isLast) {
-                            props.style = {paddingLeft: '70px'};
-                        } else {
-                            props.labelCol = {flex: '70px'};
-                        }
-
-                        return {...item, props};
-                    }),
+                    children: formChildren,
                 },
             },
             {
@@ -152,6 +153,9 @@ export default [
                 image: ColFormImage,
                 config: {
                     componentName: 'Form',
+                    props: {
+                        labelCol: {flex: '100px'},
+                    },
                     children: [
                         {
                             componentName: 'Row',
@@ -167,9 +171,6 @@ export default [
                                             props: {
                                                 label: '姓名',
                                                 name: 'field5',
-                                                labelCol: {
-                                                    flex: '70px',
-                                                },
                                             },
                                             children: [
                                                 {
@@ -193,9 +194,6 @@ export default [
                                             props: {
                                                 label: '年龄',
                                                 name: 'field6',
-                                                labelCol: {
-                                                    flex: '70px',
-                                                },
                                             },
                                             children: [
                                                 {
@@ -223,9 +221,6 @@ export default [
                                             props: {
                                                 label: '工作',
                                                 name: 'field7',
-                                                labelCol: {
-                                                    flex: '70px',
-                                                },
                                             },
                                             children: [
                                                 {
@@ -262,9 +257,6 @@ export default [
                                             props: {
                                                 label: '入职日期',
                                                 name: 'field11',
-                                                labelCol: {
-                                                    flex: '70px',
-                                                },
                                             },
                                             children: [
                                                 {
@@ -291,9 +283,6 @@ export default [
                                             props: {
                                                 label: '工作',
                                                 name: 'field9',
-                                                labelCol: {
-                                                    flex: '70px',
-                                                },
                                             },
                                             children: [
                                                 {
@@ -330,9 +319,6 @@ export default [
                                             props: {
                                                 label: '工作',
                                                 name: 'field10',
-                                                labelCol: {
-                                                    flex: '70px',
-                                                },
                                             },
                                             children: [
                                                 {
@@ -358,43 +344,51 @@ export default [
                                         },
                                     ],
                                 },
+                                {
+                                    componentName: 'div',
+                                    props: {
+                                        style: {
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            width: '100%',
+                                        },
+                                    },
+                                    children: [
+                                        {
+                                            componentName: 'Space',
+                                            children: [
+                                                {
+                                                    componentName: 'Button',
+                                                    props: {
+                                                        type: 'primary',
+                                                        htmlType: 'submit',
+                                                    },
+                                                    children: [
+                                                        {
+                                                            componentName: 'Text',
+                                                            props: {text: '提交', isDraggable: false},
+                                                        },
+                                                    ],
+                                                },
+                                                {
+                                                    componentName: 'Button',
+                                                    props: {
+                                                        htmlType: 'reset',
+                                                    },
+                                                    children: [
+                                                        {
+                                                            componentName: 'Text',
+                                                            props: {text: '重置', isDraggable: false},
+                                                        },
+                                                    ],
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
                             ],
                         },
                     ],
-                },
-            },
-            {
-                title: '表单项',
-                renderPreview: (
-                    <Form>
-                        <Form.Item
-                            label="名称"
-                        >
-                            <Input placeholder="请输入"/>
-                        </Form.Item>
-                    </Form>
-                ),
-                config: {
-                    componentName: 'Form.Item',
-                    props: {
-                        label: '名称',
-                        name: 'field',
-                    },
-                    children: [
-                        {
-                            componentName: 'Input',
-                            props: {
-                                placeholder: '请输入',
-                            },
-                        },
-                    ],
-                },
-            },
-            {
-                title: '动态表单项',
-                renderPreview: false,
-                config: {
-                    componentName: 'DynamicFormItem',
                 },
             },
         ],

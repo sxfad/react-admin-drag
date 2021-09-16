@@ -1,7 +1,17 @@
 import {colFields} from '../common/Col';
 import {getFieldUUID} from 'src/drag-page/util';
+import {findParentNodeByName} from 'src/drag-page/util/node-util';
 
 export default {
+    // 祖先元素中必须不能有Form，Fom不允许嵌套
+    dropInTo: options => {
+        const {targetNode, pageConfig} = options;
+        if (targetNode?.componentName === 'Form') return false;
+
+        let formNode = findParentNodeByName(pageConfig, 'Form', targetNode.id);
+
+        return !formNode;
+    },
     hooks: {
         beforeAdd: options => {
             const {node} = options;
