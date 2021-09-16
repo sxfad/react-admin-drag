@@ -75,7 +75,7 @@ export default React.memo(config({
         const afterPropsChange = nodeConfig?.hooks?.afterPropsChange;
         afterPropsChange && afterPropsChange({node: node, dragPageAction});
 
-        console.log('props', JSON.stringify(node.props, null, 4));
+        // console.log('props', JSON.stringify(node.props, null, 4));
         dragPageAction.updateNode(node);
         dragPageAction.updateParentNode(node); // 有些组件需要更新父级，比如：Descriptions.Item
     }, {wait: 300, leading: true});

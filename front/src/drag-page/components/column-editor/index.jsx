@@ -1,9 +1,10 @@
 import {useCallback, useMemo} from 'react';
 import {Button} from 'antd';
 import PropTypes from 'prop-types';
-import {Table, tableEditable} from '@ra-lib/admin';
+import {Table, tableEditable, tableRowDraggable} from '@ra-lib/admin';
+import {v4 as uuid} from 'uuid';
 
-const EditTable = tableEditable(Table);
+const EditTable = tableRowDraggable(tableEditable(Table));
 
 ColumnEditor.propTypes = {
     value: PropTypes.array,
@@ -32,6 +33,23 @@ export default function ColumnEditor(props) {
         onChange && onChange(dataSource);
     }, [dataSource, onChange]);
 
+    const handleDelete = useCallback((index) => {
+        console.log('delete', index);
+        dataSource.splice(index, 1);
+        onChange && onChange([...dataSource]);
+    }, [dataSource, onChange]);
+
+    const handleSortEnd = useCallback((info) => {
+        const {oldIndex, newIndex} = info;
+
+        if (oldIndex === newIndex) return;
+
+        const [record] = dataSource.splice(oldIndex, 1);
+        dataSource.splice(newIndex, 0, record);
+
+        onChange && onChange([...dataSource]);
+    }, [dataSource, onChange]);
+
     const columns = [
         {
             title: '字段名', dataIndex: 'dataIndex',
@@ -46,13 +64,19 @@ export default function ColumnEditor(props) {
         },
         {
             title: '列名', dataIndex: 'title',
-            formProps: (record, rowIndex) => {
+            formProps: (record) => {
                 return {
                     label: '',
                     type: 'input',
                     // size: 'small',
                     onChange: e => handleChange(record, 'title', e.target.value),
                 };
+            },
+        },
+        {
+            title: '操作', dataIndex: '_operator', width: 60,
+            render: (value, record, index) => {
+                return <a style={{color: 'red'}} onClick={() => handleDelete(index)}>删除</a>;
             },
         },
     ];
@@ -64,6 +88,8 @@ export default function ColumnEditor(props) {
                 columns={columns}
                 dataSource={dataSource}
                 onChange={handleChange}
+                rowKey={() => uuid()}
+                onSortEnd={handleSortEnd}
             />
             <Button onClick={handleAdd} block style={{marginTop: 8}}>添加一列</Button>
         </div>
